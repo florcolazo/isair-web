@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administración - ISAIR</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- CryptoJS for Decryption -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
     :root {
       --blue: #0072ff;
@@ -90,13 +92,11 @@
     
     <div class="auth-section" id="authSection">
       <div class="field">
-        <label for="ghToken">Contraseña de Administrador (GitHub Token)</label>
-        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-        <small style="display:block; margin-top:8px; color:#666;">
-          Para conseguir tu Token, andá a GitHub > Settings > Developer Settings > Personal Access Tokens > Fine-grained tokens. Dale permisos de lectura y escritura (Read & Write) a 'Contents'.
-        </small>
+        <label for="clientPassword">Contraseña de Acceso</label>
+        <input type="password" id="clientPassword" placeholder="Ingresá la clave">
       </div>
-      <button class="btn" style="background:var(--blue);" onclick="loadPrices()" id="btnLoad">Entrar y cargar precios</button>
+      <button class="btn" style="background:var(--blue);" onclick="loadPrices()" id="btnLoad">Entrar al panel</button>
+      <div id="authErrorMsg" class="msg error" style="margin-top:15px; display:none;">Contraseña incorrecta</div>
     </div>
 
     <form id="priceForm" onsubmit="savePrices(event)">
@@ -134,16 +134,20 @@
     const FILE_PATH = 'precios.json';
     const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
     
+    // =========================================================
+    // PEGA AQUÍ EL TOKEN ENCRIPTADO (GENERADO CON generar_clave.html)
+    // =========================================================
+    const ENCRYPTED_TOKEN = 'U2FsdGVkX19dummyencryptedtokenreplaceit'; 
+    
     let currentSha = '';
+    let decryptedToken = '';
 
-    // Util: Decode Base64 safely (handles Unicode)
     function b64DecodeUnicode(str) {
       return decodeURIComponent(atob(str).split('').map(function(c) {
           return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
     }
 
-    // Util: Encode Base64 safely
     function b64EncodeUnicode(str) {
       return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
           function toSolidBytes(match, p1) {
@@ -152,25 +156,37 @@
     }
 
     async function loadPrices() {
-      const token = document.getElementById('ghToken').value;
-      if (!token) return alert('Por favor, ingresá el Token.');
+      const pwd = document.getElementById('clientPassword').value;
+      const errorBox = document.getElementById('authErrorMsg');
+      if (!pwd) return;
       
+      errorBox.style.display = 'none';
       const btn = document.getElementById('btnLoad');
-      btn.textContent = 'Cargando...';
+      btn.textContent = 'Verificando...';
       btn.disabled = true;
 
       try {
+        // Attempt to decrypt token
+        const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TOKEN, pwd);
+        const originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+        if (!originalText || (!originalText.startsWith('ghp_') && !originalText.startsWith('github_pat_'))) {
+          throw new Error('Clave incorrecta');
+        }
+
+        decryptedToken = originalText;
+
         const response = await fetch(API_URL, {
           headers: {
-            'Authorization': `token ${token}`,
+            'Authorization': `token ${decryptedToken}`,
             'Accept': 'application/vnd.github.v3+json'
           }
         });
 
-        if (!response.ok) throw new Error('Token inválido o no hay permisos.');
+        if (!response.ok) throw new Error('Error al conectar con la base de datos (Token vencido o sin permisos).');
 
         const data = await response.json();
-        currentSha = data.sha; // We need this to update the file later
+        currentSha = data.sha; 
         
         const content = JSON.parse(b64DecodeUnicode(data.content));
         
@@ -184,16 +200,20 @@
         document.getElementById('priceForm').style.display = 'block';
 
       } catch (err) {
-        alert(err.message);
+        if(err.message === 'Clave incorrecta') {
+          errorBox.textContent = 'Contraseña incorrecta.';
+        } else {
+          errorBox.textContent = err.message;
+        }
+        errorBox.style.display = 'block';
       } finally {
-        btn.textContent = 'Entrar y cargar precios';
+        btn.textContent = 'Entrar al panel';
         btn.disabled = false;
       }
     }
 
     async function savePrices(e) {
       e.preventDefault();
-      const token = document.getElementById('ghToken').value;
       const btn = document.getElementById('btnSave');
       const msg = document.getElementById('statusMsg');
       
@@ -217,7 +237,7 @@
         const response = await fetch(API_URL, {
           method: 'PUT',
           headers: {
-            'Authorization': `token ${token}`,
+            'Authorization': `token ${decryptedToken}`,
             'Accept': 'application/vnd.github.v3+json',
             'Content-Type': 'application/json'
           },
@@ -228,10 +248,10 @@
           })
         });
 
-        if (!response.ok) throw new Error('Error al guardar. Revisá los permisos del Token.');
+        if (!response.ok) throw new Error('Error al guardar. Avisá al desarrollador.');
         
         const data = await response.json();
-        currentSha = data.content.sha; // Update sha for next edit
+        currentSha = data.content.sha; 
 
         msg.textContent = '¡Precios guardados con éxito! Los cambios tardarán 2 minutos en reflejarse en la página principal.';
         msg.className = 'msg success';
