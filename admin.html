@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="es-AR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administración - ISAIR</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
   <!-- CryptoJS for Decryption -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
@@ -14,6 +16,7 @@
       --paper: #f4f6fa;
       --text: #1a1a2e;
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--paper);
@@ -21,29 +24,36 @@
       margin: 0;
       padding: 20px;
     }
+
     .container {
       max-width: 600px;
       margin: 40px auto;
       background: #fff;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
+
     h1 {
       font-family: 'Sora', sans-serif;
       text-align: center;
       color: var(--blue);
       margin-top: 0;
     }
+
     .field {
       margin-bottom: 20px;
     }
+
     label {
       display: block;
       font-weight: 600;
       margin-bottom: 8px;
     }
-    input[type="text"], input[type="number"], input[type="password"] {
+
+    input[type="text"],
+    input[type="number"],
+    input[type="password"] {
       width: 100%;
       padding: 12px;
       border: 1px solid #ccc;
@@ -51,6 +61,7 @@
       font-size: 16px;
       box-sizing: border-box;
     }
+
     .btn {
       display: block;
       width: 100%;
@@ -64,13 +75,16 @@
       cursor: pointer;
       text-align: center;
     }
+
     .btn:hover {
       background: #c21a14;
     }
+
     .btn:disabled {
       background: #ccc;
       cursor: not-allowed;
     }
+
     .msg {
       margin-top: 20px;
       padding: 15px;
@@ -79,17 +93,36 @@
       font-weight: 600;
       text-align: center;
     }
-    .msg.success { background: #d4edda; color: #155724; display: block; }
-    .msg.error { background: #f8d7da; color: #721c24; display: block; }
-    .auth-section { margin-bottom: 30px; padding-bottom: 30px; border-bottom: 1px solid #eee; }
-    #priceForm { display: none; }
+
+    .msg.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+
+    .msg.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+
+    .auth-section {
+      margin-bottom: 30px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #eee;
+    }
+
+    #priceForm {
+      display: none;
+    }
   </style>
 </head>
+
 <body>
 
   <div class="container">
     <h1>Admin ISAIR</h1>
-    
+
     <div class="auth-section" id="authSection">
       <div class="field">
         <label for="clientPassword">Contraseña de Acceso</label>
@@ -101,7 +134,7 @@
 
     <form id="priceForm" onsubmit="savePrices(event)">
       <h3 style="margin-top:0;">Actualizar Precios ($)</h3>
-      
+
       <div class="field">
         <label>Fibra Óptica 300MB</label>
         <input type="number" id="fibra_300" required>
@@ -133,33 +166,33 @@
     const REPO_NAME = 'isair-web';
     const FILE_PATH = 'precios.json';
     const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
-    
+
     // =========================================================
     // PEGA AQUÍ EL TOKEN ENCRIPTADO (GENERADO CON generar_clave.html)
     // =========================================================
-    const ENCRYPTED_TOKEN = 'U2FsdGVkX19dummyencryptedtokenreplaceit'; 
-    
+    const ENCRYPTED_TOKEN = 'U2FsdGVkX199MdaeBdhvUsOvj3o1pfDw6Jx1f7FftUg6t1y3MTXAC8kQmxilu2RDHotBNBRLLW8BVZLFjKPNmwfCpqWHEXEMkDhIu4pPNC9H1Tz+BJxCQhhXXEIURSl0I5zAvSRDVNIj6uoVIDkQPw==';
+
     let currentSha = '';
     let decryptedToken = '';
 
     function b64DecodeUnicode(str) {
-      return decodeURIComponent(atob(str).split('').map(function(c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      return decodeURIComponent(atob(str).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
     }
 
     function b64EncodeUnicode(str) {
       return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-          function toSolidBytes(match, p1) {
-              return String.fromCharCode('0x' + p1);
-      }));
+        function toSolidBytes(match, p1) {
+          return String.fromCharCode('0x' + p1);
+        }));
     }
 
     async function loadPrices() {
       const pwd = document.getElementById('clientPassword').value;
       const errorBox = document.getElementById('authErrorMsg');
       if (!pwd) return;
-      
+
       errorBox.style.display = 'none';
       const btn = document.getElementById('btnLoad');
       btn.textContent = 'Verificando...';
@@ -186,10 +219,10 @@
         if (!response.ok) throw new Error('Error al conectar con la base de datos (Token vencido o sin permisos).');
 
         const data = await response.json();
-        currentSha = data.sha; 
-        
+        currentSha = data.sha;
+
         const content = JSON.parse(b64DecodeUnicode(data.content));
-        
+
         document.getElementById('fibra_300').value = content.fibra_300 || '';
         document.getElementById('fibra_istv_move').value = content.fibra_istv_move || '';
         document.getElementById('fibra_istv_full').value = content.fibra_istv_full || '';
@@ -200,7 +233,7 @@
         document.getElementById('priceForm').style.display = 'block';
 
       } catch (err) {
-        if(err.message === 'Clave incorrecta') {
+        if (err.message === 'Clave incorrecta') {
           errorBox.textContent = 'Contraseña incorrecta.';
         } else {
           errorBox.textContent = err.message;
@@ -216,7 +249,7 @@
       e.preventDefault();
       const btn = document.getElementById('btnSave');
       const msg = document.getElementById('statusMsg');
-      
+
       btn.textContent = 'Guardando...';
       btn.disabled = true;
       msg.className = 'msg';
@@ -249,9 +282,9 @@
         });
 
         if (!response.ok) throw new Error('Error al guardar. Avisá al desarrollador.');
-        
+
         const data = await response.json();
-        currentSha = data.content.sha; 
+        currentSha = data.content.sha;
 
         msg.textContent = '¡Precios guardados con éxito! Los cambios tardarán 2 minutos en reflejarse en la página principal.';
         msg.className = 'msg success';
@@ -266,4 +299,5 @@
     }
   </script>
 </body>
+
 </html>
