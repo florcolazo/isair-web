@@ -45,6 +45,7 @@
       color: var(--text);
       background: var(--paper);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     h1,
@@ -998,7 +999,7 @@
 
         <div class="plan-card">
           <p class="plan-name" style="font-size:24px; color:var(--blue);">Internet 300MB</p>
-          <div class="plan-price"><span class="amount">$27.451</span><span class="per">/ mes</span></div>
+          <div class="plan-price"><span class="amount" data-price-id="fibra_300">$27.451</span><span class="per">/ mes</span></div>
           <ul class="plan-features">
             <li>Streaming sin cortes</li>
             <li>WiFi para toda la casa</li>
@@ -1017,9 +1018,9 @@
         </div>
 
         <div class="plan-card featured">
-          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + ISTV Move (Fibra Óptica)" data-price="$27.963">⚽ Quiero fútbol</button>
+          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + ISTV Move (Fibra Óptica)" data-price-ref="fibra_istv_move" data-price="$27.963">⚽ Quiero fútbol</button>
           <p class="plan-name"><span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + ISTV Move</p>
-          <div class="plan-price"><span class="amount">$27.963</span><span class="per">/ mes</span></div>
+          <div class="plan-price"><span class="amount" data-price-id="fibra_istv_move">$27.963</span><span class="per">/ mes</span></div>
           <ul class="plan-features">
             <li>TV online sin deco extra</li>
             <li>Más de 100 canales</li>
@@ -1038,9 +1039,9 @@
         </div>
 
         <div class="plan-card featured">
-          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + ISTV Full (Fibra Óptica)" data-price="$31.568">⚽ Quiero fútbol</button>
+          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + ISTV Full (Fibra Óptica)" data-price-ref="fibra_istv_full" data-price="$31.568">⚽ Quiero fútbol</button>
           <p class="plan-name"><span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + ISTV Full</p>
-          <div class="plan-price"><span class="amount">$31.568</span><span class="per">/ mes</span></div>
+          <div class="plan-price"><span class="amount" data-price-id="fibra_istv_full">$31.568</span><span class="per">/ mes</span></div>
           <ul class="plan-features">
             <li>Convertidor Android incluido</li>
             <li>Más de 100 canales</li>
@@ -1059,9 +1060,9 @@
         </div>
 
         <div class="plan-card featured">
-          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + IS CAM (Fibra Óptica)" data-price="$44.383">⚽ Quiero fútbol</button>
+          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + IS CAM (Fibra Óptica)" data-price-ref="fibra_iscam" data-price="$44.383">⚽ Quiero fútbol</button>
           <p class="plan-name"><span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + IS CAM</p>
-          <div class="plan-price"><span class="amount">$44.383</span><span class="per">/ mes</span></div>
+          <div class="plan-price"><span class="amount" data-price-id="fibra_iscam">$44.383</span><span class="per">/ mes</span></div>
           <ul class="plan-features">
             <li>Cámaras de seguridad</li>
             <li>Monitoreo desde el celular</li>
@@ -1096,7 +1097,7 @@
       <div class="plans-grid single">
         <div class="plan-card wireless">
           <p class="plan-name">Internet Inalámbrica 15MB</p>
-          <div class="plan-price"><span class="amount">$17.354</span><span class="per">/ mes</span></div>
+          <div class="plan-price"><span class="amount" data-price-id="inalambrica_15">$17.354</span><span class="per">/ mes</span></div>
           <div class="plan-meta">
             <div><span>Instalación</span><strong>Sin Costo</strong></div>
             <div><span>Duración</span><strong>12 meses</strong></div>
@@ -1203,6 +1204,31 @@
   </a>
 
   <script>
+    // Fetch precios.json to update prices dynamically
+    fetch('precios.json')
+      .then(response => response.json())
+      .then(prices => {
+        // Update DOM prices
+        document.querySelectorAll('[data-price-id]').forEach(el => {
+          const id = el.getAttribute('data-price-id');
+          if (prices[id]) {
+            const formattedPrice = '$' + prices[id].toLocaleString('es-AR');
+            el.textContent = formattedPrice;
+            
+            // Also update the select-plan button data-price attribute for this card
+            const card = el.closest('.plan-card');
+            if (card) {
+              const btn = card.querySelector('.select-plan');
+              if (btn) btn.setAttribute('data-price', formattedPrice);
+              
+              const addFutbolBtn = card.querySelector('.add-futbol-btn');
+              if (addFutbolBtn) addFutbolBtn.setAttribute('data-price', formattedPrice);
+            }
+          }
+        });
+      })
+      .catch(err => console.error('Error loading prices:', err));
+
     document.getElementById('year').textContent = new Date().getFullYear();
 
     document.querySelectorAll('.select-plan').forEach(function (btn) {
