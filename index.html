@@ -449,6 +449,7 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       gap: 24px;
+      padding-top: 20px;
       padding-bottom: 24px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
@@ -541,7 +542,7 @@
 
     .badge {
       position: absolute;
-      top: -14px;
+      top: -16px;
       left: 28px;
       background: var(--red);
       color: #fff;
@@ -550,6 +551,13 @@
       padding: 6px 14px;
       border-radius: 999px;
       letter-spacing: .02em;
+      box-shadow: 0 4px 10px rgba(230, 42, 34, 0.4);
+      animation: bounceBadge 2s infinite;
+    }
+    
+    @keyframes bounceBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
     }
 
     .plan-name {
