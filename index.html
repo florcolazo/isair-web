@@ -460,10 +460,12 @@
     .plans-grid::-webkit-scrollbar {
       height: 8px;
     }
+
     .plans-grid::-webkit-scrollbar-track {
       background: var(--paper-2);
       border-radius: 4px;
     }
+
     .plans-grid::-webkit-scrollbar-thumb {
       background: var(--blue);
       border-radius: 4px;
@@ -515,7 +517,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       z-index: 10;
       transition: background 0.2s, transform 0.2s;
     }
@@ -525,16 +527,33 @@
       transform: translateY(-50%) scale(1.05);
     }
 
-    .carousel-arrow.left { left: -24px; }
-    .carousel-arrow.right { right: -24px; }
-    .carousel-arrow svg { width: 24px; height: 24px; fill: currentColor; }
+    .carousel-arrow.left {
+      left: -24px;
+    }
+
+    .carousel-arrow.right {
+      right: -24px;
+    }
+
+    .carousel-arrow svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
 
     @media (max-width: 768px) {
       .carousel-arrow {
-        width: 40px; height: 40px;
+        width: 40px;
+        height: 40px;
       }
-      .carousel-arrow.left { left: -10px; }
-      .carousel-arrow.right { right: -10px; }
+
+      .carousel-arrow.left {
+        left: -10px;
+      }
+
+      .carousel-arrow.right {
+        right: -10px;
+      }
     }
 
     .plan-card.featured {
@@ -555,10 +574,17 @@
       box-shadow: 0 4px 10px rgba(230, 42, 34, 0.4);
       animation: bounceBadge 2s infinite;
     }
-    
+
     @keyframes bounceBadge {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
     }
 
     .plan-name {
@@ -990,95 +1016,118 @@
       </div>
       <div class="carousel-container">
         <button id="scrollLeft" class="carousel-arrow left" aria-label="Desplazar a la izquierda">
-          <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" />
+          </svg>
         </button>
         <button id="scrollRight" class="carousel-arrow right" aria-label="Desplazar a la derecha">
-          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+          </svg>
         </button>
         <div class="plans-grid" id="plansGrid">
 
-        <div class="plan-card">
-          <p class="plan-name" style="font-size:24px; color:var(--blue);">Internet 300MB</p>
-          <div class="plan-price"><span class="amount" data-price-id="fibra_300">$27.451</span><span class="per">/ mes</span></div>
-          <ul class="plan-features">
-            <li>Streaming sin cortes</li>
-            <li>WiFi para toda la casa</li>
-            <li>Instalación rápida</li>
-            <li>Atención personalizada</li>
-          </ul>
-          <div class="plan-meta">
-            <div><span>Instalación</span><strong>Sin costo</strong></div>
-            <div><span>Promo</span><strong>12 meses</strong></div>
+          <div class="plan-card">
+            <p class="plan-name" style="font-size:24px; color:var(--blue);">Internet 300MB</p>
+            <div class="plan-price"><span class="amount" data-price-id="fibra_300">$27.451</span><span class="per">/
+                mes</span></div>
+            <ul class="plan-features">
+              <li>Streaming sin cortes</li>
+              <li>WiFi para toda la casa</li>
+              <li>Instalación rápida</li>
+              <li>Atención personalizada</li>
+            </ul>
+            <div class="plan-meta">
+              <div><span>Instalación</span><strong>Sin costo</strong></div>
+              <div><span>Promo</span><strong>12 meses</strong></div>
+            </div>
+            <p class="plan-note">Promoción válida para nuevas contrataciones del servicio de Internet Fibra Óptica 300
+              MB.
+              Válida entre el 01/12/2026 al 31/12/2026 en San José. Corresponde a una promoción de 12 meses con
+              descuentos
+              cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
+            <button class="btn btn-red select-plan" data-name="Internet 300MB (Fibra Óptica)" data-price="$27.451">Yo
+              quiero!</button>
           </div>
-          <p class="plan-note">Promoción válida para nuevas contrataciones del servicio de Internet Fibra Óptica 300 MB.
-            Válida entre el 01/12/2025 al 31/12/2025 en San José. Corresponde a una promoción de 12 meses con descuentos
-            cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
-          <button class="btn btn-red select-plan" data-name="Internet 300MB (Fibra Óptica)" data-price="$27.451">Yo
-            quiero!</button>
-        </div>
 
-        <div class="plan-card featured">
-          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + ISTV Move (Fibra Óptica)" data-price-ref="fibra_istv_move" data-price="$27.963">⚽ Quiero fútbol</button>
-          <p class="plan-name"><span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + ISTV Move</p>
-          <div class="plan-price"><span class="amount" data-price-id="fibra_istv_move">$27.963</span><span class="per">/ mes</span></div>
-          <ul class="plan-features">
-            <li>TV online sin deco extra</li>
-            <li>Más de 100 canales</li>
-            <li>4 dispositivos en simultáneo</li>
-            <li>Ideal para Smart TV con Android</li>
-          </ul>
-          <div class="plan-meta">
-            <div><span>Instalación</span><strong>Sin costo</strong></div>
-            <div><span>Promo</span><strong>12 meses</strong></div>
+          <div class="plan-card featured">
+            <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;"
+              data-name="Internet + ISTV Move (Fibra Óptica)" data-price-ref="fibra_istv_move" data-price="$27.963">⚽
+              Quiero fútbol</button>
+            <p class="plan-name"><span
+                style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> +
+              ISTV Move</p>
+            <div class="plan-price"><span class="amount" data-price-id="fibra_istv_move">$27.963</span><span
+                class="per">/ mes</span></div>
+            <ul class="plan-features">
+              <li>TV online sin deco extra</li>
+              <li>Más de 100 canales</li>
+              <li>4 dispositivos en simultáneo</li>
+              <li>Ideal para Smart TV con Android</li>
+            </ul>
+            <div class="plan-meta">
+              <div><span>Instalación</span><strong>Sin costo</strong></div>
+              <div><span>Promo</span><strong>12 meses</strong></div>
+            </div>
+            <p class="plan-note">Promoción válida para nuevas contrataciones del servicio Internet + ISTV Move. Válida
+              entre el 01/12/2026 al 31/12/2026 en San José. Corresponde a una promoción de 12 meses con descuentos
+              cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
+            <button class="btn btn-red select-plan" data-name="Internet + ISTV Move (Fibra Óptica)"
+              data-price="$27.963">Yo quiero!</button>
           </div>
-          <p class="plan-note">Promoción válida para nuevas contrataciones del servicio Internet + ISTV Move. Válida
-            entre el 01/12/2025 al 31/12/2025 en San José. Corresponde a una promoción de 12 meses con descuentos
-            cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
-          <button class="btn btn-red select-plan" data-name="Internet + ISTV Move (Fibra Óptica)"
-            data-price="$27.963">Yo quiero!</button>
-        </div>
 
-        <div class="plan-card featured">
-          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + ISTV Full (Fibra Óptica)" data-price-ref="fibra_istv_full" data-price="$31.568">⚽ Quiero fútbol</button>
-          <p class="plan-name"><span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + ISTV Full</p>
-          <div class="plan-price"><span class="amount" data-price-id="fibra_istv_full">$31.568</span><span class="per">/ mes</span></div>
-          <ul class="plan-features">
-            <li>Convertidor Android incluido</li>
-            <li>Más de 100 canales</li>
-            <li>4 dispositivos en simultáneo</li>
-            <li>Convierte tu TV en Smart</li>
-          </ul>
-          <div class="plan-meta">
-            <div><span>Instalación</span><strong>Sin costo</strong></div>
-            <div><span>Promo</span><strong>12 meses</strong></div>
+          <div class="plan-card featured">
+            <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;"
+              data-name="Internet + ISTV Full (Fibra Óptica)" data-price-ref="fibra_istv_full" data-price="$31.568">⚽
+              Quiero fútbol</button>
+            <p class="plan-name"><span
+                style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> +
+              ISTV Full</p>
+            <div class="plan-price"><span class="amount" data-price-id="fibra_istv_full">$31.568</span><span
+                class="per">/ mes</span></div>
+            <ul class="plan-features">
+              <li>Convertidor Android incluido</li>
+              <li>Más de 100 canales</li>
+              <li>4 dispositivos en simultáneo</li>
+              <li>Convierte tu TV en Smart</li>
+            </ul>
+            <div class="plan-meta">
+              <div><span>Instalación</span><strong>Sin costo</strong></div>
+              <div><span>Promo</span><strong>12 meses</strong></div>
+            </div>
+            <p class="plan-note">Promoción válida para nuevas contrataciones del servicio Internet + ISTV Full. Válida
+              entre el 01/12/2026 al 31/12/2026 en San José. Corresponde a una promoción de 12 meses con descuentos
+              cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
+            <button class="btn btn-red select-plan" data-name="Internet + ISTV Full (Fibra Óptica)"
+              data-price="$31.568">Yo quiero!</button>
           </div>
-          <p class="plan-note">Promoción válida para nuevas contrataciones del servicio Internet + ISTV Full. Válida
-            entre el 01/12/2025 al 31/12/2025 en San José. Corresponde a una promoción de 12 meses con descuentos
-            cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
-          <button class="btn btn-red select-plan" data-name="Internet + ISTV Full (Fibra Óptica)"
-            data-price="$31.568">Yo quiero!</button>
-        </div>
 
-        <div class="plan-card featured">
-          <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;" data-name="Internet + IS CAM (Fibra Óptica)" data-price-ref="fibra_iscam" data-price="$44.383">⚽ Quiero fútbol</button>
-          <p class="plan-name"><span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + IS CAM</p>
-          <div class="plan-price"><span class="amount" data-price-id="fibra_iscam">$44.383</span><span class="per">/ mes</span></div>
-          <ul class="plan-features">
-            <li>Cámaras de seguridad</li>
-            <li>Monitoreo desde el celular</li>
-            <li>Instalación profesional</li>
-            <li>Asesoramiento personalizado</li>
-          </ul>
-          <div class="plan-meta">
-            <div><span>Instalación</span><strong>Sin costo</strong></div>
-            <div><span>Promo</span><strong>12 meses</strong></div>
+          <div class="plan-card featured">
+            <button class="badge add-futbol-btn" style="cursor:pointer; border:none; outline:none;"
+              data-name="Internet + IS CAM (Fibra Óptica)" data-price-ref="fibra_iscam" data-price="$44.383">⚽ Quiero
+              fútbol</button>
+            <p class="plan-name"><span
+                style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">Internet 300MB</span> + IS
+              CAM</p>
+            <div class="plan-price"><span class="amount" data-price-id="fibra_iscam">$44.383</span><span class="per">/
+                mes</span></div>
+            <ul class="plan-features">
+              <li>Cámaras de seguridad</li>
+              <li>Monitoreo desde el celular</li>
+              <li>Instalación profesional</li>
+              <li>Asesoramiento personalizado</li>
+            </ul>
+            <div class="plan-meta">
+              <div><span>Instalación</span><strong>Sin costo</strong></div>
+              <div><span>Promo</span><strong>12 meses</strong></div>
+            </div>
+            <p class="plan-note">Promoción válida para nuevas contrataciones del servicio Internet + IS CAM. Válida
+              entre
+              el 01/12/2026 al 31/12/2026 en San José. Corresponde a una promoción de 12 meses con descuentos
+              cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
+            <button class="btn btn-red select-plan" data-name="Internet + IS CAM (Fibra Óptica)" data-price="$44.383">Yo
+              quiero!</button>
           </div>
-          <p class="plan-note">Promoción válida para nuevas contrataciones del servicio Internet + IS CAM. Válida entre
-            el 01/12/2025 al 31/12/2025 en San José. Corresponde a una promoción de 12 meses con descuentos
-            cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.</p>
-          <button class="btn btn-red select-plan" data-name="Internet + IS CAM (Fibra Óptica)" data-price="$44.383">Yo
-            quiero!</button>
-        </div>
 
         </div> <!-- /.plans-grid -->
       </div> <!-- /.carousel-container -->
@@ -1097,7 +1146,8 @@
       <div class="plans-grid single">
         <div class="plan-card wireless">
           <p class="plan-name">Internet Inalámbrica 15MB</p>
-          <div class="plan-price"><span class="amount" data-price-id="inalambrica_15">$17.354</span><span class="per">/ mes</span></div>
+          <div class="plan-price"><span class="amount" data-price-id="inalambrica_15">$17.354</span><span class="per">/
+              mes</span></div>
           <div class="plan-meta">
             <div><span>Instalación</span><strong>Sin Costo</strong></div>
             <div><span>Duración</span><strong>12 meses</strong></div>
@@ -1176,7 +1226,7 @@
       <div class="foot-grid">
         <div>
           <strong>Internet Services · Agencia San José</strong>
-          <p>Fibra Óptica e Inalámbrica en San José y alrededores.</p>
+          <p>Internet Fibra Óptica e Inalámbrica en San José y alrededores.</p>
         </div>
         <div>
           <strong>Contacto</strong>
@@ -1190,7 +1240,7 @@
               Instagram</a></p>
         </div>
       </div>
-      <p class="price-notice">A partir del 01/09/2025 nuestra empresa realizará un incremento en sus precios.</p>
+
       <p class="copy">© <span id="year"></span> Internet Services · Agencia San José. Todos los derechos reservados.</p>
     </div>
   </footer>
@@ -1214,13 +1264,13 @@
           if (prices[id]) {
             const formattedPrice = '$' + prices[id].toLocaleString('es-AR');
             el.textContent = formattedPrice;
-            
+
             // Also update the select-plan button data-price attribute for this card
             const card = el.closest('.plan-card');
             if (card) {
               const btn = card.querySelector('.select-plan');
               if (btn) btn.setAttribute('data-price', formattedPrice);
-              
+
               const addFutbolBtn = card.querySelector('.add-futbol-btn');
               if (addFutbolBtn) addFutbolBtn.setAttribute('data-price', formattedPrice);
             }
@@ -1291,13 +1341,13 @@
       var futbol = (fCheckbox && fCheckbox.checked) ? 'Sí' : 'No';
 
       var texto = "👋 Hola ISAIR, quiero solicitar un plan:\n\n" +
-                  "📌 *Plan:* " + plan + "\n" +
-                  "⚽ *Pack Fútbol:* " + futbol + "\n\n" +
-                  "👤 *Mis datos:*\n" +
-                  "- Nombre: " + nombre + "\n" +
-                  "- Teléfono: " + telefono + "\n" +
-                  "- Dirección: " + direccion;
-      
+        "📌 *Plan:* " + plan + "\n" +
+        "⚽ *Pack Fútbol:* " + futbol + "\n\n" +
+        "👤 *Mis datos:*\n" +
+        "- Nombre: " + nombre + "\n" +
+        "- Teléfono: " + telefono + "\n" +
+        "- Dirección: " + direccion;
+
       if (email) {
         texto += "\n- Email: " + email;
       }
@@ -1359,11 +1409,11 @@
         ball.remove();
       }, 1000);
     }
-    
-    document.getElementById('scrollRight').addEventListener('click', function() {
+
+    document.getElementById('scrollRight').addEventListener('click', function () {
       document.getElementById('plansGrid').scrollBy({ left: 340, behavior: 'smooth' });
     });
-    document.getElementById('scrollLeft').addEventListener('click', function() {
+    document.getElementById('scrollLeft').addEventListener('click', function () {
       document.getElementById('plansGrid').scrollBy({ left: -340, behavior: 'smooth' });
     });
   </script>
