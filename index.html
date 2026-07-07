@@ -491,6 +491,13 @@
       flex-direction: column;
       gap: 20px;
       position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 45px rgba(0, 114, 255, 0.15);
+      border-color: var(--blue);
     }
 
     @media (min-width: 768px) {
@@ -558,6 +565,11 @@
 
     .plan-card.featured {
       border: 2px solid var(--red);
+    }
+
+    .plan-card.featured:hover {
+      box-shadow: 0 25px 45px rgba(230, 42, 34, 0.18);
+      border-color: var(--red);
     }
 
     .badge {
