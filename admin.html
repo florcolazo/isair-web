@@ -201,7 +201,7 @@
       try {
         // Attempt to decrypt token
         const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TOKEN, pwd);
-        const originalText = bytes.toString(CryptoJS.enc.Utf8);
+        const originalText = bytes.toString(CryptoJS.enc.Utf8).trim();
 
         if (!originalText || (!originalText.startsWith('ghp_') && !originalText.startsWith('github_pat_'))) {
           throw new Error('Clave incorrecta');
