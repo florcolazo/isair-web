@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa de Cobertura — Internet Services San José</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <meta name="description" content="Verificá si tenemos cobertura en tu zona. Mapa interactivo de zonas con servicio de Internet en San José, Entre Ríos.">
+
+  <!-- Fuentes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Estilos del sitio -->
+  <link rel="stylesheet" href="styles.css?v=1.0.1">
+
+  <style>
+    /* ── Mapa público ── */
+    .cobertura-hero {
+      background: linear-gradient(135deg, #051b44 0%, #0072ff 100%);
+      padding: 60px 24px 40px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .cobertura-hero .eyebrow {
+      color: rgba(255,255,255,.7);
+      font-size: 12px;
+      letter-spacing: .18em;
+    }
+
+    .cobertura-hero h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 800;
+      margin: 10px 0 14px;
+      color: #fff;
+    }
+
+    .cobertura-hero p {
+      font-size: 16px;
+      opacity: .85;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Buscador de dirección */
+    .search-bar {
+      max-width: 580px;
+      margin: 32px auto 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 999px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      outline: none;
+    }
+
+    .search-bar button {
+      padding: 14px 24px;
+      border-radius: 999px;
+      border: none;
+      background: #e62a22;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(230,42,34,.4);
+      transition: background .2s, transform .15s;
+      white-space: nowrap;
+    }
+
+    .search-bar button:hover {
+      background: #c41f18;
+      transform: translateY(-1px);
+    }
+
+    /* Leyenda de colores */
+    .map-legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 20px 24px;
+      background: #fff;
+      border-bottom: 1px solid #e0e4ec;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Mapa */
+    #map {
+      width: 100%;
+      height: 580px;
+      z-index: 1;
+    }
+
+    /* Panel de resultado de búsqueda */
+    .coverage-result {
+      display: none;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    .coverage-result.visible {
+      display: block;
+    }
+
+    .result-card {
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.1);
+    }
+
+    .result-card.tiene {
+      background: linear-gradient(135deg, #d4edda, #f0fff4);
+      border: 1.5px solid #28a745;
+    }
+
+    .result-card.no-tiene {
+      background: linear-gradient(135deg, #f8d7da, #fff5f5);
+      border: 1.5px solid #dc3545;
+    }
+
+    .result-icon {
+      font-size: 40px;
+      flex-shrink: 0;
+    }
+
+    .result-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .result-card p {
+      font-size: 14.5px;
+      color: #444;
+      line-height: 1.5;
+    }
+
+    /* CTA después del mapa */
+    .map-cta {
+      background: var(--paper);
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .map-cta h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      color: #051b44;
+      margin-bottom: 12px;
+    }
+
+    .map-cta p {
+      color: #5b6472;
+      font-size: 15.5px;
+      margin-bottom: 28px;
+    }
+
+    /* Loading spinner */
+    .map-loading {
+      width: 100%;
+      height: 580px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f6fa;
+      flex-direction: column;
+      gap: 16px;
+      color: #5b6472;
+      font-size: 15px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e0e4ec;
+      border-top-color: #0072ff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .search-bar {
+        flex-direction: column;
+      }
+      #map {
+        height: 420px;
+      }
+    }
+  
+    /* Redes Sociales Outline */
+    .foot-social {
+      display: flex;
+      gap: 10px;
+    }
+    .social-btn-outline {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .social-btn-outline:hover {
+      background: #fff;
+    }
+    .social-btn-outline svg {
+      width: 16px;
+      height: 16px;
+      fill: #fff;
+      transition: fill 0.2s;
+    }
+    .social-btn-outline:hover svg {
+      fill: var(--ink);
+    }
+
+  
+    .suggestions-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 140px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      margin: 8px 0 0 0;
+      padding: 0;
+      list-style: none;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      text-align: left;
+    }
+    @media (max-width: 600px) {
+      .suggestions-list { right: 0; }
+    }
+    .suggestions-list li {
+      padding: 12px 18px;
+      color: #333;
+      font-size: 14.5px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .suggestions-list li:last-child {
+      border-bottom: none;
+    }
+    .suggestions-list li:hover {
+      background: #f4f6fa;
+      color: #0072ff;
+    }
+</style>
+</head>
+
+<body>
+
+  <!-- HEADER (igual al resto del sitio) -->
+  <header>
+    <div class="nav">
+      <a href="index.html" class="brand">
+        <img src="logo.png" alt="Internet Services" class="brand-logo">
+        <div class="brand-text">
+          <strong id="brandName">INTERNET SERVICES</strong>
+          <span id="brandSub">AGENCIA SAN JOSE</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" style="align-items: center;">
+        <div class="nav-item dropdown">
+          <a href="javascript:void(0)" class="dropdown-trigger">Planes <span class="arrow">▼</span></a>
+          <div class="dropdown-menu">
+            <a href="internet.html">Internet</a>
+            <a href="internet-tv.html">Internet + TV</a>
+            <a href="internet-cam.html">Internet + IS CAM</a>
+            <a href="internet-mesh.html">Internet + IS Mesh</a>
+            <a href="combos-full.html" class="combo-full">Combos Full (TV + IS CAM + IS Mesh) <span class="badge">Nuevo</span></a>
+          </div>
+        </div>
+        <div class="nav-item dropdown">
+          <a href="javascript:void(0)" class="dropdown-trigger">Contenidos <span class="arrow">▼</span></a>
+          <div class="dropdown-menu">
+            <a href="pack-futbol.html">Pack Fútbol</a>
+            <a href="pack-hbo.html">Paquete HBO</a>
+            <a href="internet-tv.html">TV</a>
+          </div>
+        </div>
+        <div class="nav-item dropdown">
+          <a href="javascript:void(0)" class="dropdown-trigger">Soporte <span class="arrow">▼</span></a>
+          <div class="dropdown-menu">
+            <a href="preguntas-frecuentes.html">Preguntas Frecuentes</a>
+            <a href="contacto.html">Contactanos</a>
+            <a href="conocenos.html">Conocenos</a>
+          </div>
+        </div>
+        <a href="cobertura.html" class="btn-cobertura">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span>Cobertura</span>
+        </a>
+      </nav>
+
+      <div class="nav-actions" style="display:flex; align-items:center; gap:16px;">
+        <a href="https://tv.is.com.ar/login" target="_blank" rel="noopener" class="btn-login-top">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+            <polyline points="17 2 12 7 7 2"></polyline>
+          </svg>
+          <span>Acceso ISTV</span>
+        </a>
+        <a href="https://clientes.is.com.ar/#/login" target="_blank" rel="noopener" class="btn-login-top white">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>Acceso Clientes</span>
+        </a>
+
+        <div class="hamburger-menu" id="hamburgerMenu">
+          <button class="hamburger-btn" aria-label="Menu" id="hamburgerBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6"  x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="dropdown-content" id="dropdownContent">
+            <a href="cobertura.html" style="color:#0072ff; font-weight:700;">📍 Mapa de Cobertura</a>
+            <div class="dropdown-submenu">
+              <span>Planes ▾</span>
+              <div class="submenu-content">
+                <a href="internet.html">Internet</a>
+                <a href="internet-tv.html">Internet + TV</a>
+                <a href="internet-cam.html">Internet + IS CAM</a>
+                <a href="internet-mesh.html">Internet + IS Mesh</a>
+              </div>
+            </div>
+            <div class="dropdown-submenu">
+              <span>Contenidos ▾</span>
+              <div class="submenu-content">
+                <a href="pack-futbol.html">Pack Fútbol</a>
+                <a href="pack-hbo.html">Paquete HBO</a>
+                <a href="internet-tv.html">TV</a>
+              </div>
+            </div>
+            <div class="dropdown-submenu">
+              <span>Soporte ▾</span>
+              <div class="submenu-content">
+                <a href="preguntas-frecuentes.html">Preguntas Frecuentes</a>
+                <a href="contacto.html">Contactanos</a>
+                <a href="conocenos.html">Conocenos</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- HERO -->
+  <section class="cobertura-hero">
+    <p class="eyebrow">📍 Mapa de Cobertura</p>
+    <h1>¿Tenemos Fibra Óptica en tu calle?</h1>
+    <p>El servicio inalámbrico está disponible en toda el área de San José.</p>
+
+        <div class="search-bar" style="position:relative;">
+      <input type="text" id="searchInput" placeholder="Ej: San Martín 450" autocomplete="off">
+      <ul id="suggestionsList" class="suggestions-list"></ul>
+      <button onclick="buscarDireccion()" id="searchBtn">Verificar Fibra</button>
+    </div>
+  </section>
+
+  <!-- RESULTADO DE BÚSQUEDA -->
+  <div class="coverage-result" id="coverageResult">
+    <div class="result-card" id="resultCard">
+      <div class="result-icon" id="resultIcon">✅</div>
+      <div>
+        <h3 id="resultTitle">¡Tenemos cobertura!</h3>
+        <p id="resultText">Tu zona cuenta con servicio disponible.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEYENDA -->
+  <div class="map-legend" style="display: none;">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#0072ff; opacity:.8;"></div>
+      Zona con Fibra Óptica
+    </div>
+    <div class="legend-item" style="color:#5b6472;">
+      <div class="legend-dot" style="background:#28a745; opacity:.5;"></div>
+      Inalámbrica (toda el área)
+    </div>
+  </div>
+
+  <!-- MAPA -->
+  <div id="mapContainer" style="position: absolute; opacity: 0; pointer-events: none; z-index: -1; height: 1px; overflow: hidden;">
+    <div class="map-loading" id="mapLoading">
+      <div class="spinner"></div>
+      <span>Cargando mapa de cobertura...</span>
+    </div>
+    <div id="map" style="display:none;"></div>
+  </div>
+
+  <!-- CTA -->
+  <section class="map-cta">
+    <h2>¿Tenés dudas sobre la cobertura?</h2>
+    <p>En toda la zona llega el servicio <strong>inalámbrico</strong>. También podés anotarte para que te avisemos cuando la fibra llegue a tu cuadra.</p>
+    <a href="contacto.html" class="btn btn-red">Consultar disponibilidad</a>
+  </section>
+
+
+  <!-- FOOTER -->
+        <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        
+        <!-- Col 1: Logo y Copyright -->
+        <div class="foot-col">
+          <div class="foot-logo">
+            <img src="logo.png" alt="Internet Services" id="footerLogo">
+          </div>
+          <p class="brand-text-foot">
+            <strong id="footerBrand">INTERNET SERVICES</strong>
+          </p>
+        </div>
+        
+        <!-- Col 2: Oficina y Dirección -->
+        <div class="foot-col foot-col-border">
+          <strong>Oficina Comercial</strong>
+          <p id="footerAddress">Cargando...</p>
+          <p id="footerHorarioOficina" style="color: #cfd4de; font-size: 13px; margin-top: 4px;">Cargando...</p>
+        </div>
+        
+        <!-- Col 3: Atención y Teléfonos -->
+        <div class="foot-col">
+          <strong>Atención al Cliente</strong>
+          <p id="footerPhone">Cargando...</p>
+          <p id="footerHorarioDigital" style="color: #cfd4de; font-size: 13px; margin-top: 4px;">Cargando...</p>
+          
+          <strong style="margin-top: 24px;">Contacto Telefónico</strong>
+          <p id="footerTelefonos">Cargando...</p>
+        </div>
+        
+        <!-- Col 4: Links y Redes -->
+        <div class="foot-col">
+          <div class="foot-links">
+            <a href="conocenos.html">Conocenos</a>
+            <a href="contacto.html">Contactanos</a>
+            <a href="cobertura.html">Cobertura</a>
+            <a href="internet.html">Planes</a>
+          </div>
+          
+          <div class="foot-social" style="margin-top: 24px;">
+            <a href="#" target="_blank" rel="noopener" id="socialWa" class="social-btn-outline" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" style="margin-top: 1px; margin-left: 1px;">
+      <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z"/>
+    </svg>
+            </a>
+            <a href="#" target="_blank" rel="noopener" id="socialIg" class="social-btn-outline" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.054 1.97.24 2.43.403a4.08 4.08 0 011.47.957c.45.45.77.89.957 1.47.163.46.349 1.26.404 2.43.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.055 1.17-.241 1.97-.404 2.43a4.08 4.08 0 01-.957 1.47 4.08 4.08 0 01-1.47.957c-.46.163-1.26.349-2.43.404-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.055-1.97-.241-2.43-.404a4.08 4.08 0 01-1.47-.957 4.08 4.08 0 01-.957-1.47c-.163-.46-.349-1.26-.404-2.43C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.055-1.17.241-1.97.404-2.43a4.08 4.08 0 01.957-1.47A4.08 4.08 0 015.064 2.293c.46-.163 1.26-.349 2.43-.404C8.76 1.831 9.14 1.82 12 1.82zM12 0C8.741 0 8.333.014 7.053.072 5.775.131 4.902.333 4.14.63a5.88 5.88 0 00-2.126 1.384A5.88 5.88 0 00.63 4.14C.333 4.902.131 5.775.072 7.053.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.059 1.278.261 2.15.558 2.913a5.88 5.88 0 001.384 2.126A5.88 5.88 0 004.14 23.37c.763.297 1.636.499 2.913.558C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.059 2.15-.261 2.913-.558a5.88 5.88 0 002.126-1.384 5.88 5.88 0 001.384-2.126c.297-.763.499-1.636.558-2.913.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.059-1.278-.261-2.15-.558-2.913a5.88 5.88 0 00-1.384-2.126A5.88 5.88 0 0019.86.63C19.097.333 18.224.131 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+      
+      <p class="copy">
+        © <span id="year"></span> <span id="footerCopyBrand">Internet Services</span>. Todos los derechos reservados.
+      </p>
+    </div>
+  </footer>
+
+  <!-- WhatsApp flotante -->
+  <a class="wa-float" href="https://wa.me/5493442578899" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp">
+    <svg viewBox="0 0 24 24" style="fill: #fff; width: 30px; height: 30px;">
+      <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z" />
+    </svg>
+  </a>
+
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ══════════════════════════════════════════════════════
+    // ⚙️  CONFIGURACIÓN FIREBASE
+    //     Reemplazá estos valores con los de tu proyecto
+    //     Ver: admin/cobertura.html para más instrucciones
+    // ══════════════════════════════════════════════════════
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8kcU2b2H2UYLYZ1bTiXxjaHurpFUcNGs",
+      authDomain: "agencia-cdelu.firebaseapp.com",
+      projectId: "agencia-cdelu",
+      storageBucket: "agencia-cdelu.firebasestorage.app",
+      messagingSenderId: "698495749625",
+      appId: "1:698495749625:web:e928784c89d29a95720128"
+    };
+
+    const FIREBASE_CONFIGURADO = firebaseConfig.apiKey !== "TU_API_KEY";
+
+    // San José, Entre Ríos
+    const CDU_CENTER = [-32.4833, -58.2333];
+    const CDU_ZOOM   = 13;
+
+    // Colores por tipo de servicio
+    const COLORES = {
+      'fibra':       '#0072ff',
+      'inalambrica': '#28a745',
+      'tv':          '#e62a22',
+      'completa':    '#6f42c1',
+    };
+
+    // ── Inicializar mapa ─────────────────────────────────
+    document.getElementById('mapLoading').style.display = 'none';
+    document.getElementById('map').style.display = 'block';
+
+    const map = L.map('map', {
+      center: CDU_CENTER,
+      zoom: CDU_ZOOM,
+      zoomControl: true,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Marcador de búsqueda
+    let searchMarker = null;
+    // Capas de zonas
+    let zonasLayers = [];
+
+    // ── Cargar zonas desde Firebase ──────────────────────
+    if (FIREBASE_CONFIGURADO) {
+      const app = initializeApp(firebaseConfig);
+      const db  = getFirestore(app);
+
+      onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
+        // Limpiar capas anteriores
+        zonasLayers.forEach(l => map.removeLayer(l));
+        zonasLayers = [];
+
+        snapshot.forEach((doc) => {
+          const zona = doc.data();
+          if (!zona.geojson) return;
+
+          const color = COLORES[zona.tipo] || '#0072ff';
+
+          const geojson = typeof zona.geojson === 'string' ? JSON.parse(zona.geojson) : zona.geojson;
+          const layer = L.geoJSON(geojson, {
+            style: {
+              color:       color,
+              fillColor:   color,
+              fillOpacity: 0.3,
+              weight:      2.5,
+              opacity:     0.9,
+            }
+          }).bindPopup(`
+            <div style="font-family:'Inter',sans-serif; min-width:180px;">
+              <strong style="font-size:15px; color:#051b44;">${zona.nombre || 'Zona de cobertura'}</strong><br>
+              <span style="font-size:13px; color:#5b6472; margin-top:4px; display:block;">
+                ${zona.descripcion || servicioLabel(zona.tipo)}
+              </span>
+            </div>
+          `).addTo(map);
+
+          zonasLayers.push(layer);
+        });
+      });
+    } else {
+      // Modo demo: muestra una zona de ejemplo centrada en CdU
+      mostrarZonaDemo();
+    }
+
+    function servicioLabel(tipo) {
+      const labels = {
+        fibra: '🔵 Internet Fibra Óptica',
+        inalambrica: '🟢 Internet Inalámbrica',
+        tv: '🔴 Internet + TV',
+        completa: '🟣 Cobertura Completa',
+      };
+      return labels[tipo] || 'Servicio disponible';
+    }
+
+    function mostrarZonaDemo() {
+      // Zona demo: centro de San José
+      const demoZona = {
+        type: "Feature",
+        geometry: {
+          type: "Polygon",
+          coordinates: [[
+            [-58.2450, -32.4780],
+            [-58.2250, -32.4780],
+            [-58.2250, -32.4900],
+            [-58.2450, -32.4900],
+            [-58.2450, -32.4780],
+          ]]
+        }
+      };
+      const layer = L.geoJSON(demoZona, {
+        style: { color:'#0072ff', fillColor:'#0072ff', fillOpacity:.25, weight:2.5 }
+      }).bindPopup(`
+        <div style="font-family:'Inter',sans-serif;">
+          <strong>Centro — Demo</strong><br>
+          <span style="font-size:13px; color:#5b6472;">🔵 Internet Fibra Óptica</span><br>
+          <em style="font-size:11px; color:#aaa;">Conectá Firebase para ver zonas reales</em>
+        </div>
+      `).addTo(map);
+      zonasLayers.push(layer);
+    }
+
+    // ── Autocomplete (Sugerencias) ──────────────────────
+    const searchInput = document.getElementById('searchInput');
+    const suggestionsList = document.getElementById('suggestionsList');
+    let debounceTimer;
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const val = searchInput.value.trim();
+      if (val.length < 3) {
+        suggestionsList.style.display = 'none';
+        return;
+      }
+      
+      debounceTimer = setTimeout(async () => {
+        try {
+          const q = encodeURIComponent(val + ', San José');
+          // Limitar sugerencias a la zona de CdU
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${q}&viewbox=-58.3,-32.44,-58.18,-32.52&bounded=1&limit=5`);
+          const data = await res.json();
+          
+          suggestionsList.innerHTML = '';
+          if (data.length > 0) {
+            data.forEach(item => {
+              const li = document.createElement('li');
+              // Extract the street and number by removing everything from "San José" onwards
+              const fullAddress = item.display_name.split(/,\s*San José/i)[0];
+              li.textContent = fullAddress;
+              
+              li.addEventListener('click', () => {
+                searchInput.value = fullAddress; // Actualiza el valor del campo
+                suggestionsList.style.display = 'none';
+                buscarDireccion(item.lat, item.lon, item.display_name); // Ejecuta la búsqueda
+              });
+              
+              suggestionsList.appendChild(li);
+            });
+            suggestionsList.style.display = 'block';
+          } else {
+            suggestionsList.style.display = 'none';
+          }
+        } catch (e) {
+          console.error('Error cargando sugerencias:', e);
+        }
+      }, 400);
+    });
+
+    // Deja listo el input para una nueva búsqueda al hacer foco
+    searchInput.addEventListener('focus', () => {
+      searchInput.select();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-bar')) {
+        suggestionsList.style.display = 'none';
+      }
+    });
+
+    // ── Buscar dirección ─────────────────────────────────
+    window.buscarDireccion = async function(preLat = null, preLon = null, preName = null) {
+      const input = document.getElementById('searchInput').value.trim();
+      if (!input) return;
+
+      const btn = document.getElementById('searchBtn');
+      btn.textContent = 'Buscando...';
+      btn.disabled = true;
+      suggestionsList.style.display = 'none';
+
+      try {
+        let lat, lon;
+        
+        if (preLat && preLon) {
+          lat = parseFloat(preLat);
+          lon = parseFloat(preLon);
+        } else {
+          const query = encodeURIComponent(input + ', San José');
+          const res   = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&viewbox=-58.3,-32.44,-58.18,-32.52&bounded=1&limit=1`);
+          const data  = await res.json();
+
+          if (!data.length) {
+            mostrarResultado(false, 'Verificación manual necesaria', 'No pudimos confirmar la fibra en esa ubicación exacta, pero nuestro servicio inalámbrico cubre toda el área.<br><br><a href="contacto.html" class="btn btn-red" style="display:inline-block; padding: 10px 20px; font-size: 14px;">Consultar disponibilidad</a>');
+            btn.textContent = 'Verificar Fibra';
+            btn.disabled = false;
+            return;
+          }
+
+          lat = parseFloat(data[0].lat);
+          lon = parseFloat(data[0].lon);
+        }
+
+        // Mover mapa al punto
+        map.setView([lat, lon], 15);
+
+        // Marcador
+        if (searchMarker) map.removeLayer(searchMarker);
+        searchMarker = L.marker([lat, lon]).addTo(map)
+          .bindPopup(`<strong>${input}</strong>`).openPopup();
+
+        // Verificar si el punto cae dentro de alguna zona
+        const puntoDentro = verificarCobertura(lat, lon);
+
+        if (puntoDentro) {
+          mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu dirección está dentro de la zona <strong>${puntoDentro}</strong>.<br><br><a href=\'contacto.html\' class=\'btn btn-red\' style=\'display:inline-block; padding: 10px 20px; font-size: 14px;\'>Consultar disponibilidad</a>`);
+        } else {
+          mostrarResultado(false, 'Verificación manual necesaria', 'No pudimos confirmar la fibra en esa ubicación exacta, pero nuestro servicio inalámbrico cubre toda el área.<br><br><a href=\'contacto.html\' class=\'btn btn-red\' style=\'display:inline-block; padding: 10px 20px; font-size: 14px;\'>Consultar disponibilidad</a>');
+        }
+
+      } catch (e) {
+        mostrarResultado(false, 'Error de conexión', 'No se pudo verificar. Intentá de nuevo o escribinos por WhatsApp.');
+      }
+
+      btn.textContent = 'Verificar';
+      btn.disabled = false;
+    };
+
+    function verificarCobertura(lat, lon) {
+      const punto = L.latLng(lat, lon);
+      for (const layer of zonasLayers) {
+        let dentro = false;
+        layer.eachLayer(sublayer => {
+          if (sublayer.getBounds && sublayer.getBounds().contains(punto)) {
+            dentro = true;
+          }
+        });
+        if (dentro) {
+          // Obtener nombre de la zona del popup
+          const popup = layer.getLayers()[0]?.getPopup?.();
+          const content = popup?.getContent() || '';
+          const match = content.match(/<strong[^>]*>([^<]+)<\/strong>/);
+          return match ? match[1] : 'servicio disponible';
+        }
+      }
+      return null;
+    }
+
+    function mostrarResultado(tiene, titulo, texto) {
+      const result = document.getElementById('coverageResult');
+      const card   = document.getElementById('resultCard');
+      const icon   = document.getElementById('resultIcon');
+      const title  = document.getElementById('resultTitle');
+      const textEl = document.getElementById('resultText');
+
+      icon.textContent  = tiene ? '✅' : '❌';
+      title.textContent = titulo;
+      textEl.innerHTML  = texto;
+
+      card.className = 'result-card ' + (tiene ? 'tiene' : 'no-tiene');
+      result.classList.add('visible');
+      result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Enter en el buscador
+    document.getElementById('searchInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') buscarDireccion();
+    });
+
+    // Footer año
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Hamburger menu
+    document.getElementById('hamburgerBtn')?.addEventListener('click', () => {
+      document.getElementById('hamburgerMenu').classList.toggle('open');
+    });
+    document.querySelectorAll('.dropdown-submenu span').forEach(span => {
+      span.addEventListener('click', () => {
+        span.parentElement.classList.toggle('open');
+      });
+    });
+  </script>
+
+  <script src="main.js"></script>
+</body>
+</html>

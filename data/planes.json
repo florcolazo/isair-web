@@ -1,0 +1,107 @@
+{
+  "sitio": {
+    "nombre_marca": "INTERNET SERVICES",
+    "banner_imagen": "/images/cd1c20b3-fa47-457d-84e6-fea15c9303d6.png",
+    "precio_pack_futbol": "26.990",
+    "precio_pack_hbo": "12.999",
+    "whatsapp_formato": "3442 578899",
+    "banner_link": "#formulario",
+    "banner_mostrar": true,
+    "horario_oficina": "Lunes a Viernes de 07:00 a 16.00 hs ",
+    "telefonos_contacto": "08008884772",
+    "whatsapp": "5493442578899",
+    "instagram": "internetservicescdeluruguay",
+    "banner_alt": "Promoción Fútbol",
+    "horario_atencion_digital": "",
+    "ciudad": "Concepción del Uruguay",
+    "direccion_oficina": "Gral. Galarza 1322, E3260 Concepción del Uruguay",
+    "email": "concepcion@is.com.ar"
+  },
+  "planes": [
+    {
+      "pack_futbol": false,
+      "precio": 28588,
+      "beneficios": [
+        "Fibra Óptica Directa al Hogar FTTH",
+        "Velocidad Simétrica de Subida y Bajada",
+        "Ideal para streaming 4K y gaming",
+        "Incluye router WiFi de doble banda bonificado"
+      ],
+      "destacado": false,
+      "nombre": "Internet 300MB",
+      "nota": "Promoción válida para nuevas contrataciones del servicio de Internet Fibra Óptica 300 MB. Válida entre el 01/12/2026 al 31/12/2026 en Concepción del Uruguay. Corresponde a una promoción de 12 meses con descuentos cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.",
+      "tipo": "fibra",
+      "promo_duracion": "12 meses",
+      "instalacion": "Sin costo",
+      "id": "fibra_300"
+    },
+    {
+      "pack_futbol": false,
+      "precio": 43620,
+      "beneficios": [
+        "Internet de Alta Velocidad por Fibra Óptica",
+        "ISTV Move con contenido premium en tus dispositivos",
+        "Ideal para ver series, películas y deportes",
+        "Instalación bonificada"
+      ],
+      "destacado": false,
+      "nombre": "Internet + ISTV Move",
+      "nota": "Promoción válida para nuevas contrataciones del servicio Internet + ISTV Move. Válida entre el 01/12/2026 al 31/12/2026 en Concepción del Uruguay. Corresponde a una promoción de 12 meses con descuentos cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.",
+      "tipo": "fibra",
+      "promo_duracion": "12 meses",
+      "instalacion": "Sin costo",
+      "id": "fibra_istv_move"
+    },
+    {
+      "pack_futbol": true,
+      "precio": 48055,
+      "beneficios": [
+        "Máxima velocidad de conexión y estabilidad",
+        "ISTV Full en todas las pantallas de tu hogar",
+        "Pack Fútbol incluido con transmisiones en HD",
+        "Router WiFi de última generación"
+      ],
+      "destacado": true,
+      "nombre": "Internet + ISTV Full",
+      "nota": "Promoción válida para nuevas contrataciones del servicio Internet + ISTV Full. Válida entre el 01/12/2026 al 31/12/2026 en Concepción del Uruguay. Corresponde a una promoción de 12 meses con descuentos cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.",
+      "tipo": "fibra",
+      "promo_duracion": "12 meses",
+      "instalacion": "Sin costo",
+      "id": "fibra_istv_full"
+    },
+    {
+      "pack_futbol": false,
+      "precio": 37915,
+      "beneficios": [
+        "Internet Fibra Óptica Directa",
+        "Monitoreo con cámaras de seguridad integradas",
+        "Acceso en tiempo real desde tu celular",
+        "Grabación y alertas de movimiento"
+      ],
+      "destacado": false,
+      "nombre": "Internet + IS CAM",
+      "nota": "Promoción válida para nuevas contrataciones del servicio Internet + IS CAM. Válida entre el 01/12/2026 al 31/12/2026 en Concepción del Uruguay. Corresponde a una promoción de 12 meses con descuentos cuatrimestrales de 60%, 55% y 50% sobre el precio de lista de cada mes.",
+      "tipo": "fibra",
+      "promo_duracion": "12 meses",
+      "instalacion": "Con costo — Consultar",
+      "id": "fibra_iscam"
+    },
+    {
+      "pack_futbol": false,
+      "precio": 21777,
+      "beneficios": [
+        "Conexión Inalámbrica de alta fidelidad",
+        "Ideal para navegación general y redes sociales",
+        "Cobertura en zonas rurales y de difícil acceso",
+        "Soporte técnico especializado"
+      ],
+      "destacado": false,
+      "nombre": "Internet Inalámbrico 15MB",
+      "nota": "Promoción válida para nuevas contrataciones de Internet Inalámbrico 15MB en Concepción del Uruguay y zonas rurales aledañas. Sujeto a factibilidad técnica.",
+      "tipo": "inalambrica",
+      "promo_duracion": "12 meses",
+      "instalacion": "Con costo — Consultar",
+      "id": "inalambrica_15"
+    }
+  ]
+}

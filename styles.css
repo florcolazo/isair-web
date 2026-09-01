@@ -192,13 +192,114 @@ header {
   font-weight: 600;
 }
 
-.nav-links a {
+.nav-links > a {
   color: #fff;
   transition: opacity .15s;
 }
 
-.nav-links a:hover {
+.nav-links > a:hover {
   opacity: 0.8;
+}
+
+/* Dropdown Menú Desktop */
+.nav-item.dropdown {
+  position: relative;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 14.5px;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
+  cursor: pointer;
+  opacity: 1 !important;
+}
+
+.dropdown-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  opacity: 1 !important;
+}
+
+.dropdown-trigger .arrow {
+  font-size: 9px;
+  transition: transform 0.2s;
+}
+
+.dropdown:hover .dropdown-trigger .arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 85, 204, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e4ec;
+  padding: 8px 0;
+  width: 250px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  z-index: 100;
+}
+
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(2px);
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px 20px;
+  color: #051b44 !important;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  border-bottom: none !important;
+  opacity: 1 !important;
+  transition: background-color 0.2s, color 0.2s;
+  text-align: left;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f4f6fa;
+  color: #0072ff !important;
+  opacity: 1 !important;
+}
+
+/* Combos Full Highlight */
+.dropdown-menu a.combo-full {
+  color: #e62a22 !important;
+  font-weight: 700;
+  border-top: 1px solid #f0f2f5 !important;
+  margin-top: 4px;
+}
+
+.dropdown-menu a.combo-full:hover {
+  background-color: #fff1f0;
+}
+
+.dropdown-menu .badge {
+  background-color: #e62a22;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  margin-left: 6px;
+  vertical-align: middle;
+  z-index: 10;
 }
 
 /* Íconos de acción (Instagram, WhatsApp) */
@@ -225,11 +326,13 @@ header {
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   box-shadow: 0 4px 12px rgba(230, 42, 34, .3);
   font-size: 13.5px;
   font-weight: 700;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .btn-login-top.white {
@@ -237,6 +340,26 @@ header {
   color: var(--blue) !important;
   box-shadow: 0 6px 16px rgba(255, 255, 255, .2);
   font-weight: 800;
+}
+
+/* Botón Cobertura */
+.btn-cobertura {
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, .15);
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.btn-cobertura:hover {
+  background: rgba(255, 255, 255, .25);
 }
 
 /* ---------- HAMBURGER MENU (mobile) ---------- */
@@ -386,24 +509,24 @@ header {
 .tech-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  max-width: 600px;
+  gap: 24px;
+  max-width: 900px;
   margin: 0 auto 40px auto;
   padding: 0 20px;
 }
 
 .tech-card {
   position: relative;
-  min-height: 120px;
-  border-radius: 16px;
+  min-height: 160px;
+  border-radius: 20px;
   display: flex;
   align-items: flex-end;
-  padding: 18px;
+  padding: 24px;
   overflow: hidden;
   isolation: isolate;
   background-size: cover;
   background-position: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .tech-card h3 {
@@ -425,12 +548,12 @@ header {
 
 .fibra {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)),
-    url('Diseño-sin-título-10.jpg') center/cover;
+    url('fibra-bg.jpg') center/cover;
 }
 
 .inal {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)),
-    url('images.jpeg') center/cover;
+    url('inal-bg.jpeg') center/cover;
 }
 
 /* ---------- ANIMACIONES ---------- */
@@ -590,7 +713,7 @@ header {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   gap: 24px;
-  padding-top: 20px;
+  padding-top: 40px;
   padding-bottom: 24px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
@@ -827,6 +950,7 @@ form {
   font-size: 14.5px;
   font-family: 'Inter';
   background: var(--paper);
+  color: var(--ink);
 }
 
 .field input:focus,
@@ -850,39 +974,136 @@ form {
 .form-msg.ok  { color: #1a8a4a; display: block; }
 .form-msg.err { color: var(--red); display: block; }
 
-/* ---------- FOOTER ---------- */
+/* ---------- FOOTER DARK NAVY ---------- */
 footer {
-  background: var(--ink);
-  color: #9aa3b2;
-  padding: 44px 0 26px;
+  background: var(--ink); /* Azul oscuro corporativo #051b44 */
+  color: #fff;
+  padding: 60px 0 40px;
 }
 
 .foot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 30px;
+}
+
+@media (max-width: 900px) {
+  .foot-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.foot-col {
   display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  flex-wrap: wrap;
-  padding-bottom: 26px;
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  flex-direction: column;
 }
 
-.foot-grid strong {
-  color: #fff;
-  font-family: 'Sora';
-  font-size: 16px;
+/* Borde izquierdo estilo separador */
+.foot-col-border {
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 30px;
+}
+@media (max-width: 900px) {
+  .foot-col-border {
+    border-left: none;
+    padding-left: 0;
+  }
 }
 
-.foot-grid p {
-  font-size: 13.5px;
-  margin-top: 8px;
+/* Logo y Texto en Columna 1 */
+.foot-logo {
+  max-width: 150px;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+.foot-logo img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.brand-text-foot {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+  text-align: center;
+  max-width: 150px;
+}
+
+.foot-col strong {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.foot-col p {
+  font-size: 14px;
   line-height: 1.6;
+  margin: 0;
+}
+
+/* Links */
+.foot-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.foot-links a {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.foot-links a:hover {
+  opacity: 0.7;
+}
+
+/* Redes Sociales Outline */
+.foot-social {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn-outline {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.social-btn-outline:hover {
+  background: #fff;
+}
+
+.social-btn-outline svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+  transition: fill 0.2s;
+}
+
+.social-btn-outline:hover svg {
+  fill: var(--ink);
 }
 
 .copy {
   text-align: center;
   font-size: 12px;
-  margin-top: 18px;
-  color: #666f7d;
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  width: 100%;
 }
 
 /* ---------- BOTÓN FLOTANTE WHATSAPP ---------- */
@@ -907,9 +1128,11 @@ footer {
 }
 
 .wa-float svg {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   fill: #fff;
+  margin-top: 2px;
+  margin-left: 1px;
 }
 
 /* ---------- RESPONSIVE ---------- */

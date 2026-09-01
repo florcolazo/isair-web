@@ -1,0 +1,55 @@
+{
+  "_comment": "Zonas de cobertura ISAIR - San José, Entre Ríos, Argentina",
+  "_instrucciones": "Editá los polígonos en https://geojson.io para ajustar a la cobertura real.",
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zona": "fibra",
+        "nombre": "Zona Fibra Óptica",
+        "descripcion": "Casco urbano de San José con cobertura de Fibra Óptica"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-58.1760, -32.1730],
+          [-58.1690, -32.1730],
+          [-58.1620, -32.1760],
+          [-58.1580, -32.1810],
+          [-58.1580, -32.1880],
+          [-58.1620, -32.1940],
+          [-58.1690, -32.1970],
+          [-58.1760, -32.1970],
+          [-58.1830, -32.1940],
+          [-58.1870, -32.1880],
+          [-58.1870, -32.1810],
+          [-58.1830, -32.1760],
+          [-58.1760, -32.1730]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zona": "inalambrica",
+        "nombre": "Zona Inalámbrica",
+        "descripcion": "Periferia y zonas rurales con cobertura inalámbrica"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-58.2200, -32.1400],
+          [-58.1200, -32.1400],
+          [-58.1100, -32.1500],
+          [-58.1100, -32.2300],
+          [-58.1200, -32.2400],
+          [-58.2200, -32.2400],
+          [-58.2300, -32.2300],
+          [-58.2300, -32.1500],
+          [-58.2200, -32.1400]
+        ]]
+      }
+    }
+  ]
+}

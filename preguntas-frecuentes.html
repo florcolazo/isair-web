@@ -1267,6 +1267,76 @@
         justify-content: center;
       }
     }
+
+    /* ---------- FAQ STYLES ---------- */
+    .faq-section {
+      padding: 80px 0 100px;
+      background: var(--paper);
+      min-height: 80vh;
+    }
+    .faq-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    .faq-header h1 {
+      font-size: clamp(32px, 5vw, 42px);
+      color: var(--ink);
+      font-weight: 800;
+    }
+    .faq-container {
+      max-width: 850px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .faq-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .faq-question {
+      width: 100%;
+      text-align: left;
+      padding: 20px 24px;
+      background: transparent;
+      border: none;
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s;
+    }
+    .faq-question:hover {
+      background: var(--paper);
+    }
+    .faq-question .icon {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--blue);
+      transition: transform 0.3s;
+    }
+    .faq-item.active .faq-question .icon {
+      transform: rotate(45deg);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: #fff;
+    }
+    .faq-answer-inner {
+      padding: 0 24px 24px 24px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
   
     </style>
 </head>
@@ -1375,48 +1445,86 @@
     </div>
   </header>
 
-  <section class="about-section" id="conocenos" style="padding: 100px 0; background: var(--paper-2); position: relative; overflow: hidden; min-height: 80vh; display: flex; align-items: center;">
-    
-    <!-- Decorative background circles -->
-    <div style="position: absolute; top: -10%; left: -5%; width: 600px; height: 600px; background: rgba(0, 114, 255, 0.04); border-radius: 50%; z-index: 0;"></div>
-    <div style="position: absolute; bottom: -20%; left: 10%; width: 400px; height: 400px; background: rgba(0, 114, 255, 0.06); border-radius: 50%; z-index: 0;"></div>
-    <div style="position: absolute; top: 10%; right: 20%; width: 500px; height: 500px; background: rgba(0, 114, 255, 0.03); border-radius: 50%; z-index: 0;"></div>
-
-    <div class="wrap about-layout">
-      
-      <!-- Text column (right aligned on desktop) -->
-      <div class="about-text">
-        <h2 style="font-size: clamp(28px, 4vw, 42px); font-weight: 800; color: var(--blue); text-transform: uppercase;">¿Por qué elegirnos?</h2>
-        
-        <p style="font-size: 16px; line-height: 1.6; color: var(--blue); font-weight: 500;">
-          En Internet Services, somos una empresa argentina líder en telecomunicaciones, comprometida con conectar a las comunidades a través de tecnología de vanguardia y un servicio de excelencia.
-        </p>
-        
-        <p style="font-size: 16px; line-height: 1.6; color: var(--blue); font-weight: 500;">
-          Llevamos la más alta tecnología en Fibra Óptica y Televisión Digital (ISTV) a miles de hogares, comercios y empresas, ofreciendo conexiones estables, rápidas y confiables para que navegues, trabajes y disfrutes del mejor entretenimiento sin interrupciones.
-        </p>
-
-        <h3 style="font-size: 20px; font-weight: 700; color: var(--blue); margin-top: 10px;">Nuestra presencia en San José</h3>
-        <p style="font-size: 16px; line-height: 1.6; color: var(--blue); font-weight: 500;">
-          En la Agencia San José, combinamos la potencia de una red con cobertura regional y la cercanía de una atención personalizada. Conocemos las necesidades de nuestra ciudad, por eso brindamos un soporte técnico y administrativo local, rápido y eficiente, adaptado a cada uno de nuestros clientes.
-        </p>
-
-        <h3 style="font-size: 20px; font-weight: 700; color: var(--blue); margin-top: 10px;">Nuestros Pilares</h3>
-        <p style="font-size: 16px; line-height: 1.6; color: var(--blue); font-weight: 500;">
-          <strong>Innovación constante:</strong> Invertimos de manera continua en infraestructura de última generación para garantizar la mayor velocidad y estabilidad de conexión.<br><br>
-          <strong>Atención cercana:</strong> Priorizamos la atención personalizada a través de nuestro equipo local para acompañarte y resolver tus consultas de manera inmediata.<br><br>
-          <strong>Soluciones integrales:</strong> Integración total de Internet de alta velocidad y más de 100 canales de televisión en HD para el entretenimiento de toda la familia.
-        </p>
+  <section class="faq-section" id="faq">
+    <div class="wrap">
+      <div class="faq-header">
+        <h1>Preguntas Frecuentes</h1>
       </div>
-
-      <!-- Image column -->
-      <div class="about-img-wrapper">
-        <div style="width: 100%; max-width: 450px; aspect-ratio: 1/1; border-radius: 50%; border: 6px solid var(--red); overflow: hidden; box-shadow: 0 12px 32px rgba(230,42,34,.15); position: relative;">
-          <!-- Using local image for the man with computer -->
-          <img src="https://is.com.ar/wp-content/uploads/2024/02/background-istv.png" alt="Hombre con la compu" style="width: 100%; height: 100%; object-fit: cover;">
+      <div class="faq-container">
+        <!-- Q1 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Qué tipos de conexión a internet ofrecen? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Ofrecemos servicios de internet por Fibra Óptica más TV y Wireless Inalámbrico.</div></div>
+        </div>
+        <!-- Q2 -->
+        <div class="faq-item">
+          <button class="faq-question">¿En Fibra Óptica qué ancho de banda ofrecen? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">En Fibra Óptica se ofrece anchos de banda a partir de los 300 Megas hasta los 800 Megas.</div></div>
+        </div>
+        <!-- Q3 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Puedo agregar servicio de TV a mi servicio de Fibra Óptica? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">¡Sí! Podés tener ambos servicios. Para más información podés contactarte con nosotros y te armamos el plan que necesites.</div></div>
+        </div>
+        <!-- Q4 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Cómo puedo obtener mi factura? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            Ingresá a app.is.com.ar.<br><br>
+            Escribí tu Usuario y Clave. (Si no los recordás, solicitálos por WhatsApp).<br><br>
+            Seleccioná la opción de ver/descargar factura.
+          </div></div>
+        </div>
+        <!-- Q5 -->
+        <div class="faq-item">
+          <button class="faq-question">No tengo internet. No anda el servicio de TV ¿Qué debo hacer? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">
+            Recuerda verificar las conexiones de tu equipo. Desenchufa el router por 5 minutos y vuelve a conectarlo. Si el problema persiste puede utilizar nuestro Chat Bot disponible, abajo a la derecha en nuestra página web.<br><br>
+            Los pasos a seguir son:<br>
+            - Opción 1 (Soy cliente)<br>
+            - Ingrese su número de cliente<br>
+            - Opción 1 (Servicio Técnico)<br>
+            1. Sin servicio.<br>
+            2. Servicio inestable.<br>
+            3. Otros inconvenientes.
+          </div></div>
+        </div>
+        <!-- Q6 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Si tengo dos facturas vencidas y pago una ¿Cuánto se demora en restablecer el servicio? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Demora entre 24 a 48hs hábiles en ingresar el pago en el sistema, una vez que ingresa se restablece automáticamente el servicio.</div></div>
+        </div>
+        <!-- Q7 -->
+        <div class="faq-item">
+          <button class="faq-question">¿En cuántos dispositivos móviles se pueden ver? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">En 5 dispositivos.</div></div>
+        </div>
+        <!-- Q8 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Cómo recibo la factura? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">La factura la vas a recibir todos los meses en formato digital a tu mail que registraste. Por razones ecológicas es que se emite y envía factura electrónica.</div></div>
+        </div>
+        <!-- Q9 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Cómo puedo pagar? ¿Qué formas de pago tienen? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Para tu comodidad, podemos adherirte al débito automático en crédito o débito directo en cuenta a través de tu CBU. O podés pagarla a través de Rapipago, Pago Fácil, Mercado Pago, Pago Mis Cuentas, y Home Banking con código Link/Banelco que aparece en la factura o en Santa Fe Servicios.</div></div>
+        </div>
+        <!-- Q10 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Qué necesito para contratar el servicio? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">Es muy sencillo, sólo tomaremos tus datos: DNI, Nombre y Apellido, Domicilio, Teléfono, Email. Es muy importante que nos envíes la ubicación en tiempo «Actual» del lugar donde se va a realizar la instalación.</div></div>
+        </div>
+        <!-- Q11 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Cómo me facturan? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">El servicio se va a facturar al mes siguiente de la conexión, es decir al mes siguiente vas a pagar el mes completo por adelantado y un proporcional de los días que se usó el servicio del mes que se hizo la conexión.</div></div>
+        </div>
+        <!-- Q12 -->
+        <div class="faq-item">
+          <button class="faq-question">¿Cómo realizo el cambio de domicilio? <span class="icon">+</span></button>
+          <div class="faq-answer"><div class="faq-answer-inner">El titular del servicio debe enviar un mensaje o presentarse a la agencia correspondiente para informar el nuevo domicilio, en ese momento podemos verificar con el departamento técnico si tenemos disponibilidad para el mismo u otro servicio.</div></div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -1674,6 +1782,29 @@
       if (menu && !menu.contains(e.target)) {
         menu.classList.remove('open');
       }
+    });
+
+    // Accordion Logic
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.parentElement;
+        const answer = button.nextElementSibling;
+        
+        // Optional: close other items when opening one
+        document.querySelectorAll('.faq-item').forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+            otherItem.querySelector('.faq-answer').style.maxHeight = null;
+          }
+        });
+
+        item.classList.toggle('active');
+        if (item.classList.contains('active')) {
+          answer.style.maxHeight = answer.scrollHeight + 'px';
+        } else {
+          answer.style.maxHeight = null;
+        }
+      });
     });
   </script>
 

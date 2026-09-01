@@ -1,0 +1,67 @@
+backend:
+  name: github
+  repo: florcolazo/isair-web
+  branch: main
+
+logo_url: "/images/logo.png"
+site_url: "https://iscdelu.com.ar"
+display_url: "https://iscdelu.com.ar" 
+
+local_backend: true
+locale: es
+show_preview_links: false
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "configuracion"
+    label: "Configuración y Planes"
+    delete: false
+    editor:
+      preview: false
+    files:
+      - name: "planes"
+        label: "Datos del Sitio y Planes"
+        file: "data/planes.json"
+        fields:
+          - label: "Información de la Agencia"
+            name: "sitio"
+            widget: "object"
+            fields:
+              - { label: "Nombre Comercial de la Agencia", name: "nombre_marca", widget: "string", required: false }
+              - { label: "Ciudad / Ubicación de la Agencia", name: "ciudad", widget: "string", required: false }
+              - { label: "Número de WhatsApp (Formato link, ej: 5493442578899)", name: "whatsapp", widget: "string", required: false }
+              - { label: "Número de WhatsApp (Formato texto, ej: 3442 578899)", name: "whatsapp_formato", widget: "string", required: false }
+              - { label: "Correo Electrónico de Contacto", name: "email", widget: "string", required: false }
+              - { label: "Usuario de Instagram (sin @, ej: internetservicescdeluruguay)", name: "instagram", widget: "string", required: false }
+              - { label: "Mostrar Banner Promocional de Inicio", name: "banner_mostrar", widget: "boolean", default: true }
+              - { label: "Imagen del Banner Promocional", name: "banner_imagen", widget: "image", required: false }
+              - { label: "Enlace de Redirección del Banner (ej: #formulario)", name: "banner_link", widget: "string", required: false }
+              - { label: "Texto Alternativo de la Imagen (para accesibilidad)", name: "banner_alt", widget: "string", required: false }
+              - { label: "Horario de Atención Digital (WhatsApp)", name: "horario_atencion_digital", widget: "string", required: false, default: "Lunes a Viernes de 08:30 a 19:00 hs y Sábados de 08:00 a 12:00 hs." }
+              - { label: "Dirección de Oficina Comercial", name: "direccion_oficina", widget: "string", required: false, default: "Churruarin 2207. Paraná, Entre Ríos, Argentina." }
+              - { label: "Horario de Oficina Comercial", name: "horario_oficina", widget: "string", required: false, default: "Lunes a Viernes de 08:30 a 17:00 hs." }
+              - { label: "Teléfonos de Contacto (ej: 0810-444-0414 / 0343 4140080)", name: "telefonos_contacto", widget: "string", required: false, default: "0810-444-0414 / 0343 4140080" }
+              - { label: "Precio Mensual Pack Fútbol", name: "precio_pack_futbol", widget: "string", required: false, default: "23.350" }
+              - { label: "Precio Mensual Paquete HBO", name: "precio_pack_hbo", widget: "string", required: false, default: "18.500" }
+          - label: "Planes de Conexión"
+            label_singular: "Plan"
+            name: "planes"
+            widget: "list"
+            summary: "{{fields.nombre}} - ${{fields.precio}} ({{fields.tipo}})"
+            collapsed: true
+            fields:
+              - { label: "Identificador Único del Plan (ej: fibra_300)", name: "id", widget: "string" }
+              - { label: "Nombre del Plan (ej: Internet 300MB)", name: "nombre", widget: "string" }
+              - label: "Tipo de Tecnología / Conexión"
+                name: "tipo"
+                widget: "select"
+                options: ["fibra", "inalambrica"]
+              - { label: "Precio Mensual ($)", name: "precio", widget: "number", value_type: "int" }
+              - { label: "Costo de Instalación (ej: Sin costo)", name: "instalacion", widget: "string" }
+              - { label: "Duración de la Promoción (ej: 12 meses)", name: "promo_duracion", widget: "string" }
+              - { label: "Plan Destacado / Recomendado", name: "destacado", widget: "boolean", default: false }
+              - { label: "Incluye Pack Fútbol (Activa efectos deportivos)", name: "pack_futbol", widget: "boolean", default: false }
+              - { label: "Términos y Condiciones (Nota legal chica)", name: "nota", widget: "text" }
+              - { label: "Beneficios y Detalles del Servicio", name: "beneficios", widget: "list", field: { label: "Detalle / Beneficio", name: "beneficio", widget: "string" } }

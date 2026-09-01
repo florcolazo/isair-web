@@ -1,0 +1,54 @@
+.map {
+  width: 100%;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Leaflet popup override */
+:global(.leaflet-popup-content-wrapper) {
+  border-radius: 10px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Legend */
+.legend {
+  background: rgba(10, 14, 30, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dotFibra,
+.dotWifi {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.dotFibra { background: #10b950; }
+.dotWifi  { background: #0072ff; }
+
+@media (max-width: 860px) {
+  .map { height: 300px; }
+}

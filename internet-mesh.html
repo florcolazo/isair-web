@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planes de Internet + IS Mesh · Internet Services</title>
+  <meta name="description" content="Planes de Internet + WiFi Mesh en San José. Ampliá la cobertura de internet en tu hogar con señal inteligente y estable.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Estilos del sitio -->
+  <link rel="stylesheet" href="styles.css?v=1.0.1">
+  
+  <style>
+    /* Estilos específicos de la página de planes de Internet + IS Mesh */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 340px));
+      gap: 30px;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 40px auto 0 auto;
+      padding: 0 20px;
+    }
+    
+    .page-hero {
+      background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+      padding: 120px 20px 80px 20px;
+      text-align: center;
+      color: #fff;
+    }
+    
+    .page-hero h1 {
+      font-size: 38px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    
+    .page-hero p {
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    /* Adaptar botones para que funcionen como enlaces */
+    .plan-card .btn {
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  
+    /* Redes Sociales Outline */
+    .foot-social {
+      display: flex;
+      gap: 10px;
+    }
+    .social-btn-outline {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    .social-btn-outline:hover {
+      background: #fff;
+    }
+    .social-btn-outline svg {
+      width: 16px;
+      height: 16px;
+      fill: #fff;
+      transition: fill 0.2s;
+    }
+    .social-btn-outline:hover svg {
+      fill: var(--ink);
+    }
+
+  
+    /* Estilos específicos de IS Mesh Formulario */
+    .futbol-container {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      max-width: 1100px;
+      margin: -40px auto 100px auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 10;
+    }
+    @media (max-width: 850px) {
+      .futbol-container {
+        grid-template-columns: 1fr;
+        margin-top: 20px;
+      }
+    }
+    
+    .futbol-card {
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    
+    .futbol-image-container {
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .futbol-image {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .futbol-features {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0 0;
+    }
+    
+    .futbol-features li {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      padding-left: 28px;
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    
+    .futbol-features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #25D366;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    
+    .form-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .form-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      background: var(--paper);
+      color: var(--ink);
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(10, 37, 64, 0.1);
+    }
+    
+    .btn-submit-wa {
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 14px 24px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      transition: background 0.2s;
+    }
+    
+    .btn-submit-wa:hover {
+      background: #128C7E;
+    }
+    
+    .btn-submit-wa svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+    
+    .option-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--line);
+      margin: 30px 0;
+      position: relative;
+    }
+    
+    .non-client-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+    
+    .btn-secondary-link {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      color: var(--blue);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 12px;
+      border: 1px solid var(--blue);
+      border-radius: var(--radius);
+      transition: all 0.2s;
+    }
+    
+    .btn-secondary-link:hover {
+      background: var(--blue);
+      color: white;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="nav">
+      <a href="index.html" class="brand">
+        <img src="logo.png" alt="Internet Services" class="brand-logo">
+        <div class="brand-text">
+          <strong id="brandName">INTERNET SERVICES</strong>
+          <span id="brandSub">AGENCIA SAN JOSE</span>
+        </div>
+      </a>
+      
+      <!-- Links desktop con submenús -->
+      <nav class="nav-links" style="align-items: center;">
+        <!-- Planes -->
+        <div class="nav-item dropdown">
+          <a href="javascript:void(0)" class="dropdown-trigger">Planes <span class="arrow">▼</span></a>
+          <div class="dropdown-menu">
+            <a href="internet.html">Internet</a>
+            <a href="internet-tv.html">Internet + TV</a>
+            <a href="internet-cam.html">Internet + IS CAM</a>
+            <a href="internet-mesh.html">Internet + IS Mesh</a>
+            <a href="combos-full.html" class="combo-full">Combos Full (TV + IS CAM + IS Mesh) <span class="badge">Nuevo</span></a>
+          </div>
+        </div>
+
+
+        <!-- Contenidos -->
+        <div class="nav-item dropdown">
+          <a href="javascript:void(0)" class="dropdown-trigger">Contenidos <span class="arrow">▼</span></a>
+          <div class="dropdown-menu">
+            <a href="pack-futbol.html">Pack Fútbol</a>
+            <a href="pack-hbo.html">Paquete HBO</a>
+            <a href="internet-tv.html">TV</a>
+          </div>
+        </div>
+
+        <!-- Soporte -->
+        <div class="nav-item dropdown">
+          <a href="javascript:void(0)" class="dropdown-trigger">Soporte <span class="arrow">▼</span></a>
+          <div class="dropdown-menu">
+            <a href="preguntas-frecuentes.html">Preguntas Frecuentes</a>
+            <a href="contacto.html">Contactanos</a>
+            <a href="conocenos.html">Conocenos</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Acciones: botones de acceso, hamburger, redes -->
+      <div class="nav-actions" style="display:flex; align-items:center; gap:16px;">
+        <a href="https://tv.is.com.ar/login" target="_blank" rel="noopener" class="btn-login-top">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+          <span>Acceso ISTV</span>
+        </a>
+        <a href="https://clientes.is.com.ar/#/login" target="_blank" rel="noopener" class="btn-login-top white">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>Acceso Clientes</span>
+        </a>
+
+        <!-- Menú hamburguesa (mobile) -->
+        <div class="hamburger-menu" id="hamburgerMenu">
+          <button class="hamburger-btn" aria-label="Menu" id="hamburgerBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6"  x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="dropdown-content" id="dropdownContent">
+            <!-- Planes -->
+            <div class="dropdown-submenu">
+              <span>Planes ▾</span>
+              <div class="submenu-content">
+                <a href="internet.html">Internet</a>
+                <a href="internet-tv.html">Internet + TV</a>
+                <a href="internet-cam.html">Internet + IS CAM</a>
+                <a href="internet-mesh.html">Internet + IS Mesh</a>
+                <a href="combos-full.html" class="combo-full" style="color:#e62a22; font-weight:700;">Combos Full (TV + IS CAM + IS Mesh)</a>
+              </div>
+            </div>
+            
+
+            <!-- Contenidos -->
+            <div class="dropdown-submenu">
+              <span>Contenidos ▾</span>
+              <div class="submenu-content">
+                <a href="pack-futbol.html">Pack Fútbol</a>
+                <a href="pack-hbo.html">Paquete HBO</a>
+                <a href="internet-tv.html">TV</a>
+              </div>
+            </div>
+
+            <!-- Soporte -->
+            <div class="dropdown-submenu">
+              <span>Soporte ▾</span>
+              <div class="submenu-content">
+                <a href="preguntas-frecuentes.html">Preguntas Frecuentes</a>
+                <a href="contacto.html">Contactanos</a>
+                <a href="conocenos.html">Conocenos</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECCIÓN -->
+  <section class="page-hero">
+    <div class="wrap">
+      <h1>Planes de Internet + IS Mesh</h1>
+      <p>Ampliá la cobertura de tu señal WiFi con nuestra tecnología Mesh. Conectividad estable, inteligente y de alta velocidad en todos los ambientes de tu hogar.</p>
+    </div>
+  </section>
+
+  
+  <!-- SECCIÓN CENTRAL DE INFORMACIÓN Y FORMULARIO -->
+  <section style="padding: 0 0 40px 0; background: var(--paper); position: relative; z-index: 5;">
+    <div class="futbol-container">
+      
+      <!-- Detalle e Imagen -->
+      <div class="futbol-card" style="border-top: 4px solid var(--blue);">
+        <div class="futbol-image-container">
+          <img src="is-mesh-promo.png" alt="IS Mesh Premium" class="futbol-image">
+        </div>
+        
+        <h2 style="font-family: 'Sora', sans-serif; font-size: 26px; color: var(--ink); margin-bottom: 10px; text-align: center;">WIFI PREMIUM EN TODO TU HOGAR</h2>
+        <p style="font-family: 'Inter', sans-serif; font-size: 15px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; text-align: center;">
+          Evitá los cortes y zonas sin señal. Con nuestra red inteligente IS Mesh, tus dispositivos cambian automáticamente al nodo con mejor conexión sin que lo notes.
+        </p>
+        
+        <ul class="futbol-features">
+          <li>Cobertura total sin zonas muertas.</li>
+          <li>Una única red WiFi para toda tu casa.</li>
+          <li>Mayor estabilidad y velocidad en múltiples dispositivos.</li>
+          <li>Diseño elegante y sin cables adicionales.</li>
+        </ul>
+        
+        <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 20px;">
+          * Equipamiento sujeto a disponibilidad técnica y stock. Consultar planes de comodato o venta.
+        </p>
+      </div>
+
+      <!-- Opciones / Formulario de sumarse -->
+      <div class="futbol-card">
+        <!-- OPCIÓN 1: YA SOY CLIENTE -->
+        <h3 class="form-title">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#25D366;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          Opción 1: Sumar IS Mesh
+        </h3>
+        <p class="form-subtitle">Si ya sos cliente de Internet Services, completá tus datos para solicitar el equipamiento Mesh y mejorar tu cobertura local.</p>
+        
+        <form id="meshForm">
+          <div class="form-group">
+            <label for="nroCliente">Número de Cliente</label>
+            <input type="text" id="nroCliente" required placeholder="Ej: 1489">
+          </div>
+          
+          <div class="form-group">
+            <label for="nombreCliente">Nombre y Apellido</label>
+            <input type="text" id="nombreCliente" required placeholder="Ej: Juan Carlos Pérez">
+          </div>
+          
+          <div class="form-group">
+            <label for="emailCliente">Correo Electrónico</label>
+            <input type="email" id="emailCliente" required placeholder="Ej: juan.perez@email.com">
+          </div>
+          
+          <button type="submit" class="btn-submit-wa" style="margin-top: 12px;">
+            <svg viewBox="0 0 24 24" style="fill: #fff; width: 20px; height: 20px; margin-right: 8px;">
+      <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z" />
+    </svg>
+            <span>Solicitar por WhatsApp</span>
+          </button>
+        </form>
+
+        <div class="option-divider"></div>
+
+        <!-- OPCIÓN 2: NO SOY CLIENTE -->
+        <h3 class="non-client-title">Opción 2: No soy cliente</h3>
+        <p class="form-subtitle" style="margin-bottom: 20px;">Para acceder a los equipos IS Mesh, primero necesitás tener contratado nuestro servicio de Internet.</p>
+        <a href="combos-full.html" class="btn-secondary-link">Ver Planes y Combos</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GRILA DE PLANES -->
+  <section style="padding: 60px 0 100px 0; background: var(--paper);">
+    <div class="wrap">
+      <div class="plans-grid" id="meshPlansGrid">
+        <!-- Render dinámico desde JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+        <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        
+        <!-- Col 1: Logo y Copyright -->
+        <div class="foot-col">
+          <div class="foot-logo">
+            <img src="logo.png" alt="Internet Services" id="footerLogo">
+          </div>
+          <p class="brand-text-foot">
+            <strong id="footerBrand">INTERNET SERVICES</strong>
+          </p>
+        </div>
+        
+        <!-- Col 2: Oficina y Dirección -->
+        <div class="foot-col foot-col-border">
+          <strong>Oficina Comercial</strong>
+          <p id="footerAddress">Cargando...</p>
+          <p id="footerHorarioOficina" style="color: #cfd4de; font-size: 13px; margin-top: 4px;">Cargando...</p>
+        </div>
+        
+        <!-- Col 3: Atención y Teléfonos -->
+        <div class="foot-col">
+          <strong>Atención al Cliente</strong>
+          <p id="footerPhone">Cargando...</p>
+          <p id="footerHorarioDigital" style="color: #cfd4de; font-size: 13px; margin-top: 4px;">Cargando...</p>
+          
+          <strong style="margin-top: 24px;">Contacto Telefónico</strong>
+          <p id="footerTelefonos">Cargando...</p>
+        </div>
+        
+        <!-- Col 4: Links y Redes -->
+        <div class="foot-col">
+          <div class="foot-links">
+            <a href="conocenos.html">Conocenos</a>
+            <a href="contacto.html">Contactanos</a>
+            <a href="cobertura.html">Cobertura</a>
+            <a href="internet.html">Planes</a>
+          </div>
+          
+          <div class="foot-social" style="margin-top: 24px;">
+            <a href="#" target="_blank" rel="noopener" id="socialWa" class="social-btn-outline" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24" style="margin-top: 1px; margin-left: 1px;">
+      <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z"/>
+    </svg>
+            </a>
+            <a href="#" target="_blank" rel="noopener" id="socialIg" class="social-btn-outline" aria-label="Instagram">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.17.054 1.97.24 2.43.403a4.08 4.08 0 011.47.957c.45.45.77.89.957 1.47.163.46.349 1.26.404 2.43.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.055 1.17-.241 1.97-.404 2.43a4.08 4.08 0 01-.957 1.47 4.08 4.08 0 01-1.47.957c-.46.163-1.26.349-2.43.404-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.17-.055-1.97-.241-2.43-.404a4.08 4.08 0 01-1.47-.957 4.08 4.08 0 01-.957-1.47c-.163-.46-.349-1.26-.404-2.43C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.055-1.17.241-1.97.404-2.43a4.08 4.08 0 01.957-1.47A4.08 4.08 0 015.064 2.293c.46-.163 1.26-.349 2.43-.404C8.76 1.831 9.14 1.82 12 1.82zM12 0C8.741 0 8.333.014 7.053.072 5.775.131 4.902.333 4.14.63a5.88 5.88 0 00-2.126 1.384A5.88 5.88 0 00.63 4.14C.333 4.902.131 5.775.072 7.053.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.059 1.278.261 2.15.558 2.913a5.88 5.88 0 001.384 2.126A5.88 5.88 0 004.14 23.37c.763.297 1.636.499 2.913.558C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.278-.059 2.15-.261 2.913-.558a5.88 5.88 0 002.126-1.384 5.88 5.88 0 001.384-2.126c.297-.763.499-1.636.558-2.913.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.059-1.278-.261-2.15-.558-2.913a5.88 5.88 0 00-1.384-2.126A5.88 5.88 0 0019.86.63C19.097.333 18.224.131 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+      
+      <p class="copy">
+        © <span id="year"></span> <span id="footerCopyBrand">Internet Services</span>. Todos los derechos reservados.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Botón WhatsApp flotante -->
+  <a id="floatWaLink" class="wa-float" href="#" target="_blank" rel="noopener" aria-label="Contacto por WhatsApp">
+    <svg viewBox="0 0 24 24" style="fill: #fff; width: 30px; height: 30px;">
+      <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z" />
+    </svg>
+  </a>
+
+  <!-- Scripts -->
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 1. Cargar datos del sitio y renderizar planes
+    fetch('data/planes.json?v=' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        // Rellenar marcas y contactos
+        if (document.getElementById('brandName')) document.getElementById('brandName').textContent = data.sitio.nombre_marca;
+        if (document.getElementById('brandSub')) document.getElementById('brandSub').textContent = "AGENCIA " + data.sitio.ciudad.toUpperCase();
+        if (document.getElementById('footerBrand')) document.getElementById('footerBrand').textContent = data.sitio.nombre_marca;
+        if (document.getElementById('footerAddress')) document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
+
+        const footerHorarioOficina = document.getElementById('footerHorarioOficina');
+        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
+
+        const footerHorarioDigital = document.getElementById('footerHorarioDigital');
+        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_digital || "Lunes a Viernes de 08:00 a 20:00 hs. Sábados de 08:00 a 13:00 hs.";
+
+        const footerTelefonos = document.getElementById('footerTelefonos');
+        if (footerTelefonos) footerTelefonos.textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";
+
+        if (document.getElementById('footerPhone')) document.getElementById('footerPhone').textContent = "+54 9 " + data.sitio.whatsapp_formato;
+        if (document.getElementById('footerEmail')) document.getElementById('footerEmail').textContent = data.sitio.email;
+        if (document.getElementById('instagramLink')) document.getElementById('instagramLink').href = "https://www.instagram.com/" + data.sitio.instagram;
+        if (document.getElementById('instagramUser')) document.getElementById('instagramUser').textContent = data.sitio.instagram;
+        if (document.getElementById('footerCopyBrand')) document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
+        if (document.getElementById('floatWaLink')) document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
+
+        
+        // Formulario IS Mesh para enviar a WhatsApp
+        const meshForm = document.getElementById('meshForm');
+        if(meshForm) {
+          meshForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nro = document.getElementById('nroCliente').value.trim();
+            const nom = document.getElementById('nombreCliente').value.trim();
+            const mail = document.getElementById('emailCliente').value.trim();
+            
+            let msg = `Hola! Soy cliente de Internet Services (Nro: ${nro}).\n`;
+            msg += `Mi nombre es ${nom} (${mail}).\n`;
+            msg += `Me interesa solicitar los equipos IS Mesh para ampliar la cobertura WiFi de mi domicilio.`;
+            
+            const waNumber = data.sitio.whatsapp || "5493442578899";
+            const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
+            
+            window.open(url, '_blank');
+          });
+        }
+
+        const meshPlanes = data.planes.filter(p => {
+          const nameLower = p.nombre.toLowerCase();
+          return nameLower.includes('mesh') || nameLower.includes('repetidor') || nameLower.includes('wifi premium');
+        });
+
+        const grid = document.getElementById('meshPlansGrid');
+        grid.innerHTML = '';
+
+        if (meshPlanes.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: var(--paper-2); border-radius: 8px; border: 1px solid var(--line); max-width: 600px; margin: 40px auto;">
+              <h3 style="color: var(--blue); margin-bottom: 12px; font-family: Sora, sans-serif; font-size: 22px;">Próximamente más planes con Mesh</h3>
+              <p style="color: var(--muted); font-size: 15px; font-family: Inter, sans-serif;">Estamos preparando nuevas combinaciones de WiFi Premium Mesh para tu hogar. ¡Consultanos ahora mismo por WhatsApp!</p>
+            </div>
+          `;
+          return;
+        }
+
+        meshPlanes.forEach(plan => {
+          // Crear contenedor de tarjeta
+          const card = document.createElement('div');
+          
+          // Asignar clases correspondientes
+          let cardClasses = ['plan-card'];
+          if (plan.destacado) cardClasses.push('featured');
+          if (plan.tipo === 'inalambrica') cardClasses.push('wireless');
+          card.className = cardClasses.join(' ');
+
+          const priceFormatted = '$' + plan.precio.toLocaleString('es-AR');
+          const btnClass = plan.tipo === 'inalambrica' ? 'btn-blue' : 'btn-red';
+          const btnText = plan.tipo === 'inalambrica' ? 'Lo quiero!' : 'Yo quiero!';
+          const planCategoryText = plan.tipo === 'fibra' ? 'Fibra Óptica' : 'Inalámbrico';
+
+          let htmlContent = '';
+
+          // Botón insignia de fútbol
+          if (plan.pack_futbol) {
+            htmlContent += `
+              <div class="badge" style="top: -16px; left: 28px;">⚽ Quiero fútbol</div>
+            `;
+          }
+
+          // Nombre y precio
+          let planNameHtml = '';
+          if (plan.nombre.includes(' + ')) {
+            const parts = plan.nombre.split(' + ');
+            planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts[1]}`;
+          } else {
+            planNameHtml = plan.nombre;
+          }
+
+          htmlContent += `
+            <p class="plan-name" style="${!plan.nombre.includes(' + ') ? 'font-size:24px; color:var(--blue);' : ''}">${planNameHtml}</p>
+            <div class="plan-price">
+              <span class="amount">${priceFormatted}</span>
+              <span class="per">/ mes</span>
+            </div>
+          `;
+
+          // Características / Beneficios
+          htmlContent += `
+            <ul class="plan-features">
+              ${plan.beneficios.map(b => `<li>${b}</li>`).join('')}
+            </ul>
+          `;
+
+          // Metadata de instalación
+          htmlContent += `
+            <div class="plan-meta">
+              <div><span>Instalación</span><strong>${plan.instalacion}</strong></div>
+              <div><span>Promo</span><strong>${plan.promo_duracion}</strong></div>
+            </div>
+          `;
+
+          // Nota legal y botón de contratación
+          htmlContent += `
+            <p class="plan-note">${plan.nota}</p>
+            <a href="https://wa.me/${data.sitio.whatsapp}?text=Hola!%20Me%20interesa%20contratar%20el%20plan%20${encodeURIComponent(plan.nombre)}%20(${planCategoryText})" 
+               class="btn ${btnClass}" target="_blank" rel="noopener">
+               ${btnText}
+            </a>
+          `;
+
+          card.innerHTML = htmlContent;
+          grid.appendChild(card);
+        });
+      })
+      .catch(err => console.error('Error al cargar configuración y planes:', err));
+
+    // Hamburger Menu
+    const hambBtn = document.getElementById('hamburgerBtn');
+    if (hambBtn) {
+      hambBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        document.getElementById('hamburgerMenu').classList.toggle('open');
+      });
+    }
+
+    document.querySelectorAll('.dropdown-submenu span').forEach(function (span) {
+      span.addEventListener('click', function (e) {
+        e.stopPropagation();
+        this.parentElement.classList.toggle('open');
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      const menu = document.getElementById('hamburgerMenu');
+      if (menu && !menu.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>

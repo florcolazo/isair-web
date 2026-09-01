@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Control · Internet Services</title>
+  
+  <!-- Fuentes Premium -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <!-- Estilos Personalizados para la Interfaz de Administración -->
+  <style>
+    /* ══════ LIGHT & CLEAN UI (Estilo ISAIR) ══════ */
+    body {
+      font-family: 'Inter', sans-serif !important;
+      background-color: #f4f7f9 !important;
+      color: #333333 !important;
+      margin: 0;
+    }
+
+    /* Cabecera superior */
+    [class*=AppHeader] {
+      background: #ffffff !important;
+      border-bottom: 1px solid #eaeaea !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03) !important;
+      height: 64px !important;
+    }
+
+    /* Logo personalizado */
+    [class*=LogoContainer] {
+      display: flex !important;
+      align-items: center !important;
+      font-size: 0 !important;
+      text-decoration: none !important;
+    }
+    [class*=LogoContainer]::before {
+      content: "Admin ISAIR" !important;
+      font-family: 'Inter', sans-serif !important;
+      font-weight: 800 !important;
+      font-size: 18px !important;
+      color: #0072ff !important;
+      margin-right: 12px !important;
+    }
+    [class*=LogoContainer]::after {
+      display: none !important; /* Ocultar badge viejo */
+    }
+    [class*=LogoContainer] svg { display: none !important; }
+
+    /* Las reglas de Dropdown fueron removidas para no romper los menús de Decap CMS */
+
+    [class*=AppHeader] a, [class*=AppHeader] button {
+      color: #555555 !important;
+    }
+
+    /* Menú lateral (Sidebar) */
+    [class*=SidebarContainer] {
+      background-color: #ffffff !important;
+      border-right: 1px solid #eaeaea !important;
+      padding-top: 16px !important;
+    }
+    [class*=SidebarHeading] {
+      font-family: 'Inter', sans-serif !important;
+      font-size: 12px !important;
+      color: #999999 !important;
+      font-weight: 700 !important;
+      margin-bottom: 12px !important;
+    }
+    [class*=SidebarNavLink] {
+      font-weight: 600 !important;
+      font-size: 14.5px !important;
+      color: #444444 !important;
+      padding: 10px 16px !important;
+      border-left: 4px solid transparent !important;
+    }
+    [class*=SidebarNavLink]:hover {
+      background-color: #f4f7f9 !important;
+      color: #0072ff !important;
+    }
+    [class*=SidebarActiveLink] {
+      color: #0072ff !important;
+      background-color: #eef5ff !important;
+      border-left: 4px solid #0072ff !important;
+    }
+
+    /* Botón Publicar (Principal Rojo) */
+    [class*=ToolbarContainer] [class*=PublishButton] {
+      background-color: #e62a22 !important; 
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      border-radius: 6px !important;
+      height: 40px !important;
+      padding: 0 24px !important;
+      box-shadow: none !important;
+      border: none !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    [class*=ToolbarContainer] [class*=PublishButton] *,
+    [class*=ToolbarContainer] [class*=PublishButton] span,
+    [class*=ToolbarContainer] [class*=PublishButton] svg,
+    [class*=ToolbarContainer] [class*=PublishButton] path {
+      color: #ffffff !important;
+      fill: #ffffff !important;
+    }
+    [class*=ToolbarContainer] [class*=PublishButton]:hover {
+      background-color: #c41f18 !important;
+    }
+    button[class*=Button] { border-radius: 6px !important; font-weight: 600 !important; }
+
+    /* Barra superior del editor */
+    [class*=ToolbarContainer] {
+      background-color: #ffffff !important;
+      border-bottom: 1px solid #eaeaea !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.02) !important;
+      color: #444444 !important;
+    }
+    [class*=ToolbarContainer] * {
+      color: #444444 !important;
+    }
+
+    /* ── Forzar Ancho Completo del Editor (Solo Desktop) ── */
+    @media (min-width: 769px) {
+      [class*="EditorContainer"], 
+      [class*="editorContainer" i] {
+        max-width: none !important; 
+        width: calc(100% - 40px) !important; 
+        margin: 30px 20px !important;
+        display: block !important;
+      }
+      
+      [class*="EditorControlPane"], 
+      [class*="editorControlPane" i] {
+        max-width: 100% !important;
+        width: 100% !important;
+        flex: 1 1 100% !important;
+      }
+      [class*="EditorControlPane"] > div, 
+      [class*="editorControlPane" i] > div {
+        max-width: 100% !important;
+      }
+    }
+    
+    [class*="EditorPreviewPane"], 
+    [class*="editorPreviewPane" i] {
+      display: none !important;
+    }
+
+    /* Ocultar logo en login */
+    a[href^="https://decapcms.org"] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sveltia CMS (reemplazo de Decap CMS 100% compatible y sin necesidad de backend para GitHub) -->
+  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  
+  <!-- Cargar paquete de idioma Español -->
+  <script src="https://unpkg.com/decap-cms-locales@^3.0.0/dist/decap-cms-locales.js"></script>
+  <script>
+    window.CMS_MANUAL_INIT = true;
+    // Sveltia CMS usa la misma API global 'CMS'
+    if (window.CMS) {
+      CMS.registerLocale('es', decapCmsLocales.es);
+      CMS.init();
+    }
+  </script>
+  
+  <script>
+    // Script para personalizar la pantalla de login
+    const customizeLogin = setInterval(() => {
+      // Buscar el botón de login
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(btn => {
+        if (btn.textContent.includes('Netlify Identity')) {
+          btn.textContent = 'Iniciar Sesión';
+          btn.style.backgroundColor = '#0072ff'; // Darle un color más de la marca
+          btn.style.color = '#ffffff';
+          btn.style.fontWeight = '700';
+          
+          // Agregar título "Panel Admin" arriba del botón si no existe
+          const container = btn.parentElement.parentElement;
+          if (container && !document.getElementById('customAdminTitle')) {
+            const title = document.createElement('h1');
+            title.id = 'customAdminTitle';
+            title.textContent = 'PANEL ADMIN';
+            title.style.color = '#051b44';
+            title.style.fontFamily = 'Sora, sans-serif';
+            title.style.textAlign = 'center';
+            title.style.fontSize = '22px';
+            title.style.marginTop = '0';
+            title.style.marginBottom = '24px';
+            title.style.letterSpacing = '1px';
+            container.insertBefore(title, container.firstChild);
+          }
+        }
+      });
+      
+        // Detener el script si ya estamos dentro del panel (ya cargó la cabecera)
+        if (document.querySelector('[class*=AppHeader]')) {
+          clearInterval(customizeLogin);
+        }
+      }, 150);
+
+      // Script para forzar traducción de los botones "Add" a "Añadir"
+      setInterval(() => {
+        document.querySelectorAll('button').forEach(btn => {
+          // Caminar por los nodos de texto dentro de cada botón
+          const walker = document.createTreeWalker(btn, NodeFilter.SHOW_TEXT, null, false);
+          let node;
+          while (node = walker.nextNode()) {
+            if (node.nodeValue && node.nodeValue.startsWith('Add ')) {
+              node.nodeValue = node.nodeValue.replace('Add ', 'Añadir ');
+            }
+          }
+        });
+      }, 500);
+
+      // Script para agregar el botón del Mapa en el menú lateral de Decap
+    const customizeSidebar = setInterval(() => {
+      const sidebar = document.querySelector('[class*="SidebarContainer"]');
+      if (sidebar) {
+        if (!document.getElementById('btnMapaPersonalizado')) {
+          const mapLink = document.createElement('a');
+          mapLink.id = 'btnMapaPersonalizado';
+          mapLink.href = '/admin/cobertura.html';
+          mapLink.innerHTML = '🗺️ Configurar Mapa';
+          
+          // Estilo de botón azul llamativo
+          mapLink.style.display = 'block';
+          mapLink.style.margin = '20px 16px';
+          mapLink.style.padding = '12px 16px';
+          mapLink.style.backgroundColor = '#0072ff';
+          mapLink.style.color = 'white';
+          mapLink.style.fontWeight = '700';
+          mapLink.style.borderRadius = '8px';
+          mapLink.style.textDecoration = 'none';
+          mapLink.style.textAlign = 'center';
+          mapLink.style.boxShadow = '0 4px 10px rgba(0, 114, 255, 0.2)';
+          mapLink.style.transition = 'all 0.2s ease';
+          
+          mapLink.onmouseover = () => {
+            mapLink.style.backgroundColor = '#0055cc';
+            mapLink.style.transform = 'translateY(-1px)';
+          };
+          mapLink.onmouseout = () => {
+            mapLink.style.backgroundColor = '#0072ff';
+            mapLink.style.transform = 'translateY(0)';
+          };
+
+          sidebar.appendChild(mapLink);
+        }
+        clearInterval(customizeSidebar);
+      }
+    }, 500);
+  </script>
+</body>
+</html>

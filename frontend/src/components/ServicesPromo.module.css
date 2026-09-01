@@ -1,0 +1,229 @@
+.container {
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+}
+
+.sectionWrap {
+  scroll-margin-top: 90px;
+}
+
+/* ── IS CAM (CÁMARAS DE SEGURIDAD) ── */
+.camCardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px rgba(230, 0, 0, 0.15);
+  background: #ffffff;
+}
+
+.camRedCard {
+  background: linear-gradient(135deg, #e60000 0%, #cc0000 100%);
+  color: #ffffff;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+
+.newTag {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.camRedCard h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+}
+
+.camRedCard h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffcccc;
+  margin: 4px 0 20px;
+  letter-spacing: 0.05em;
+}
+
+.imgWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 24px;
+}
+
+.productImg {
+  max-height: 200px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.productImg:hover {
+  transform: scale(1.04);
+}
+
+.featuresPills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.featuresPills span {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.04em;
+}
+
+.camWhiteCard {
+  background: #ffffff;
+  padding: 44px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.camTitle {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 800;
+  color: #e60000;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.bulletList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bulletList li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.bulletCheck {
+  color: #e60000;
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.btnAction {
+  align-self: flex-start;
+  padding: 14px 32px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(230, 0, 0, 0.3);
+}
+
+/* ── IS MESH (WIFI PREMIUM) ── */
+.meshCardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px rgba(0, 114, 255, 0.15);
+  background: #ffffff;
+}
+
+.meshBlueCard {
+  background: linear-gradient(135deg, #0055cc 0%, #003399 100%);
+  color: #ffffff;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.meshBlueCard h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.meshBadge {
+  background: #0088ff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 6px;
+  margin: 8px 0 16px;
+  letter-spacing: 0.05em;
+}
+
+.meshDesc {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 13.5px;
+  line-height: 1.5;
+  margin-top: auto;
+}
+
+.meshSkyCard {
+  background: #f0f7ff;
+  padding: 44px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.meshTitle {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(22px, 2.5vw, 30px);
+  font-weight: 800;
+  color: #0055cc;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.bulletCheckBlue {
+  color: #0055cc;
+  font-weight: 900;
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 900px) {
+  .camCardGrid, .meshCardGrid {
+    grid-template-columns: 1fr;
+  }
+  .camRedCard, .camWhiteCard, .meshBlueCard, .meshSkyCard {
+    padding: 32px 24px;
+  }
+  .btnAction {
+    width: 100%;
+    text-align: center;
+  }
+}

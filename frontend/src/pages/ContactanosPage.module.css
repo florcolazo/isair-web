@@ -1,0 +1,27 @@
+.pageContainer {
+  background: var(--paper);
+  min-height: 100vh;
+}
+
+.heroHeader {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+  color: #ffffff;
+  padding: 60px 0 50px;
+  text-align: center;
+}
+
+.heroHeader h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(30px, 4.5vw, 46px);
+  font-weight: 800;
+  margin: 12px 0 16px;
+  color: #ffffff;
+}
+
+.heroHeader p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}

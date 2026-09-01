@@ -1,0 +1,282 @@
+.pageContainer {
+  background: #ffffff;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Location Bar */
+.locationBar {
+  background: #002d6b;
+  color: #ffffff;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.locationBar strong {
+  color: #ffffff;
+}
+
+/* Hero Section */
+.heroSection {
+  position: relative;
+  padding: 70px 0 80px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.circleBgGlow1 {
+  position: absolute;
+  top: -100px;
+  left: -100px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: rgba(0, 168, 255, 0.08);
+  pointer-events: none;
+}
+
+.circleBgGlow2 {
+  position: absolute;
+  bottom: -50px;
+  left: 200px;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: rgba(0, 168, 255, 0.12);
+  pointer-events: none;
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* Left Text Column */
+.textColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mainTitle {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(32px, 4vw, 44px);
+  font-weight: 800;
+  color: #0088ff;
+  margin-bottom: 28px;
+  letter-spacing: -0.01em;
+}
+
+.textBlock {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(15px, 1.8vw, 17.5px);
+  font-weight: 600;
+  color: #0077e6;
+  line-height: 1.65;
+  margin-bottom: 22px;
+  max-width: 560px;
+}
+
+.badgeWrapper {
+  margin-top: 12px;
+}
+
+.taglineBadge {
+  display: inline-block;
+  background: #e62a22;
+  color: #ffffff;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  box-shadow: 0 10px 25px rgba(230, 42, 34, 0.3);
+}
+
+/* Right Image Column */
+.imageColumn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circleFrame {
+  width: clamp(320px, 34vw, 460px);
+  height: clamp(320px, 34vw, 460px);
+  border-radius: 50%;
+  border: 6px solid #e62a22;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(230, 42, 34, 0.25);
+  position: relative;
+  background: #e0f2fe;
+}
+
+.heroImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Blue Bar */
+.blueBar {
+  height: 48px;
+  background: #0099ff;
+  width: 100%;
+}
+
+/* Network Section */
+.networkSection {
+  padding: 80px 0;
+  background: var(--paper);
+}
+
+.networkBox {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+  border-radius: 28px;
+  padding: 50px 40px;
+  color: #ffffff;
+  box-shadow: 0 25px 60px rgba(5, 27, 68, 0.35);
+}
+
+.networkText {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+.networkText h2 {
+  font-size: clamp(26px, 3.5vw, 36px);
+  font-weight: 800;
+  margin: 8px 0 12px;
+  color: #ffffff;
+}
+
+.networkText p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.provinciasGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.provinciaCard {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 18px;
+  padding: 24px 20px;
+  backdrop-filter: blur(10px);
+}
+
+.provinciaTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.provinciaTitle h4 {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.provinciaCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.provinciaCard li {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.highlightCity {
+  color: #ffffff !important;
+  font-weight: 700;
+  background: rgba(230, 42, 34, 0.35);
+  border: 1px solid rgba(230, 42, 34, 0.5);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.b2bNote {
+  margin-top: 36px;
+  padding: 20px 24px;
+  background: rgba(0, 114, 255, 0.15);
+  border: 1px solid rgba(0, 114, 255, 0.3);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.b2bNote p {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 80px 0;
+  background: #ffffff;
+}
+
+.ctaBox {
+  background: var(--paper-2);
+  border: 2px solid var(--blue);
+  border-radius: 28px;
+  padding: 48px 30px;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: var(--shadow);
+}
+
+.ctaBox h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.ctaBox p {
+  color: var(--muted);
+  font-size: 15.5px;
+  margin-bottom: 24px;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .circleFrame {
+    width: 320px;
+    height: 320px;
+  }
+}

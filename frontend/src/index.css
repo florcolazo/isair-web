@@ -1,0 +1,131 @@
+/* ============================================================
+   ISAIR · Internet Services Agencia San José
+   index.css — Design system global: variables, reset, utilidades
+   ============================================================ */
+
+/* ---------- VARIABLES ---------- */
+:root {
+  --ink:       #051b44;
+  --ink-2:     #0a2a5e;
+  --red:       #e62a22;
+  --red-dark:  #c41f18;
+  --blue:      #0072ff;
+  --blue-dark: #005acc;
+  --whatsapp:  #25d366;
+  --paper:     #f4f6fa;
+  --paper-2:   #ffffff;
+  --text:      #1a1a2e;
+  --muted:     #5b6472;
+  --line:      #e0e4ec;
+  --radius:    18px;
+  --shadow:    0 20px 45px -20px rgba(5,27,68,.3);
+}
+
+/* ---------- RESET ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+h1, h2, h3 { font-family: 'Sora', sans-serif; margin: 0; }
+p  { margin: 0; }
+a  { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+ul  { list-style: none; margin: 0; padding: 0; }
+button { font-family: 'Inter', sans-serif; cursor: pointer; }
+
+/* ---------- UTILIDADES ---------- */
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.eyebrow {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* ---------- BOTONES ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.btn-red  { background: var(--red);  color: #fff; box-shadow: 0 10px 24px -8px rgba(239,35,60,.55); }
+.btn-red:hover  { background: var(--red-dark);  transform: translateY(-2px); }
+.btn-blue { background: var(--blue); color: #fff; box-shadow: 0 10px 24px -8px rgba(31,111,235,.5); }
+.btn-blue:hover { background: var(--blue-dark); transform: translateY(-2px); }
+.btn-ghost {
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.4);
+}
+.btn-ghost:hover { background: rgba(255,255,255,.22); transform: translateY(-2px); }
+
+/* ---------- ANIMACIONES GLOBALES ---------- */
+@keyframes travel {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+@keyframes ring {
+  0%   { transform: scale(.15); opacity: 0; }
+  15%  { opacity: 1; }
+  100% { transform: scale(1);   opacity: 0; }
+}
+@keyframes explode {
+  0%   { transform: translate(0,0) scale(0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--tx),var(--ty)) scale(1.5) rotate(720deg); opacity: 0; }
+}
+@keyframes flash {
+  0%   { box-shadow: 0 0 0px  0px var(--red); }
+  50%  { box-shadow: 0 0 40px 10px var(--red); }
+  100% { box-shadow: 0 0 0px  0px transparent; }
+}
+@keyframes bounceBadge {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(.95) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pulse, .wifi-rings span { animation: none !important; }
+}
+
+/* ---------- SOCCER BALL ---------- */
+.soccer-ball {
+  position: fixed;
+  font-size: 32px;
+  z-index: 9999;
+  pointer-events: none;
+  animation: explode 1s ease-out forwards;
+}

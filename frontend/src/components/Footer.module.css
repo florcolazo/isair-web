@@ -1,0 +1,21 @@
+.footer { background: var(--ink); color: #9aa3b2; padding: 44px 0 26px; }
+.grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-bottom: 26px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.grid strong { color: #fff; font-family: 'Sora'; font-size: 16px; display: block; margin-bottom: 8px; }
+.grid p { font-size: 13.5px; line-height: 1.6; }
+.igLink {
+  color: #cfd4de;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.igLink img { width: 20px; height: 20px; }
+.visits { text-align: center; margin: 18px 0 0; }
+.visits img { height: 22px; border-radius: 4px; display: inline-block; }
+.copy { text-align: center; font-size: 12px; margin-top: 12px; color: #666f7d; }

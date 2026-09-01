@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Mapa de Cobertura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #0a0f1e; color: #e0e4ec; min-height: 100vh; }
+
+    /* Top bar */
+    .topbar {
+      background: linear-gradient(90deg,#051b44,#0072ff);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .topbar h1 { font-family:'Sora',sans-serif; font-size:18px; color:#fff; font-weight:800; }
+    .topbar a { color:rgba(255,255,255,.7); font-size:13px; text-decoration:none; }
+    .topbar a:hover { color:#fff; }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      height: calc(100vh - 54px);
+    }
+
+    /* Panel lateral */
+    .panel {
+      background: #111827;
+      border-right: 1px solid #1f2937;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-section {
+      background: #1a2233;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #1f2d45;
+    }
+
+    .panel-section h3 {
+      font-family:'Sora',sans-serif;
+      font-size:13px;
+      font-weight:700;
+      color:#7dd3fc;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      margin-bottom:12px;
+    }
+
+    label { font-size:13px; color:#94a3b8; display:block; margin-bottom:5px; }
+
+    input[type=text], textarea, select {
+      width:100%;
+      background:#0f172a;
+      border:1px solid #1f2d45;
+      border-radius:8px;
+      color:#e0e4ec;
+      font-family:'Inter',sans-serif;
+      font-size:14px;
+      padding:10px 12px;
+      margin-bottom:12px;
+      outline:none;
+      transition:border .2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color:#0072ff; }
+    textarea { resize:vertical; min-height:70px; }
+
+    /* Color swatches */
+    .type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom:12px;
+    }
+    .type-btn {
+      padding:9px 8px;
+      border-radius:8px;
+      border:2px solid transparent;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:600;
+      text-align:center;
+      transition:all .2s;
+      background:#0f172a;
+      color:#e0e4ec;
+    }
+    .type-btn.active { border-color:currentColor; background:rgba(255,255,255,.07); }
+    .type-btn[data-tipo=fibra]       { color:#0072ff; }
+    .type-btn[data-tipo=inalambrica] { color:#28a745; }
+    .type-btn[data-tipo=tv]          { color:#e62a22; }
+    .type-btn[data-tipo=completa]    { color:#6f42c1; }
+
+    /* Botones */
+    .btn-save {
+      width:100%;
+      padding:13px;
+      border-radius:10px;
+      border:none;
+      background:linear-gradient(135deg,#0055cc,#0072ff);
+      color:#fff;
+      font-family:'Sora',sans-serif;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+      transition:opacity .2s, transform .15s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .btn-save:hover { opacity:.9; transform:translateY(-1px); }
+    .btn-save:disabled { opacity:.5; cursor:not-allowed; }
+
+    .btn-delete {
+      background:#7f1d1d;
+      color:#fca5a5;
+      border:none;
+      border-radius:6px;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+      transition:background .2s;
+    }
+    .btn-delete:hover { background:#991b1b; }
+
+    /* Lista de zonas */
+    .zona-item {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      background:#0f172a;
+      border-radius:8px;
+      margin-bottom:8px;
+      gap:8px;
+    }
+    .zona-dot {
+      width:10px; height:10px;
+      border-radius:50%;
+      flex-shrink:0;
+    }
+    .zona-nombre { font-size:13.5px; font-weight:600; flex:1; color:#e0e4ec; }
+    .zona-tipo { font-size:11px; color:#64748b; }
+
+    /* Instrucciones */
+    .instrucciones {
+      background:#0f172a;
+      border-radius:8px;
+      padding:12px;
+      font-size:12.5px;
+      color:#64748b;
+      line-height:1.6;
+    }
+    .instrucciones strong { color:#94a3b8; }
+
+    /* Status message */
+    .status-msg {
+      padding:10px 14px;
+      border-radius:8px;
+      font-size:13px;
+      font-weight:600;
+      display:none;
+    }
+    .status-msg.ok { background:#052e16; color:#4ade80; border:1px solid #14532d; }
+    .status-msg.err { background:#450a0a; color:#f87171; border:1px solid #7f1d1d; }
+    .status-msg.visible { display:block; }
+
+    /* Mapa */
+    #map { width:100%; height:100%; }
+
+    /* Firebase config warning */
+    .config-warning {
+      background:#422006;
+      border:1px solid #78350f;
+      border-radius:8px;
+      padding:12px;
+      font-size:12.5px;
+      color:#fbbf24;
+      line-height:1.6;
+    }
+    .config-warning code {
+      background:#1c0f00;
+      padding:1px 5px;
+      border-radius:4px;
+      font-size:11px;
+    }
+
+    @media (max-width:768px) {
+      .layout { grid-template-columns:1fr; grid-template-rows:auto 1fr; }
+      .panel { height:auto; max-height:55vh; }
+      #map { height:45vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <h1>🗺️ Admin — Mapa de Cobertura</h1>
+    <a href="../index.html">← Volver al sitio</a>
+  </div>
+
+  <div class="layout">
+
+    <!-- PANEL LATERAL -->
+    <aside class="panel">
+
+      <!-- Instrucciones de dibujo -->
+      <div class="panel-section">
+        <h3>Cómo usar</h3>
+        <div class="instrucciones">
+          <strong>1.</strong> Dibujá un polígono en el mapa sobre la zona con cobertura.<br><br>
+          <strong>2.</strong> Completá el nombre y tipo de servicio.<br><br>
+          <strong>3.</strong> Hacé clic en <strong>Guardar zona</strong>.<br><br>
+          Los cambios se publican <strong>automáticamente</strong> en el mapa público.
+        </div>
+      </div>
+
+      <!-- Formulario nueva zona -->
+      <div class="panel-section">
+        <h3>Nueva zona</h3>
+
+        <label>Nombre de la zona</label>
+        <input type="text" id="zonaNombre" placeholder="Ej: Centro, Barrio Norte...">
+
+        <label>Descripción (opcional)</label>
+        <textarea id="zonaDescripcion" placeholder="Ej: Cobertura fibra óptica disponible"></textarea>
+
+        <label>Tipo de servicio</label>
+        <div class="type-grid" style="grid-template-columns:1fr;">
+          <button class="type-btn active" data-tipo="fibra" onclick="selTipo(this)">🔵 Fibra Óptica</button>
+        </div>
+
+        <div class="status-msg" id="statusMsg"></div>
+
+        <button class="btn-save" id="btnGuardar" onclick="guardarZona()" disabled>
+          <span>💾</span> Guardar zona
+        </button>
+      </div>
+
+      <!-- Zonas existentes -->
+      <div class="panel-section">
+        <h3>Zonas guardadas</h3>
+        <div id="zonasList">
+          <div style="color:#64748b; font-size:13px; text-align:center; padding:12px;">Esperando conexión...</div>
+        </div>
+      </div>
+
+      <!-- Estado Firebase -->
+      <div class="panel-section">
+        <h3>⚙️ Estado de conexión</h3>
+        <div class="config-warning" id="firebaseWarning" style="display:none;">
+          <strong>⚠️ Firebase no configurado.</strong><br>
+          Pegá tu configuración de Firebase en el código (líneas marcadas con TU_...).<br><br>
+          <a href="https://console.firebase.google.com" target="_blank" style="color:#fbbf24;">→ Ir a Firebase Console</a>
+        </div>
+        <div id="firebaseOk" style="display:none; color:#4ade80; font-size:13px; padding:8px;">
+          ✅ Conectado — los cambios se publican automáticamente.
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAPA -->
+    <main>
+      <div id="map"></div>
+    </main>
+  </div>
+
+
+  <!-- Leaflet + Draw -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ══════════════════════════════════════════════════════
+    // ⚙️  PEGÁ ACÁ TU CONFIGURACIÓN DE FIREBASE
+    //     (te la damos nosotros cuando la tengamos lista)
+    // ══════════════════════════════════════════════════════
+    const firebaseConfig = {
+      apiKey: "AIzaSyC8kcU2b2H2UYLYZ1bTiXxjaHurpFUcNGs",
+      authDomain: "agencia-cdelu.firebaseapp.com",
+      projectId: "agencia-cdelu",
+      storageBucket: "agencia-cdelu.firebasestorage.app",
+      messagingSenderId: "698495749625",
+      appId: "1:698495749625:web:e928784c89d29a95720128"
+    };
+
+    const CONFIGURADO = firebaseConfig.apiKey !== "TU_API_KEY";
+
+    let tipoSeleccionado = 'fibra';
+    let geometriaActual  = null;
+    let db = null;
+    let zonasLayers = {};
+
+    const COLORES = {
+      fibra: '#0072ff', inalambrica: '#28a745', tv: '#e62a22', completa: '#6f42c1'
+    };
+
+    // ── Mapa ─────────────────────────────────────────────
+    const map = L.map('map').setView([-32.4833, -58.2333], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap', maxZoom: 19
+    }).addTo(map);
+
+    const drawnItems = new L.FeatureGroup().addTo(map);
+    const drawControl = new L.Control.Draw({
+      edit: { featureGroup: drawnItems, remove: true },
+      draw: {
+        polygon:   { shapeOptions: { color: '#0072ff', fillOpacity: 0.3 }, showArea: true },
+        rectangle: { shapeOptions: { color: '#0072ff', fillOpacity: 0.3 } },
+        polyline: false, circle: false, marker: false, circlemarker: false,
+      },
+    });
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, (e) => {
+      drawnItems.clearLayers();
+      drawnItems.addLayer(e.layer);
+      geometriaActual = e.layer.toGeoJSON();
+      document.getElementById('btnGuardar').disabled = false;
+      mostrarStatus('Zona dibujada. Completá el nombre y guardá.', 'ok');
+    });
+    map.on(L.Draw.Event.DELETED, () => {
+      geometriaActual = null;
+      document.getElementById('btnGuardar').disabled = true;
+    });
+
+    // ── Conectar Firebase ────────────────────────────────
+    if (CONFIGURADO) {
+      document.getElementById('firebaseOk').style.display = 'block';
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+
+      // Escuchar cambios en tiempo real
+      onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
+        Object.values(zonasLayers).forEach(l => map.removeLayer(l));
+        zonasLayers = {};
+        renderLista(snapshot.docs);
+        snapshot.docs.forEach(d => agregarCapaEnMapa(d));
+      });
+    } else {
+      document.getElementById('firebaseWarning').style.display = 'block';
+      document.getElementById('zonasList').innerHTML =
+        '<div style="color:#fbbf24;font-size:13px;padding:10px;">⚠️ Configurá Firebase para activar el guardado automático.</div>';
+    }
+
+    // ── Guardar zona ─────────────────────────────────────
+    window.guardarZona = async function() {
+      if (!CONFIGURADO) { mostrarStatus('Primero configurá Firebase.', 'err'); return; }
+      if (!geometriaActual) { mostrarStatus('Dibujá una zona en el mapa.', 'err'); return; }
+      const nombre = document.getElementById('zonaNombre').value.trim();
+      if (!nombre) { mostrarStatus('Ponele un nombre a la zona.', 'err'); return; }
+
+      const btn = document.getElementById('btnGuardar');
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Guardando...';
+
+      try {
+        await addDoc(collection(db, 'zonas_cobertura'), {
+          nombre,
+          descripcion: document.getElementById('zonaDescripcion').value.trim(),
+          tipo: tipoSeleccionado,
+          geojson: JSON.stringify(geometriaActual),
+          creadoEl: new Date().toISOString(),
+        });
+        mostrarStatus('✅ Zona publicada automáticamente.', 'ok');
+        document.getElementById('zonaNombre').value = '';
+        document.getElementById('zonaDescripcion').value = '';
+        drawnItems.clearLayers();
+        geometriaActual = null;
+      } catch (err) {
+        mostrarStatus('Error: ' + err.message, 'err');
+      }
+
+      btn.innerHTML = '<span>💾</span> Guardar zona';
+      btn.disabled = !geometriaActual;
+    };
+
+    // ── Eliminar zona ────────────────────────────────────
+    window.eliminarZona = async function(id) {
+      if (!confirm('¿Eliminar esta zona del mapa público?')) return;
+      try {
+        await deleteDoc(doc(db, 'zonas_cobertura', id));
+        mostrarStatus('Zona eliminada del mapa.', 'ok');
+      } catch (err) {
+        mostrarStatus('Error: ' + err.message, 'err');
+      }
+    };
+
+    // ── Render lista lateral ──────────────────────────────
+    function renderLista(docs) {
+      const lista = document.getElementById('zonasList');
+      if (!docs.length) {
+        lista.innerHTML = '<div style="color:#64748b;font-size:13px;text-align:center;padding:12px;">No hay zonas guardadas aún.</div>';
+        return;
+      }
+      lista.innerHTML = docs.map(d => {
+        const z = d.data();
+        const color = COLORES[z.tipo] || '#0072ff';
+        return `<div class="zona-item">
+          <div class="zona-dot" style="background:${color};"></div>
+          <div style="flex:1;"><div class="zona-nombre">${z.nombre}</div><div class="zona-tipo">${z.tipo}</div></div>
+          <button class="btn-delete" onclick="eliminarZona('${d.id}')">Borrar</button>
+        </div>`;
+      }).join('');
+    }
+
+    function agregarCapaEnMapa(docSnap) {
+      const z = docSnap.data();
+      if (!z.geojson) return;
+      const geojson = typeof z.geojson === 'string' ? JSON.parse(z.geojson) : z.geojson;
+      const color = COLORES[z.tipo] || '#0072ff';
+      const layer = L.geoJSON(geojson, {
+        style: { color, fillColor: color, fillOpacity: .3, weight: 2.5 }
+      }).bindPopup(`<strong>${z.nombre}</strong><br><small>${z.tipo}</small>`).addTo(map);
+      zonasLayers[docSnap.id] = layer;
+    }
+
+    // ── Helpers ───────────────────────────────────────────
+    window.selTipo = function(btn) {
+      document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      tipoSeleccionado = btn.dataset.tipo;
+    };
+
+    function mostrarStatus(msg, tipo) {
+      const el = document.getElementById('statusMsg');
+      el.textContent = msg;
+      el.className = 'status-msg ' + tipo + ' visible';
+      setTimeout(() => el.classList.remove('visible'), 5000);
+    }
+  </script>
+
+</body>
+</html>

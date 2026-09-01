@@ -1,317 +1,358 @@
 <!DOCTYPE html>
 <html lang="es-AR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administración - ISAIR</title>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap"
-    rel="stylesheet">
-  <!-- CryptoJS for Decryption -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
-    :root {
-      --blue: #0072ff;
-      --red: #e62a22;
-      --paper: #f4f6fa;
-      --text: #1a1a2e;
-    }
+    :root { --blue: #0072ff; --red: #e62a22; --paper: #f4f6fa; --text: #1a1a2e; }
+    body { font-family: 'Inter', sans-serif; background: var(--paper); color: var(--text); margin: 0; padding: 20px; }
+    .container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+    h1 { font-family: 'Sora', sans-serif; text-align: center; color: var(--blue); margin-top: 0; }
+    
+    .field { margin-bottom: 20px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+    input[type="text"], input[type="number"], input[type="password"], textarea, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    .checkbox-field { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+    .checkbox-field input { width: auto; transform: scale(1.2); }
+    
+    .btn { display: inline-block; padding: 12px 24px; background: var(--red); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; text-align: center; font-family: 'Inter', sans-serif; transition: background 0.2s; }
+    .btn:hover { background: #c21a14; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-secondary { background: var(--blue); }
+    .btn-secondary:hover { background: #0056c7; }
+    .btn-small { padding: 8px 14px; font-size: 13px; }
+    .btn-danger { background: #e02424; }
+    .btn-danger:hover { background: #c81e1e; }
+    
+    .msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; font-weight: 600; text-align: center; }
+    .msg.success { background: #d4edda; color: #155724; display: block; }
+    .msg.error { background: #f8d7da; color: #721c24; display: block; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--paper);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-    }
+    .tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 24px; flex-wrap: wrap; }
+    .tab { padding: 12px 24px; cursor: pointer; font-weight: 600; color: #666; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color 0.2s; }
+    .tab:hover { color: var(--blue); }
+    .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      font-family: 'Sora', sans-serif;
-      text-align: center;
-      color: var(--blue);
-      margin-top: 0;
-    }
-
-    .field {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="password"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: var(--red);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .btn:hover {
-      background: #c21a14;
-    }
-
-    .btn:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-
-    .msg {
-      margin-top: 20px;
-      padding: 15px;
-      border-radius: 8px;
-      display: none;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    .msg.success {
-      background: #d4edda;
-      color: #155724;
-      display: block;
-    }
-
-    .msg.error {
-      background: #f8d7da;
-      color: #721c24;
-      display: block;
-    }
-
-    .auth-section {
-      margin-bottom: 30px;
-      padding-bottom: 30px;
-      border-bottom: 1px solid #eee;
-    }
-
-    #priceForm {
-      display: none;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 480px) {
-      body {
-        padding: 10px;
-      }
-      .container {
-        margin: 10px auto;
-        padding: 20px;
-      }
-      h1 {
-        font-size: 24px;
-      }
+    .plan-card { border: 1px solid #e0e4ec; border-radius: 8px; padding: 20px; margin-bottom: 20px; background: #fafafa; }
+    .plan-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
+    .plan-header h3 { margin: 0; color: var(--text); font-size: 18px; }
+    .plan-header span { font-size: 13px; font-weight: 600; color: var(--blue); background: #eef5ff; padding: 4px 10px; border-radius: 6px; }
+    
+    .plan-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 15px; }
+    .full-width { grid-column: 1 / -1; }
+    
+    .benefit-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+    .benefit-row input { flex: 1; margin: 0; }
+    
+    @media (max-width: 600px) {
+      .plan-body { grid-template-columns: 1fr; }
+      .container { padding: 20px; margin: 20px auto; }
     }
   </style>
 </head>
-
 <body>
-
-  <div class="container">
+  <div id="app" class="container">
     <h1>Admin ISAIR</h1>
 
-    <div class="auth-section" id="authSection">
+    <!-- Sección de Autenticación -->
+    <div v-if="!isAuthenticated" class="auth-section" style="max-width: 400px; margin: 0 auto; padding: 20px 0;">
+      <h2 style="text-align: center; margin-bottom: 24px;">Iniciar Sesión</h2>
       <div class="field">
-        <label for="clientPassword">Contraseña de Acceso</label>
-        <input type="password" id="clientPassword" placeholder="Ingresá la clave">
+        <label>Usuario</label>
+        <input type="text" v-model="username" placeholder="Usuario">
       </div>
-      <button class="btn" style="background:var(--blue);" onclick="loadPrices()" id="btnLoad">Entrar al panel</button>
-      <div id="authErrorMsg" class="msg error" style="margin-top:15px; display:none;">Contraseña incorrecta</div>
+      <div class="field">
+        <label>Contraseña</label>
+        <input type="password" v-model="password" @keyup.enter="login" placeholder="Contraseña">
+      </div>
+      <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" @click="login" :disabled="isLoading">
+        {{ isLoading ? 'Iniciando...' : 'Iniciar sesión' }}
+      </button>
+      <div v-if="authError" class="msg error" style="margin-top:15px;">{{ authError }}</div>
     </div>
 
-    <form id="priceForm" onsubmit="savePrices(event)">
-      <h3 style="margin-top:0;">Actualizar Precios ($)</h3>
-
-      <div class="field">
-        <label>Fibra Óptica 300MB</label>
-        <input type="number" id="fibra_300" required>
-      </div>
-      <div class="field">
-        <label>Internet + ISTV Move</label>
-        <input type="number" id="fibra_istv_move" required>
-      </div>
-      <div class="field">
-        <label>Internet + ISTV Full</label>
-        <input type="number" id="fibra_istv_full" required>
-      </div>
-      <div class="field">
-        <label>Internet + IS CAM</label>
-        <input type="number" id="fibra_iscam" required>
-      </div>
-      <div class="field">
-        <label>Internet Inalámbrica 15MB</label>
-        <input type="number" id="inalambrica_15" required>
+    <!-- Sección del CMS -->
+    <div v-else>
+      <div class="tabs">
+        <div class="tab" :class="{active: activeTab === 'sitio'}" @click="activeTab = 'sitio'">Configuración del Sitio</div>
+        <div class="tab" :class="{active: activeTab === 'planes'}" @click="activeTab = 'planes'">Planes de Internet</div>
       </div>
 
-      <button type="submit" class="btn" id="btnSave">Guardar Precios</button>
-      <div id="statusMsg" class="msg"></div>
-    </form>
+      <!-- Pestaña: Configuración del Sitio -->
+      <div v-if="activeTab === 'sitio'">
+        <h3 style="margin-top:0;">Información General</h3>
+        <div class="plan-body">
+          <div class="field"><label>Nombre Comercial</label><input type="text" v-model="data.sitio.nombre_marca"></div>
+          <div class="field"><label>Ciudad</label><input type="text" v-model="data.sitio.ciudad"></div>
+          <div class="field"><label>WhatsApp (Enlace: ej 5493442578899)</label><input type="text" v-model="data.sitio.whatsapp"></div>
+          <div class="field"><label>WhatsApp (Texto visible: ej 3442 578899)</label><input type="text" v-model="data.sitio.whatsapp_formato"></div>
+          <div class="field"><label>Correo Electrónico</label><input type="text" v-model="data.sitio.email"></div>
+          <div class="field"><label>Instagram (usuario sin @)</label><input type="text" v-model="data.sitio.instagram"></div>
+          <div class="field full-width"><label>Teléfonos Secundarios</label><input type="text" v-model="data.sitio.telefonos_contacto"></div>
+          <div class="field full-width"><label>Dirección Oficina</label><input type="text" v-model="data.sitio.direccion_oficina"></div>
+          <div class="field"><label>Horario Oficina Física</label><input type="text" v-model="data.sitio.horario_oficina"></div>
+          <div class="field"><label>Horario Atención Digital</label><input type="text" v-model="data.sitio.horario_atencion_digital"></div>
+        </div>
+
+        <h3 style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">Banner y Promociones</h3>
+        <div class="plan-body">
+          <div class="checkbox-field full-width">
+            <input type="checkbox" id="mostrarBanner" v-model="data.sitio.banner_mostrar">
+            <label for="mostrarBanner" style="margin:0;">Mostrar Banner Promocional en Inicio</label>
+          </div>
+          <div class="field full-width"><label>URL Imagen del Banner</label><input type="text" v-model="data.sitio.banner_imagen"></div>
+          <div class="field"><label>Enlace al hacer click (ej: #formulario)</label><input type="text" v-model="data.sitio.banner_link"></div>
+          <div class="field"><label>Texto Alternativo de Imagen</label><input type="text" v-model="data.sitio.banner_alt"></div>
+          <div class="field"><label>Precio Mensual Pack Fútbol ($)</label><input type="text" v-model="data.sitio.precio_pack_futbol"></div>
+          <div class="field"><label>Precio Mensual Paquete HBO ($)</label><input type="text" v-model="data.sitio.precio_pack_hbo"></div>
+        </div>
+      </div>
+
+      <!-- Pestaña: Planes -->
+      <div v-if="activeTab === 'planes'">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; flex-wrap:wrap; gap:10px;">
+          <h3 style="margin:0;">Gestor de Planes</h3>
+          <button class="btn btn-secondary btn-small" @click="addPlan">+ Agregar Nuevo Plan</button>
+        </div>
+
+        <div v-for="(plan, index) in data.planes" :key="index" class="plan-card">
+          <div class="plan-header" @click="togglePlan(index)">
+            <h3>{{ plan.nombre }} <span style="color:#666; font-size:15px; font-weight:500;">- ${{ plan.precio }}</span></h3>
+            <span>{{ expandedPlan === index ? '▲ Ocultar' : '▼ Editar' }}</span>
+          </div>
+
+          <div v-if="expandedPlan === index" class="plan-body" style="margin-top: 20px; border-top:1px solid #eee; padding-top:20px;">
+            <div class="field"><label>ID Interno (sin espacios)</label><input type="text" v-model="plan.id"></div>
+            <div class="field"><label>Nombre del Plan</label><input type="text" v-model="plan.nombre"></div>
+            <div class="field"><label>Precio Mensual ($)</label><input type="number" v-model="plan.precio"></div>
+            <div class="field">
+              <label>Tecnología</label>
+              <select v-model="plan.tipo">
+                <option value="fibra">Fibra Óptica</option>
+                <option value="inalambrica">Inalámbrica</option>
+              </select>
+            </div>
+            <div class="field"><label>Costo de Instalación</label><input type="text" v-model="plan.instalacion"></div>
+            <div class="field"><label>Duración de Promo (ej: 12 meses)</label><input type="text" v-model="plan.promo_duracion"></div>
+            
+            <div class="checkbox-field">
+              <input type="checkbox" :id="'destacado'+index" v-model="plan.destacado">
+              <label :for="'destacado'+index" style="margin:0;">Destacar (Borde Rojo)</label>
+            </div>
+            <div class="checkbox-field">
+              <input type="checkbox" :id="'futbol'+index" v-model="plan.pack_futbol">
+              <label :for="'futbol'+index" style="margin:0;">Incluye Pack Fútbol Automático</label>
+            </div>
+
+            <div class="field full-width">
+              <label>Nota Legal / Condiciones de Promoción</label>
+              <textarea v-model="plan.nota" rows="3"></textarea>
+            </div>
+
+            <div class="field full-width">
+              <label>Beneficios / Características</label>
+              <div v-for="(bene, bIdx) in plan.beneficios" :key="bIdx" class="benefit-row">
+                <input type="text" v-model="plan.beneficios[bIdx]">
+                <button class="btn btn-danger btn-small" @click="removeBenefit(plan, bIdx)" title="Quitar beneficio">✕</button>
+              </div>
+              <button class="btn btn-secondary btn-small" style="margin-top: 10px;" @click="addBenefit(plan)">+ Añadir Beneficio</button>
+            </div>
+
+            <div class="full-width" style="text-align: right; border-top: 1px solid #ccc; padding-top: 15px; margin-top: 10px;">
+              <button class="btn btn-danger btn-small" @click="removePlan(index)">🗑 Eliminar este Plan por completo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Acciones Final -->
+      <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+        <a href="frontend/editor.html" target="_blank" style="color: var(--blue); font-weight:600; text-decoration: none;">🗺️ Abrir Mapa de Cobertura</a>
+        <button class="btn" @click="saveData" :disabled="isSaving">{{ isSaving ? 'Guardando en la nube...' : '💾 Guardar Todos los Cambios' }}</button>
+      </div>
+      
+      <div v-if="saveMessage" class="msg" :class="saveStatus" style="display:block;">{{ saveMessage }}</div>
+    </div>
   </div>
 
   <script>
-    const REPO_OWNER = 'florcolazo';
-    const REPO_NAME = 'isair-web';
-    const FILE_PATH = 'precios.json';
-    const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+    const { createApp, ref, reactive } = Vue;
 
-    // =========================================================
-    // PEGA AQUÍ EL TOKEN ENCRIPTADO (GENERADO CON generar_clave.html)
-    // =========================================================
-    const ENCRYPTED_TOKEN = 'U2FsdGVkX1/tL4xtOrK8pPzkqyZHvj6/lassCu9NMx6ZgvhpXPNPrllvbKAwk7MtrZCWjUcYs3yVyoHHv5dv8F3ztAl6u3FxyHgojnGqWc4fU8VY6TEkxcX741D/7ZaQ8rkDlWo0tjvToyUb1f0Trg==';
+    createApp({
+      setup() {
+        const isAuthenticated = ref(false);
+        const username = ref('');
+        const password = ref('');
+        const isLoading = ref(false);
+        const authError = ref('');
+        const isSaving = ref(false);
+        const saveMessage = ref('');
+        const saveStatus = ref('');
+        const activeTab = ref('sitio');
+        const expandedPlan = ref(null);
 
-    let currentSha = '';
-    let decryptedToken = '';
+        const REPO_OWNER = 'florcolazo';
+        const REPO_NAME = 'isair-web';
+        const FILE_PATH = 'data/planes.json';
+        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+        
+        // Token encriptado
+        const ENCRYPTED_TOKEN = 'U2FsdGVkX1/tL4xtOrK8pPzkqyZHvj6/lassCu9NMx6ZgvhpXPNPrllvbKAwk7MtrZCWjUcYs3yVyoHHv5dv8F3ztAl6u3FxyHgojnGqWc4fU8VY6TEkxcX741D/7ZaQ8rkDlWo0tjvToyUb1f0Trg==';
+        
+        let currentSha = '';
+        let decryptedToken = '';
+        const data = reactive({ sitio: {}, planes: [] });
 
-    function b64DecodeUnicode(str) {
-      return decodeURIComponent(atob(str).split('').map(function (c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-    }
-
-    function b64EncodeUnicode(str) {
-      return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-        function toSolidBytes(match, p1) {
-          return String.fromCharCode('0x' + p1);
-        }));
-    }
-
-    async function loadPrices() {
-      const pwd = document.getElementById('clientPassword').value;
-      const errorBox = document.getElementById('authErrorMsg');
-      if (!pwd) return;
-
-      errorBox.style.display = 'none';
-      const btn = document.getElementById('btnLoad');
-      btn.textContent = 'Verificando...';
-      btn.disabled = true;
-
-      try {
-        // Attempt to decrypt token
-        const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TOKEN, pwd);
-        const originalText = bytes.toString(CryptoJS.enc.Utf8).trim();
-
-        if (!originalText || (!originalText.startsWith('ghp_') && !originalText.startsWith('github_pat_'))) {
-          throw new Error('Clave incorrecta');
+        function b64DecodeUnicode(str) {
+          return decodeURIComponent(atob(str).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
         }
 
-        decryptedToken = originalText;
+        function b64EncodeUnicode(str) {
+          return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+              return String.fromCharCode('0x' + p1);
+            }));
+        }
 
-        const response = await fetch(API_URL, {
-          headers: {
-            'Authorization': `Bearer ${decryptedToken}`,
-            'Accept': 'application/vnd.github.v3+json'
+        async function login() {
+          if (!username.value || !password.value) {
+            authError.value = 'Ingresá tu usuario y contraseña';
+            return;
           }
-        });
+          
+          if (username.value.trim().toLowerCase() !== 'admin') {
+             authError.value = 'Usuario o contraseña incorrecta';
+             return;
+          }
 
-        if (!response.ok) throw new Error('Error al conectar con la base de datos (Token vencido o sin permisos).');
+          authError.value = '';
+          isLoading.value = true;
 
-        const data = await response.json();
-        currentSha = data.sha;
+          try {
+            const bytes = CryptoJS.AES.decrypt(ENCRYPTED_TOKEN, password.value);
+            const originalText = bytes.toString(CryptoJS.enc.Utf8).trim();
 
-        const content = JSON.parse(b64DecodeUnicode(data.content));
+            if (!originalText || (!originalText.startsWith('ghp_') && !originalText.startsWith('github_pat_'))) {
+              throw new Error('Contraseña incorrecta');
+            }
 
-        document.getElementById('fibra_300').value = content.fibra_300 || '';
-        document.getElementById('fibra_istv_move').value = content.fibra_istv_move || '';
-        document.getElementById('fibra_istv_full').value = content.fibra_istv_full || '';
-        document.getElementById('fibra_iscam').value = content.fibra_iscam || '';
-        document.getElementById('inalambrica_15').value = content.inalambrica_15 || '';
+            decryptedToken = originalText;
+            const response = await fetch(API_URL, {
+              headers: {
+                'Authorization': `Bearer ${decryptedToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+              }
+            });
 
-        document.getElementById('authSection').style.display = 'none';
-        document.getElementById('priceForm').style.display = 'block';
+            if (!response.ok) throw new Error('Error al descargar los datos. Verificá tu conexión.');
 
-      } catch (err) {
-        if (err.message === 'Clave incorrecta') {
-          errorBox.textContent = 'Contraseña incorrecta.';
-        } else {
-          errorBox.textContent = err.message;
+            const resData = await response.json();
+            currentSha = resData.sha;
+            
+            const content = JSON.parse(b64DecodeUnicode(resData.content));
+            Object.assign(data, content);
+            
+            isAuthenticated.value = true;
+          } catch (err) {
+            authError.value = err.message;
+          } finally {
+            isLoading.value = false;
+          }
         }
-        errorBox.style.display = 'block';
-      } finally {
-        btn.textContent = 'Entrar al panel';
-        btn.disabled = false;
+
+        async function saveData() {
+          isSaving.value = true;
+          saveMessage.value = '';
+          
+          // Formatear precios a números para mantener compatibilidad
+          data.planes.forEach(p => {
+             if (typeof p.precio === 'string') p.precio = parseInt(p.precio, 10);
+          });
+
+          const jsonStr = JSON.stringify(data, null, 2);
+          const encodedContent = b64EncodeUnicode(jsonStr);
+
+          try {
+            const response = await fetch(API_URL, {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${decryptedToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                message: 'Actualizar configuración general y planes vía Panel Simple',
+                content: encodedContent,
+                sha: currentSha
+              })
+            });
+
+            if (!response.ok) throw new Error('Error al guardar en el servidor.');
+
+            const resData = await response.json();
+            currentSha = resData.content.sha;
+
+            saveMessage.value = '¡Guardado con éxito! Los cambios se verán en tu sitio web en unos minutos.';
+            saveStatus.value = 'success';
+          } catch (err) {
+            saveMessage.value = err.message;
+            saveStatus.value = 'error';
+          } finally {
+            isSaving.value = false;
+            // Limpiar mensaje después de 6 segundos
+            setTimeout(() => { saveMessage.value = '' }, 6000);
+          }
+        }
+
+        function togglePlan(index) {
+          expandedPlan.value = expandedPlan.value === index ? null : index;
+        }
+
+        function addPlan() {
+          data.planes.unshift({
+            id: 'nuevo_plan_' + Math.floor(Math.random() * 1000),
+            nombre: 'Nuevo Plan',
+            precio: 15000,
+            tipo: 'fibra',
+            instalacion: 'Sin costo',
+            promo_duracion: '12 meses',
+            destacado: false,
+            pack_futbol: false,
+            nota: 'Promoción válida para nuevas contrataciones.',
+            beneficios: ['Beneficio 1']
+          });
+          expandedPlan.value = 0; // Abrir el primero (recién agregado)
+        }
+
+        function removePlan(index) {
+          if (confirm('¿Seguro que querés eliminar este plan permanentemente?')) {
+            data.planes.splice(index, 1);
+            if (expandedPlan.value === index) expandedPlan.value = null;
+          }
+        }
+
+        function addBenefit(plan) {
+          plan.beneficios.push('');
+        }
+
+        function removeBenefit(plan, bIdx) {
+          plan.beneficios.splice(bIdx, 1);
+        }
+
+        return {
+          isAuthenticated, username, password, isLoading, authError, login,
+          data, activeTab, expandedPlan, togglePlan,
+          addPlan, removePlan, addBenefit, removeBenefit,
+          saveData, isSaving, saveMessage, saveStatus
+        }
       }
-    }
-
-    async function savePrices(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnSave');
-      const msg = document.getElementById('statusMsg');
-
-      btn.textContent = 'Guardando...';
-      btn.disabled = true;
-      msg.className = 'msg';
-      msg.textContent = '';
-
-      const newPrices = {
-        fibra_300: parseInt(document.getElementById('fibra_300').value, 10),
-        fibra_istv_move: parseInt(document.getElementById('fibra_istv_move').value, 10),
-        fibra_istv_full: parseInt(document.getElementById('fibra_istv_full').value, 10),
-        fibra_iscam: parseInt(document.getElementById('fibra_iscam').value, 10),
-        inalambrica_15: parseInt(document.getElementById('inalambrica_15').value, 10)
-      };
-
-      const jsonStr = JSON.stringify(newPrices, null, 2);
-      const encodedContent = b64EncodeUnicode(jsonStr);
-
-      try {
-        const response = await fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${decryptedToken}`,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: 'Actualizar precios desde Panel Admin',
-            content: encodedContent,
-            sha: currentSha
-          })
-        });
-
-        if (!response.ok) throw new Error('Error al guardar. Avisá al desarrollador.');
-
-        const data = await response.json();
-        currentSha = data.content.sha;
-
-        msg.textContent = '¡Precios guardados con éxito! Los cambios tardarán 2 minutos en reflejarse en la página principal.';
-        msg.className = 'msg success';
-
-      } catch (err) {
-        msg.textContent = err.message;
-        msg.className = 'msg error';
-      } finally {
-        btn.textContent = 'Guardar Precios';
-        btn.disabled = false;
-      }
-    }
+    }).mount('#app');
   </script>
 </body>
-
 </html>
