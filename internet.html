@@ -289,10 +289,10 @@
       .then(res => res.json())
       .then(data => {
         // Rellenar marcas y contactos
-        document.getElementById('brandName').textContent = data.sitio.nombre_marca;
-        document.getElementById('brandSub').textContent = "AGENCIA " + data.sitio.ciudad.toUpperCase();
-        document.getElementById('footerBrand').textContent = data.sitio.nombre_marca;
-        document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
+        if (document.getElementById('brandName')) document.getElementById('brandName').textContent = data.sitio.nombre_marca;
+        if (document.getElementById('brandSub')) document.getElementById('brandSub').textContent = "AGENCIA " + data.sitio.ciudad.toUpperCase();
+        if (document.getElementById('footerBrand')) document.getElementById('footerBrand').textContent = data.sitio.nombre_marca;
+        if (document.getElementById('footerAddress')) document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
 
         const footerHorarioOficina = document.getElementById('footerHorarioOficina');
         if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
@@ -303,12 +303,16 @@
         const footerTelefonos = document.getElementById('footerTelefonos');
         if (footerTelefonos) footerTelefonos.textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";
 
-        document.getElementById('footerPhone').textContent = "+54 9 " + data.sitio.whatsapp_formato;
-        document.getElementById('footerEmail').textContent = data.sitio.email;
-        document.getElementById('instagramLink').href = "https://www.instagram.com/" + data.sitio.instagram;
-        document.getElementById('instagramUser').textContent = data.sitio.instagram;
-        document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
-        document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
+        if (document.getElementById('footerPhone')) document.getElementById('footerPhone').textContent = "+54 9 " + data.sitio.whatsapp_formato;
+        if (document.getElementById('footerEmail')) document.getElementById('footerEmail').textContent = data.sitio.email;
+        if (document.getElementById('instagramLink')) document.getElementById('instagramLink').href = "https://www.instagram.com/" + data.sitio.instagram;
+        if (document.getElementById('instagramUser')) document.getElementById('instagramUser').textContent = data.sitio.instagram;
+        
+        if (document.getElementById('socialIg')) document.getElementById('socialIg').href = "https://www.instagram.com/" + data.sitio.instagram;
+        if (document.getElementById('socialWa')) document.getElementById('socialWa').href = "https://wa.me/" + data.sitio.whatsapp;
+
+        if (document.getElementById('footerCopyBrand')) document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
+        if (document.getElementById('floatWaLink')) document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
 
         const internetPlanes = data.planes.filter(p => {
           const nameLower = p.nombre.toLowerCase();
