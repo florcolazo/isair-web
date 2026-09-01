@@ -378,6 +378,7 @@
           descripcion: document.getElementById('zonaDescripcion').value.trim(),
           tipo: tipoSeleccionado,
           geojson: JSON.stringify(geometriaActual),
+          agencia: 'sanjose',
           creadoEl: new Date().toISOString(),
         });
         mostrarStatus('✅ Zona publicada automáticamente.', 'ok');
@@ -425,7 +426,15 @@
     function agregarCapaEnMapa(docSnap) {
       const z = docSnap.data();
       if (!z.geojson) return;
+      if (z.agencia && z.agencia !== 'sanjose') return;
       const geojson = typeof z.geojson === 'string' ? JSON.parse(z.geojson) : z.geojson;
+      
+      // Si las coordenadas pertenecen a Concepción del Uruguay (lat <-32.4), ignorar polígonos viejos
+      try {
+        const firstCoord = geojson.geometry.coordinates[0][0];
+        if (firstCoord && firstCoord[1] < -32.35) return;
+      } catch(e){}
+
       const color = COLORES[z.tipo] || '#0072ff';
       const layer = L.geoJSON(geojson, {
         style: { color, fillColor: color, fillOpacity: .3, weight: 2.5 }

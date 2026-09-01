@@ -590,10 +590,17 @@
         snapshot.forEach((doc) => {
           const zona = doc.data();
           if (!zona.geojson) return;
-
-          const color = COLORES[zona.tipo] || '#0072ff';
+          if (zona.agencia && zona.agencia !== 'sanjose') return;
 
           const geojson = typeof zona.geojson === 'string' ? JSON.parse(zona.geojson) : zona.geojson;
+
+          // Ignorar zonas viejas guardadas en Concepción del Uruguay (latitud menor a -32.35)
+          try {
+            const coords = geojson.geometry ? geojson.geometry.coordinates[0][0] : null;
+            if (coords && coords[1] < -32.35) return;
+          } catch(e) {}
+
+          const color = COLORES[zona.tipo] || '#0072ff';
           const layer = L.geoJSON(geojson, {
             style: {
               color:       color,
