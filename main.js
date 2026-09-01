@@ -76,12 +76,8 @@ fetch('data/planes.json?v=' + new Date().getTime())
       }
     }
 
-    // 2. Renderizar planes en pantalla (solo Internet)
-    const pureInternetPlanes = data.planes.filter(p => {
-      const nameLower = p.nombre.toLowerCase();
-      return !nameLower.includes('+') && !nameLower.includes('tv') && !nameLower.includes('cam') && !nameLower.includes('mesh') && !nameLower.includes('move') && !nameLower.includes('full');
-    });
-    renderPlanes(pureInternetPlanes);
+    // 2. Renderizar planes en pantalla
+    renderPlanes(data.planes);
   })
   .catch(err => console.error('Error al cargar configuración y planes:', err));
 

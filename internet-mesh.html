@@ -561,6 +561,10 @@
         if (document.getElementById('instagramLink')) document.getElementById('instagramLink').href = "https://www.instagram.com/" + data.sitio.instagram;
         if (document.getElementById('instagramUser')) document.getElementById('instagramUser').textContent = data.sitio.instagram;
         if (document.getElementById('footerCopyBrand')) document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
+        
+        if (document.getElementById('socialIg')) document.getElementById('socialIg').href = "https://www.instagram.com/" + (data.sitio.instagram || "");
+        if (document.getElementById('socialWa')) document.getElementById('socialWa').href = "https://wa.me/" + (data.sitio.whatsapp || "");
+
         if (document.getElementById('floatWaLink')) document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
 
         
