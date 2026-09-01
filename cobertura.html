@@ -594,7 +594,7 @@
 
           const geojson = typeof zona.geojson === 'string' ? JSON.parse(zona.geojson) : zona.geojson;
 
-          // Ignorar zonas pertenecientes a Concepción (latitud menor a -32.35)
+          // Ignorar zonas pertenecientes a Concepción (latitud menor a -32.38)
           try {
             let lat = null;
             if (geojson.geometry && geojson.geometry.coordinates) {
@@ -604,7 +604,7 @@
               const c = geojson.coordinates;
               lat = Array.isArray(c[0][0]) ? (Array.isArray(c[0][0][0]) ? c[0][0][0][1] : c[0][0][1]) : c[0][1];
             }
-            if (lat !== null && lat < -32.35) return;
+            if (lat !== null && parseFloat(lat) < -32.38) return;
           } catch(e) {}
           const color = COLORES[zona.tipo] || '#0072ff';
           const layer = L.geoJSON(geojson, {
