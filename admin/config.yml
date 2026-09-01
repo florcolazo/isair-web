@@ -4,8 +4,8 @@ backend:
   branch: main
 
 logo_url: "/images/logo.png"
-site_url: "https://iscdelu.com.ar"
-display_url: "https://iscdelu.com.ar" 
+site_url: "https://issanjose.com.ar"
+display_url: "https://issanjose.com.ar" 
 
 local_backend: true
 locale: es
