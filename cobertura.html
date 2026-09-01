@@ -582,7 +582,7 @@
       const app = initializeApp(firebaseConfig);
       const db  = getFirestore(app);
 
-      onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
+      onSnapshot(collection(db, 'zonas_sanjose'), (snapshot) => {
         // Limpiar capas anteriores
         zonasLayers.forEach(l => map.removeLayer(l));
         zonasLayers = [];

@@ -349,7 +349,7 @@
       db = getFirestore(app);
 
       // Escuchar cambios en tiempo real
-      onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
+      onSnapshot(collection(db, 'zonas_sanjose'), (snapshot) => {
         Object.values(zonasLayers).forEach(l => map.removeLayer(l));
         zonasLayers = {};
         renderLista(snapshot.docs);
@@ -373,7 +373,7 @@
       btn.innerHTML = '<span>⏳</span> Guardando...';
 
       try {
-        await addDoc(collection(db, 'zonas_cobertura'), {
+        await addDoc(collection(db, 'zonas_sanjose'), {
           nombre,
           descripcion: document.getElementById('zonaDescripcion').value.trim(),
           tipo: tipoSeleccionado,
@@ -397,7 +397,7 @@
     window.eliminarZona = async function(id) {
       if (!confirm('¿Eliminar esta zona del mapa público?')) return;
       try {
-        await deleteDoc(doc(db, 'zonas_cobertura', id));
+        await deleteDoc(doc(db, 'zonas_sanjose', id));
         mostrarStatus('Zona eliminada del mapa.', 'ok');
       } catch (err) {
         mostrarStatus('Error: ' + err.message, 'err');
