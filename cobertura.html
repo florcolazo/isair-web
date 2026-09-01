@@ -546,7 +546,7 @@
     const FIREBASE_CONFIGURADO = firebaseConfig.apiKey !== "TU_API_KEY";
 
     // San José, Entre Ríos
-    const CDU_CENTER = [-32.4833, -58.2333];
+    const SAN_JOSE_CENTER = [-32.2074, -58.2045];
     const CDU_ZOOM   = 13;
 
     // Colores por tipo de servicio
@@ -562,7 +562,7 @@
     document.getElementById('map').style.display = 'block';
 
     const map = L.map('map', {
-      center: CDU_CENTER,
+      center: SAN_JOSE_CENTER,
       zoom: CDU_ZOOM,
       zoomControl: true,
     });
