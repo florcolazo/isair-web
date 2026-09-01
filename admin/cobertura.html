@@ -354,6 +354,8 @@
         zonasLayers = {};
         renderLista(snapshot.docs);
         snapshot.docs.forEach(d => agregarCapaEnMapa(d));
+      }, (error) => {
+        console.warn("Firestore snapshot error:", error);
       });
     } else {
       document.getElementById('firebaseWarning').style.display = 'block';

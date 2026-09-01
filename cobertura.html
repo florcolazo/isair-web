@@ -626,6 +626,8 @@
 
           zonasLayers.push(layer);
         });
+      }, (error) => {
+        console.warn("Firestore snapshot error:", error);
       });
     } else {
       // Modo demo: muestra una zona de ejemplo centrada en CdU
