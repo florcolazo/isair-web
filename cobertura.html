@@ -582,7 +582,7 @@
       const app = initializeApp(firebaseConfig);
       const db  = getFirestore(app);
 
-      onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
+      onSnapshot(collection(db, 'zonas_cobertura_sanjose'), (snapshot) => {
         // Limpiar capas anteriores
         zonasLayers.forEach(l => map.removeLayer(l));
         zonasLayers = [];
@@ -636,11 +636,11 @@
         geometry: {
           type: "Polygon",
           coordinates: [[
-            [-58.2450, -32.4780],
-            [-58.2250, -32.4780],
-            [-58.2250, -32.4900],
-            [-58.2450, -32.4900],
-            [-58.2450, -32.4780],
+            [-58.2150, -32.2030],
+            [-58.1950, -32.2030],
+            [-58.1950, -32.2150],
+            [-58.2150, -32.2150],
+            [-58.2150, -32.2030],
           ]]
         }
       };
