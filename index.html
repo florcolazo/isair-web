@@ -17,6 +17,140 @@
   <link rel="stylesheet" href="styles.css?v=1.0.1">
   <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <style>
+    /* ── Verificador de cobertura (home) ── */
+    .coverage-check-hero {
+      background: linear-gradient(135deg, #051b44 0%, #0072ff 100%);
+      padding: 44px 24px 40px;
+      text-align: center;
+      color: #fff;
+    }
+    .coverage-check-hero .eyebrow {
+      color: rgba(255,255,255,.7);
+      font-size: 12px;
+      letter-spacing: .18em;
+    }
+    .coverage-check-hero h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(24px, 3.6vw, 38px);
+      font-weight: 800;
+      margin: 10px 0 10px;
+      color: #fff;
+    }
+    .coverage-check-hero p.sub {
+      font-size: 15.5px;
+      opacity: .85;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .search-bar {
+      max-width: 580px;
+      margin: 28px auto 0;
+      display: flex;
+      gap: 10px;
+    }
+    .search-bar input {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 999px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.2);
+      outline: none;
+    }
+    .search-bar button {
+      padding: 14px 24px;
+      border-radius: 999px;
+      border: none;
+      background: #e62a22;
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(230,42,34,.4);
+      transition: background .2s, transform .15s;
+      white-space: nowrap;
+    }
+    .search-bar button:hover { background: #c41f18; transform: translateY(-1px); }
+    .search-bar button:disabled { opacity: .7; cursor: default; transform: none; }
+    .suggestions-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 140px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      margin: 8px 0 0 0;
+      padding: 0;
+      list-style: none;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+      text-align: left;
+    }
+    .suggestions-list li {
+      padding: 12px 18px;
+      color: #333;
+      font-size: 14.5px;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f2f5;
+    }
+    .suggestions-list li:last-child { border-bottom: none; }
+    .suggestions-list li:hover { background: #f4f6fa; color: #0072ff; }
+    .coverage-result {
+      display: none;
+      max-width: 700px;
+      margin: 24px auto 0;
+      text-align: left;
+    }
+    .coverage-result.visible { display: block; }
+    .result-card {
+      border-radius: 16px;
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.15);
+    }
+    .result-card.tiene {
+      background: linear-gradient(135deg, #d4edda, #f0fff4);
+      border: 1.5px solid #28a745;
+    }
+    .result-card.no-tiene {
+      background: linear-gradient(135deg, #fff6da, #fffdf0);
+      border: 1.5px solid #e0a800;
+    }
+    .result-icon { font-size: 36px; flex-shrink: 0; }
+    .result-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+    .result-card p { font-size: 14px; color: #444; line-height: 1.5; }
+    .result-card .result-cta {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13.5px;
+      text-decoration: none;
+      color: #fff;
+      background: #0072ff;
+    }
+    @media (max-width: 600px) {
+      .search-bar { flex-direction: column; }
+      .suggestions-list { right: 0; }
+    }
+  </style>
 </head>
 
 <body>
@@ -164,6 +298,29 @@
     <a href="contacto.html" id="promoBannerBtn" style="display:block; width:100%; max-width:1580px; margin: 0 auto; text-decoration:none;">
       <img src="banner-promo.png" id="promoBannerImg" alt="Promoción Fútbol" style="width:100%; max-height:700px; object-fit:cover; display:block;">
     </a>
+
+    <!-- Verificador de cobertura -->
+    <section class="coverage-check-hero">
+      <p class="eyebrow">📍 Cobertura</p>
+      <h2>¿Tenemos Fibra Óptica en tu calle?</h2>
+      <p class="sub">Ingresá tu dirección y enterate al instante si tenés fibra disponible en San José.</p>
+
+      <div class="search-bar" style="position:relative;">
+        <input type="text" id="homeSearchInput" placeholder="Ej: San Martín 450" autocomplete="off">
+        <ul id="homeSuggestionsList" class="suggestions-list"></ul>
+        <button id="homeSearchBtn">Verificar cobertura</button>
+      </div>
+
+      <div class="coverage-result" id="homeCoverageResult">
+        <div class="result-card" id="homeResultCard">
+          <div class="result-icon" id="homeResultIcon">✅</div>
+          <div>
+            <h3 id="homeResultTitle"></h3>
+            <p id="homeResultText"></p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <div class="wrap hero-intro">
       <p class="eyebrow"></p>
@@ -371,6 +528,216 @@
 
   <!-- Scripts -->
   <script src="main.js"></script>
+
+  <!-- Verificador de cobertura (home) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGHZLbAnFb4SpX9XqSEmIyLN0B7703U4A",
+      authDomain: "agencia-sanjose.firebaseapp.com",
+      projectId: "agencia-sanjose",
+      storageBucket: "agencia-sanjose.firebasestorage.app",
+      messagingSenderId: "522690203802",
+      appId: "1:522690203802:web:5ffecbd5312c683b700f23",
+      measurementId: "G-FZQDMFKMDT"
+    };
+
+    // Viewbox de búsqueda: San José, Entre Ríos
+    const VIEWBOX = '-58.31,-32.10,-58.10,-32.31';
+    // Frontera de latitud que separa San José de otras agencias en la misma colección
+    const LAT_LIMITE_SAN_JOSE = -32.38;
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    let zonasFibra = [];
+    let zonasCargadas = false;
+
+    async function cargarZonas() {
+      try {
+        const snap = await getDocs(collection(db, 'zonas_cobertura'));
+        zonasFibra = snap.docs
+          .map(d => d.data())
+          .filter(z => z.tipo === 'fibra' && z.geojson)
+          .map(z => {
+            try { return typeof z.geojson === 'string' ? JSON.parse(z.geojson) : z.geojson; }
+            catch (e) { return null; }
+          })
+          .filter(gj => gj)
+          .map(gj => gj.geometry || gj)
+          .filter(geom => {
+            const lat = primerPuntoLat(geom);
+            return lat === null || lat >= LAT_LIMITE_SAN_JOSE;
+          });
+        zonasCargadas = true;
+      } catch (e) {
+        console.warn('No se pudieron cargar las zonas de cobertura:', e);
+        zonasCargadas = true; // seguir igual, se tratará como sin cobertura de fibra confirmada
+      }
+    }
+    cargarZonas();
+
+    function primerPuntoLat(geometry) {
+      let c = geometry?.coordinates;
+      if (!c) return null;
+      while (Array.isArray(c) && Array.isArray(c[0])) c = c[0];
+      return Array.isArray(c) ? c[1] : null;
+    }
+
+    // Ray casting: ¿el punto [lon,lat] está dentro del anillo?
+    function puntoEnAnillo(punto, anillo) {
+      const [x, y] = punto;
+      let dentro = false;
+      for (let i = 0, j = anillo.length - 1; i < anillo.length; j = i++) {
+        const [xi, yi] = anillo[i];
+        const [xj, yj] = anillo[j];
+        const cruza = ((yi > y) !== (yj > y)) &&
+          (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (cruza) dentro = !dentro;
+      }
+      return dentro;
+    }
+
+    function puntoEnPoligono(punto, coordsPoligono) {
+      if (!puntoEnAnillo(punto, coordsPoligono[0])) return false;
+      for (let i = 1; i < coordsPoligono.length; i++) {
+        if (puntoEnAnillo(punto, coordsPoligono[i])) return false; // agujero
+      }
+      return true;
+    }
+
+    function tieneCoberturaFibra(lat, lon) {
+      const punto = [lon, lat];
+      return zonasFibra.some(geom => {
+        if (geom.type === 'Polygon') return puntoEnPoligono(punto, geom.coordinates);
+        if (geom.type === 'MultiPolygon') return geom.coordinates.some(p => puntoEnPoligono(punto, p));
+        return false;
+      });
+    }
+
+    // ── UI ──────────────────────────────────────────────
+    const input       = document.getElementById('homeSearchInput');
+    const suggestions  = document.getElementById('homeSuggestionsList');
+    const btn          = document.getElementById('homeSearchBtn');
+    const resultBox    = document.getElementById('homeCoverageResult');
+    const resultCard   = document.getElementById('homeResultCard');
+    const resultIcon   = document.getElementById('homeResultIcon');
+    const resultTitle  = document.getElementById('homeResultTitle');
+    const resultText   = document.getElementById('homeResultText');
+
+    let debounceTimer;
+
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const val = input.value.trim();
+      if (val.length < 3) {
+        suggestions.style.display = 'none';
+        return;
+      }
+      debounceTimer = setTimeout(async () => {
+        try {
+          const q = encodeURIComponent(val + ', San José');
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${q}&viewbox=${VIEWBOX}&bounded=1&limit=5`);
+          const data = await res.json();
+          suggestions.innerHTML = '';
+          if (data.length > 0) {
+            data.forEach(item => {
+              const li = document.createElement('li');
+              const fullAddress = item.display_name.split(/,\s*San José/i)[0];
+              li.textContent = fullAddress;
+              li.addEventListener('click', () => {
+                input.value = fullAddress;
+                suggestions.style.display = 'none';
+                verificar(item.lat, item.lon);
+              });
+              suggestions.appendChild(li);
+            });
+            suggestions.style.display = 'block';
+          } else {
+            suggestions.style.display = 'none';
+          }
+        } catch (e) {
+          console.error('Error cargando sugerencias:', e);
+        }
+      }, 400);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#homeSearchInput') && !e.target.closest('#homeSuggestionsList')) {
+        suggestions.style.display = 'none';
+      }
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') verificar();
+    });
+    btn.addEventListener('click', () => verificar());
+
+    async function verificar(preLat = null, preLon = null) {
+      const direccion = input.value.trim();
+      if (!direccion) return;
+
+      suggestions.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Buscando...';
+
+      try {
+        let lat, lon;
+        if (preLat && preLon) {
+          lat = parseFloat(preLat);
+          lon = parseFloat(preLon);
+        } else {
+          const q = encodeURIComponent(direccion + ', San José');
+          const res  = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${q}&viewbox=${VIEWBOX}&bounded=1&limit=1`);
+          const data = await res.json();
+          if (!data.length) {
+            mostrarResultado(false, 'No pudimos ubicar esa dirección', 'Probá con el nombre de calle y altura, o consultanos directamente por WhatsApp.', null);
+            return;
+          }
+          lat = parseFloat(data[0].lat);
+          lon = parseFloat(data[0].lon);
+        }
+
+        // Esperar a que terminen de cargar las zonas si todavía no lo hicieron
+        let intentos = 0;
+        while (!zonasCargadas && intentos < 40) {
+          await new Promise(r => setTimeout(r, 100));
+          intentos++;
+        }
+
+        if (tieneCoberturaFibra(lat, lon)) {
+          mostrarResultado(true, '¡Tenés Fibra Óptica disponible!', 'Tu dirección está dentro de nuestra zona de cobertura de fibra. Mirá los planes disponibles para tu domicilio.', '#fibra', 'Ver planes de Fibra ⚡');
+        } else {
+          mostrarResultado(false, 'Por ahora no llega la fibra a tu calle', 'Nuestro servicio inalámbrico está disponible en toda el área de San José, sin espera de obra.', '#inalambrica', 'Ver planes Inalámbricos');
+        }
+      } catch (e) {
+        mostrarResultado(false, 'Error de conexión', 'No se pudo verificar. Intentá de nuevo o escribinos por WhatsApp.', null);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Verificar cobertura';
+      }
+    }
+
+    function mostrarResultado(tiene, titulo, texto, ctaHref, ctaTexto) {
+      resultIcon.textContent  = tiene ? '✅' : '📶';
+      resultTitle.textContent = titulo;
+      resultText.innerHTML    = texto + (ctaHref ? `<br><a class="result-cta" href="${ctaHref}">${ctaTexto}</a>` : '');
+      resultCard.className = 'result-card ' + (tiene ? 'tiene' : 'no-tiene');
+      resultBox.classList.add('visible');
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      if (ctaHref) {
+        const cta = resultText.querySelector('.result-cta');
+        cta.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = document.querySelector(ctaHref);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+    }
+  </script>
 
 </body>
 
