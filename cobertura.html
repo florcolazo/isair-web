@@ -685,27 +685,33 @@
         return;
       }
       
+      // Número de puerta que escribió el usuario, para mostrarlo aunque OSM no lo tenga cargado
+      const numeroTecleado = (val.match(/\d+/) || [])[0] || '';
+
       debounceTimer = setTimeout(async () => {
         try {
           const q = encodeURIComponent(val + ', San José');
           // Limitar sugerencias a la zona de San José
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${q}&viewbox=-58.31,-32.10,-58.10,-32.31&bounded=1&limit=5`);
+          const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${q}&viewbox=-58.31,-32.10,-58.10,-32.31&bounded=1&limit=5`);
           const data = await res.json();
-          
+
           suggestionsList.innerHTML = '';
           if (data.length > 0) {
             data.forEach(item => {
+              const tieneAltura = !!item.address?.house_number;
               const li = document.createElement('li');
               // Extract the street and number by removing everything from "San José" onwards
               const fullAddress = item.display_name.split(/,\s*San José/i)[0];
-              li.textContent = fullAddress;
-              
+              li.textContent = tieneAltura
+                ? fullAddress
+                : (numeroTecleado ? `${fullAddress} ${numeroTecleado} (altura aproximada)` : `${fullAddress} (altura aproximada)`);
+
               li.addEventListener('click', () => {
                 searchInput.value = fullAddress; // Actualiza el valor del campo
                 suggestionsList.style.display = 'none';
-                buscarDireccion(item.lat, item.lon, item.display_name); // Ejecuta la búsqueda
+                buscarDireccion(item.lat, item.lon, item.display_name, tieneAltura); // Ejecuta la búsqueda
               });
-              
+
               suggestionsList.appendChild(li);
             });
             suggestionsList.style.display = 'block';
@@ -730,7 +736,7 @@
     });
 
     // ── Buscar dirección ─────────────────────────────────
-    window.buscarDireccion = async function(preLat = null, preLon = null, preName = null) {
+    window.buscarDireccion = async function(preLat = null, preLon = null, preName = null, tieneAltura = null) {
       const input = document.getElementById('searchInput').value.trim();
       if (!input) return;
 
@@ -740,14 +746,15 @@
       suggestionsList.style.display = 'none';
 
       try {
-        let lat, lon;
-        
+        let lat, lon, aproximado;
+
         if (preLat && preLon) {
           lat = parseFloat(preLat);
           lon = parseFloat(preLon);
+          aproximado = tieneAltura === false;
         } else {
           const query = encodeURIComponent(input + ', San José');
-          const res   = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&viewbox=-58.31,-32.10,-58.10,-32.31&bounded=1&limit=1`);
+          const res   = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${query}&viewbox=-58.31,-32.10,-58.10,-32.31&bounded=1&limit=1`);
           const data  = await res.json();
 
           if (!data.length) {
@@ -759,23 +766,28 @@
 
           lat = parseFloat(data[0].lat);
           lon = parseFloat(data[0].lon);
+          aproximado = !data[0].address?.house_number;
         }
 
         // Mover mapa al punto
-        map.setView([lat, lon], 15);
+        map.setView([lat, lon], 16);
 
         // Marcador
         if (searchMarker) map.removeLayer(searchMarker);
         searchMarker = L.marker([lat, lon]).addTo(map)
-          .bindPopup(`<strong>${input}</strong>`).openPopup();
+          .bindPopup(`<strong>${input}</strong>${aproximado ? '<br><small>Ubicación aproximada (a nivel de calle)</small>' : ''}`).openPopup();
+
+        const avisoAltura = aproximado
+          ? '<br><br><small style="color:#8a6d00;">⚠️ No tenemos la altura exacta cargada en el mapa para esta calle, así que la ubicación es aproximada. El resultado de cobertura puede variar en la puerta exacta.</small>'
+          : '';
 
         // Verificar si el punto cae dentro de alguna zona
         const puntoDentro = verificarCobertura(lat, lon);
 
         if (puntoDentro) {
-          mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu dirección está dentro de la zona <strong>${puntoDentro}</strong>.<br><br><a href=\'contacto.html\' class=\'btn btn-red\' style=\'display:inline-block; padding: 10px 20px; font-size: 14px;\'>Consultar disponibilidad</a>`);
+          mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu dirección está dentro de la zona <strong>${puntoDentro}</strong>.${avisoAltura}<br><br><a href=\'contacto.html\' class=\'btn btn-red\' style=\'display:inline-block; padding: 10px 20px; font-size: 14px;\'>Consultar disponibilidad</a>`);
         } else {
-          mostrarResultado(false, 'Verificación manual necesaria', 'No pudimos confirmar la fibra en esa ubicación exacta, pero nuestro servicio inalámbrico cubre toda el área.<br><br><a href=\'contacto.html\' class=\'btn btn-red\' style=\'display:inline-block; padding: 10px 20px; font-size: 14px;\'>Consultar disponibilidad</a>');
+          mostrarResultado(false, 'Verificación manual necesaria', `No pudimos confirmar la fibra en esa ubicación exacta, pero nuestro servicio inalámbrico cubre toda el área.${avisoAltura}<br><br><a href=\'contacto.html\' class=\'btn btn-red\' style=\'display:inline-block; padding: 10px 20px; font-size: 14px;\'>Consultar disponibilidad</a>`);
         }
 
       } catch (e) {
