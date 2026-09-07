@@ -103,9 +103,9 @@ function renderPlanes(planes) {
 
     // Formatear el nombre del plan para combos (ej: Internet 300MB + ISTV Full)
     let planNameHtml = '';
-    if (plan.nombre.includes(' + ')) {
-      const parts = plan.nombre.split(' + ');
-      planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts[1]}`;
+    if (plan.nombre.includes('+')) {
+      const parts = plan.nombre.split('+').map(p => p.trim()).filter(Boolean);
+      planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts.slice(1).join(' + ')}`;
     } else {
       planNameHtml = plan.nombre;
     }
