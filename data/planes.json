@@ -19,20 +19,6 @@
   },
   "planes": [
     {
-      "id": "",
-      "nombre": "",
-      "precio": 15000,
-      "tipo": "fibra",
-      "instalacion": "Sin costo",
-      "promo_duracion": "12 meses",
-      "destacado": false,
-      "pack_futbol": false,
-      "nota": "Promoción válida para nuevas contrataciones.",
-      "beneficios": [
-        "Beneficio 1"
-      ]
-    },
-    {
       "id": "FIBRA + MESH +CAM",
       "nombre": "Fibra Optica + IS Mesh + IS Cam",
       "precio": 38.911,
