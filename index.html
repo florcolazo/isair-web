@@ -617,6 +617,14 @@
       });
     }
 
+    // Arma "Calle Número" a partir de los datos de Nominatim, sin barrio/paraje
+    function direccionLimpia(item, numeroTecleado) {
+      const a = item.address || {};
+      const calle = a.road || a.pedestrian || a.footway || a.residential || item.name || item.display_name.split(',')[0];
+      const numero = a.house_number || numeroTecleado || '';
+      return numero ? `${calle} ${numero}` : calle;
+    }
+
     // ── UI ──────────────────────────────────────────────
     const input       = document.getElementById('homeSearchInput');
     const suggestions  = document.getElementById('homeSuggestionsList');
@@ -636,25 +644,31 @@
         suggestions.style.display = 'none';
         return;
       }
+      const numeroTecleado = (val.match(/\d+/) || [])[0] || '';
+
       debounceTimer = setTimeout(async () => {
         try {
           const q = encodeURIComponent(val + ', San José');
           const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${q}&viewbox=${VIEWBOX}&bounded=1&limit=5`);
           const data = await res.json();
           suggestions.innerHTML = '';
+          const vistos = new Set();
           if (data.length > 0) {
             data.forEach(item => {
+              const direccion = direccionLimpia(item, numeroTecleado);
+              if (vistos.has(direccion)) return; // evitar sugerencias duplicadas
+              vistos.add(direccion);
+
               const li = document.createElement('li');
-              const fullAddress = item.display_name.split(/,\s*San José/i)[0];
-              li.textContent = fullAddress;
+              li.textContent = direccion;
               li.addEventListener('click', () => {
-                input.value = fullAddress;
+                input.value = direccion;
                 suggestions.style.display = 'none';
                 verificar(item.lat, item.lon);
               });
               suggestions.appendChild(li);
             });
-            suggestions.style.display = 'block';
+            suggestions.style.display = vistos.size ? 'block' : 'none';
           } else {
             suggestions.style.display = 'none';
           }
