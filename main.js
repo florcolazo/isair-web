@@ -174,6 +174,9 @@ function renderPlanes(planes) {
 
 /* ---------- VINCULACIÓN DE EVENTOS (Carruseles, selección, fútbol) ---------- */
 function bindEvents() {
+  // 0. Recalcular flechas del carrusel ahora que las tarjetas ya están en el DOM
+  carouselUpdaters.forEach(update => update());
+
   // 1. Selección de Plan ordinario
   document.querySelectorAll('.select-plan').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -293,33 +296,34 @@ if (promoBtn) {
 }
 
 /* ---------- CARRUSEL DE PLANES ---------- */
-const scrollR = document.getElementById('scrollRight');
-const scrollL = document.getElementById('scrollLeft');
+const carouselUpdaters = [];
 
-if (scrollR) {
-  scrollR.addEventListener('click', function () {
-    document.getElementById('plansGrid').scrollBy({ left: 340, behavior: 'smooth' });
-  });
-}
-if (scrollL) {
-  scrollL.addEventListener('click', function () {
-    document.getElementById('plansGrid').scrollBy({ left: -340, behavior: 'smooth' });
-  });
+function setupCarousel(gridId, leftId, rightId) {
+  const grid = document.getElementById(gridId);
+  const leftBtn = document.getElementById(leftId);
+  const rightBtn = document.getElementById(rightId);
+  if (!grid || !leftBtn || !rightBtn) return;
+
+  const TOLERANCIA = 4;
+
+  function update() {
+    const maxScroll = grid.scrollWidth - grid.clientWidth;
+    const hayOverflow = maxScroll > TOLERANCIA;
+    leftBtn.style.display  = (hayOverflow && grid.scrollLeft > TOLERANCIA) ? 'flex' : 'none';
+    rightBtn.style.display = (hayOverflow && grid.scrollLeft < maxScroll - TOLERANCIA) ? 'flex' : 'none';
+  }
+
+  leftBtn.addEventListener('click', () => grid.scrollBy({ left: -340, behavior: 'smooth' }));
+  rightBtn.addEventListener('click', () => grid.scrollBy({ left: 340, behavior: 'smooth' }));
+  grid.addEventListener('scroll', update);
+  window.addEventListener('resize', update);
+
+  update();
+  carouselUpdaters.push(update);
 }
 
-const scrollRInal = document.getElementById('scrollRightInal');
-const scrollLInal = document.getElementById('scrollLeftInal');
-
-if (scrollRInal) {
-  scrollRInal.addEventListener('click', function () {
-    document.getElementById('inalGrid').scrollBy({ left: 340, behavior: 'smooth' });
-  });
-}
-if (scrollLInal) {
-  scrollLInal.addEventListener('click', function () {
-    document.getElementById('inalGrid').scrollBy({ left: -340, behavior: 'smooth' });
-  });
-}
+setupCarousel('plansGrid', 'scrollLeft', 'scrollRight');
+setupCarousel('inalGrid', 'scrollLeftInal', 'scrollRightInal');
 
 /* ---------- HAMBURGER MENU ---------- */
 const hambBtn = document.getElementById('hamburgerBtn');

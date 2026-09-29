@@ -864,6 +864,11 @@ header {
   line-height: 1.5;
 }
 
+/* Empuja el botón de contratación al fondo, alineado entre tarjetas de distinta altura */
+.plan-card .select-plan {
+  margin-top: auto;
+}
+
 /* ---------- FORMULARIO ---------- */
 .form-section {
   padding: 80px 0 100px;
