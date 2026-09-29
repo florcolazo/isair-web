@@ -307,6 +307,20 @@ if (scrollL) {
   });
 }
 
+const scrollRInal = document.getElementById('scrollRightInal');
+const scrollLInal = document.getElementById('scrollLeftInal');
+
+if (scrollRInal) {
+  scrollRInal.addEventListener('click', function () {
+    document.getElementById('inalGrid').scrollBy({ left: 340, behavior: 'smooth' });
+  });
+}
+if (scrollLInal) {
+  scrollLInal.addEventListener('click', function () {
+    document.getElementById('inalGrid').scrollBy({ left: -340, behavior: 'smooth' });
+  });
+}
+
 /* ---------- HAMBURGER MENU ---------- */
 const hambBtn = document.getElementById('hamburgerBtn');
 if (hambBtn) {

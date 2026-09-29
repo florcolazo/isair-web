@@ -394,9 +394,18 @@
         <h2>Cobertura sin cables, lista en días</h2>
         <p>La opción ideal donde todavía no llega la fibra óptica.</p>
       </div>
-      <div class="plans-grid single" id="inalGrid">
-        <!-- Los planes inalámbricos se cargan dinámicamente desde data/planes.json -->
-      </div>
+      <div class="carousel-container">
+        <button id="scrollLeftInal"  class="carousel-arrow left"  aria-label="Desplazar a la izquierda">
+          <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+        </button>
+        <button id="scrollRightInal" class="carousel-arrow right" aria-label="Desplazar a la derecha">
+          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+        </button>
+
+        <div class="plans-grid" id="inalGrid">
+          <!-- Los planes inalámbricos se cargan dinámicamente desde data/planes.json -->
+        </div><!-- /.plans-grid -->
+      </div><!-- /.carousel-container -->
     </div>
   </section>
 
