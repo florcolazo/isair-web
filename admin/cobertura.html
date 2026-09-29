@@ -180,6 +180,8 @@
 
     /* Mapa */
     #map { width:100%; height:100%; }
+    /* Selector de vistas: el estilo general de label lo pondría gris claro */
+    .leaflet-control-layers label { color:#1a1a2e; font-size:13px; margin:0; }
 
     /* Firebase config warning */
     .config-warning {
@@ -288,6 +290,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot }
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { agregarVistas } from "../vistas-mapa.js?v=1.0.0";
 
     // ══════════════════════════════════════════════════════
     // ⚙️  PEGÁ ACÁ TU CONFIGURACIÓN DE FIREBASE
@@ -316,9 +319,7 @@
 
     // ── Mapa ─────────────────────────────────────────────
     const map = L.map('map').setView([-32.2074, -58.2045], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap', maxZoom: 19
-    }).addTo(map);
+    agregarVistas(map, 'sateliteCalles');
 
     const drawnItems = new L.FeatureGroup().addTo(map);
     const drawControl = new L.Control.Draw({
