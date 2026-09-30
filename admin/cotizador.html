@@ -40,6 +40,7 @@
     .tag.fixed { background: #fff3e0; color: #8a4b00; }
     .tag.inst { background: #ede7f6; color: #4527a0; }
     .tag.bonif { background: #e3f2fd; color: #0d47a1; }
+    .tag.free { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
     details > summary { cursor: pointer; font-family: 'Sora', sans-serif; font-weight: 600; color: var(--navy); font-size: 18px; }
     details[open] > summary { margin-bottom: 14px; }
     .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
@@ -58,6 +59,11 @@
     .bands .desc { font-weight: 700; color: var(--red); }
     .after { margin-top: 12px; padding: 10px 14px; background: #f6f7fb; border-left: 4px solid var(--navy); border-radius: 6px; font-size: 14px; }
     .note { font-size: 11.5px; color: var(--muted); margin-top: 18px; line-height: 1.5; }
+    .hero { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin: 16px 0 4px; padding: 18px 22px; border-radius: 12px; background: var(--navy); color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .hero .l { font-size: 16px; font-weight: 600; opacity: .9; }
+    .hero .v { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 38px; line-height: 1.1; }
+    .hero .v small { font-size: 16px; font-weight: 600; opacity: .85; }
+    .hero .next { font-size: 14px; opacity: .85; text-align: right; }
     .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; }
     .kpi { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
     .kpi .l { font-size: 12px; color: var(--muted); }
@@ -157,6 +163,7 @@
         <p class="hint">
           <b>Con descuento</b>: se le aplica el % de la promo. <b>Precio fijo</b>: se cobra siempre igual (ej. abono de cámara).
           <b>Instalación en cuotas</b>: el precio total se divide en las cuotas indicadas y se suma al abono los primeros meses.
+          <b>Sin cargo</b>: figura en el presupuesto pero no se cobra nunca (ej. instalación de internet); si le ponés precio, se muestra como valor de referencia.
           <b>Sin cargo N meses</b>: no se cobra durante los primeros meses indicados y después se cobra el precio completo (sin descuento).
         </p>
         <div class="row" style="margin:10px 0 18px">
@@ -195,7 +202,10 @@
       <button class="btn" id="printBtn">🖨️ Imprimir / guardar PDF para el cliente</button>
       <button class="btn blue" id="jpgBtn">📷 Descargar imagen (JPG) para WhatsApp</button>
       <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500">
-        <input type="checkbox" id="showMonthly"> Incluir detalle mes a mes en la impresión
+        <input type="checkbox" id="showMonthly"> Incluir detalle mes a mes
+      </label>
+      <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500">
+        <input type="checkbox" id="showKpis"> Incluir total, promedio y ahorro
       </label>
     </div>
   </div>
@@ -212,9 +222,9 @@
   const DEFAULT_ITEMS = [
     { id: 'f300',  nombre: 'Fibra óptica 300 MB',                       precio: 69408.45,  tipo: 'desc' },
     { id: 'f800',  nombre: 'Fibra óptica 800 MB',                       precio: 175062.71, tipo: 'desc' },
+    { id: 'instnet', nombre: 'Instalación servicio de internet',        precio: 0,         tipo: 'free' },
     { id: 'onu',   nombre: 'Mantenimiento y soporte ONU WiFi',          precio: 5312.20,   tipo: 'desc' },
-    { id: 'ba15',  nombre: 'Internet banda ancha 15 Plus',              precio: 52713.02,  tipo: 'desc' },
-    { id: 'ba6',   nombre: 'Internet banda ancha 6 Plus',               precio: 52713.02,  tipo: 'desc' },
+    { id: 'ba30',  nombre: 'Internet banda ancha 30 MB Plus',           precio: 52713.02,  tipo: 'desc' },
     { id: 'rout',  nombre: 'Mantenimiento y soporte / Router WiFi',     precio: 4205.49,   tipo: 'desc' },
     { id: 'istv',  nombre: 'Servicio ISTV Move',                        precio: 28039.99,  tipo: 'desc' },
     { id: 'tv',    nombre: 'Servicio de TV',                            precio: 41288.00,  tipo: 'desc' },
@@ -237,8 +247,8 @@
       { meses: 4, desc: 45 }, { meses: 4, desc: 40 }, { meses: 4, desc: 35 } ] },
   ];
 
-  const TIPOS = { desc: 'Con descuento', fijo: 'Precio fijo', inst: 'Instalación en cuotas', bonif: 'Sin cargo N meses' };
-  const TAG_CLASS = { desc: 'tag', fijo: 'tag fixed', inst: 'tag inst', bonif: 'tag bonif' };
+  const TIPOS = { desc: 'Con descuento', fijo: 'Precio fijo', inst: 'Instalación en cuotas', bonif: 'Sin cargo N meses', free: 'Sin cargo' };
+  const TAG_CLASS = { desc: 'tag', fijo: 'tag fixed', inst: 'tag inst', bonif: 'tag bonif', free: 'tag free' };
   const gratisDe = it => Math.max(0, Number(it.gratis) || 0);
 
   const money = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -258,14 +268,25 @@
           const fut = s.items.find(it => it.id === 'fut');
           if (fut && fut.tipo === 'desc') { fut.tipo = 'bonif'; fut.gratis = 4; }
         }
-        return { ...defaults(s.promos), ...s, v: 3 };
+        if ((s.v || 0) < 4 && !s.items.some(it => it.id === 'instnet')) {
+          const i = s.items.findIndex(it => it.id === 'f800');
+          s.items.splice(i + 1, 0, clone(DEFAULT_ITEMS.find(it => it.id === 'instnet')));
+        }
+        if ((s.v || 0) < 5) {
+          // Banda ancha 15 Plus y 6 Plus se unificaron en 30 MB Plus.
+          const i = s.items.findIndex(it => it.id === 'ba15' || it.id === 'ba6');
+          s.items = s.items.filter(it => it.id !== 'ba15' && it.id !== 'ba6');
+          if (!s.items.some(it => it.id === 'ba30')) s.items.splice(i < 0 ? s.items.length : i, 0, clone(DEFAULT_ITEMS.find(it => it.id === 'ba30')));
+          ['qty', 'qtyAdd'].forEach(k => { if (s[k]) { delete s[k].ba15; delete s[k].ba6; } });
+        }
+        return { ...defaults(s.promos), ...s, v: 5 };
       }
     } catch (e) { /* sin almacenamiento: usar valores por defecto */ }
     return { ...defaults(DEFAULT_PROMOS), items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS) };
   }
   function defaults(promos) {
     const first = promos[0].id;
-    return { v: 3, promoId: first, editId: first, promoAddId: first, tipoCliente: 'nuevo', mesActual: 1, mesAdd: 1, qty: {}, qtyAdd: {}, deuda: 0, deudaCuotas: 6 };
+    return { v: 5, promoId: first, editId: first, promoAddId: first, tipoCliente: 'nuevo', mesActual: 1, mesAdd: 1, qty: {}, qtyAdd: {}, deuda: 0, deudaCuotas: 6 };
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignorar */ }
@@ -343,7 +364,7 @@
     });
 
     const lines = groups.flatMap(g => g.lines);
-    const after = lines.reduce((a, l) => a + (l.tipo === 'inst' ? 0 : l.precio * l.qty), 0);
+    const after = lines.reduce((a, l) => a + (l.tipo === 'inst' || l.tipo === 'free' ? 0 : l.precio * l.qty), 0);
     const totalPeriodo = months.reduce((a, x) => a + x.total, 0);
     const totalLista = months.reduce((a, x) => a + x.lista + x.fijo + x.inst + x.deuda, 0);
 
@@ -359,7 +380,7 @@
       <tr class="${(Number(state.qty[it.id]) || 0) + (ex ? Number(state.qtyAdd[it.id]) || 0 : 0) > 0 ? 'selected' : ''}">
         <td>${esc(it.nombre)}</td>
         <td><span class="${TAG_CLASS[it.tipo]}">${it.tipo === 'inst' ? `${Number(it.cuotas) || 1} cuotas` : it.tipo === 'bonif' ? `Sin cargo ${gratisDe(it)} meses` : TIPOS[it.tipo]}</span></td>
-        <td class="num">${fmt(it.precio)}</td>
+        <td class="num">${it.tipo === 'free' && !it.precio ? '—' : fmt(it.precio)}</td>
         <td class="num">${input(state.qty, 'base', it.id)}</td>
         <td class="num only-existente">${input(state.qtyAdd, 'add', it.id)}</td>
       </tr>`).join('');
@@ -432,6 +453,7 @@
     const fechaVal = document.getElementById('fecha').value;
     const fecha = fechaVal ? new Date(fechaVal + 'T12:00:00').toLocaleDateString('es-AR') : '';
     const showMonthly = document.getElementById('showMonthly').checked;
+    const showKpis = document.getElementById('showKpis').checked;
 
     const promoInfo = !ex
       ? `<b>Promoción:</b> ${esc(base.p.nombre)}`
@@ -456,6 +478,7 @@
     }
 
     const condicion = (l, g) => {
+      if (l.tipo === 'free') return '<b>Sin cargo</b>';
       if (l.tipo === 'desc') return g.p ? 'Con descuento de la promo' : 'Precio de lista (sin promo)';
       if (l.tipo === 'fijo') return 'Precio fijo mensual (sin descuento)';
       if (l.tipo === 'bonif') {
@@ -472,7 +495,7 @@
           <tr>
             <td>${esc(l.nombre)}</td>
             <td class="num">${l.qty}</td>
-            <td class="num">${fmt(l.precio * l.qty)}</td>
+            <td class="num">${l.tipo === 'free' && !l.precio ? '—' : fmt(l.precio * l.qty)}</td>
             <td>${condicion(l, g)}</td>
           </tr>`).join('');
     const servicios = `
@@ -531,10 +554,20 @@
       </table>
       ${!r.lines.length ? '' : `<div class="after">${ex ? `En el mes <b>${r.totalMonths + 1}</b> desde la próxima factura` : `Desde el mes <b>${r.totalMonths + 1}</b>`},
         finalizada la promoción, el abono pasa a precio de lista: <b>${fmt(r.after)}</b> por mes (a valores de hoy).</div>`}
-      <div class="kpis">
+      ${!showKpis ? '' : `<div class="kpis">
         <div class="kpi"><div class="l">Total a pagar en ${ex ? 'los próximos ' : ''}${r.totalMonths} meses</div><div class="v">${fmt(r.totalPeriodo)}</div></div>
         <div class="kpi"><div class="l">Promedio mensual</div><div class="v">${fmt(r.totalPeriodo / r.totalMonths)}</div></div>
         <div class="kpi"><div class="l">Ahorro con la promo</div><div class="v" style="color:#1b7f3b">${fmt(r.ahorro)}</div></div>
+      </div>`}`;
+
+    // Lo más importante, en grande: cuánto paga en el primer tramo.
+    const first = r.bands[0], next = r.bands[1], n = first.to - first.from + 1;
+    const heroLabel = ex ? (n === 1 ? 'En tu próxima factura vas a pagar' : `En tus próximas ${n} facturas vas a pagar`)
+      : (n === 1 ? 'El primer mes vas a pagar' : `Los primeros ${n} meses vas a pagar`);
+    const hero = `
+      <div class="hero">
+        <div><div class="l">${heroLabel}</div><div class="v">${fmt(first.total)} <small>por mes</small></div></div>
+        ${next ? `<div class="next">${ex ? 'Después, desde la factura' : 'Después, desde el mes'} ${next.from}:<br><b>${fmt(next.total)}</b> por mes<br>(ver detalle abajo)</div>` : ''}
       </div>`;
 
     const monthly = showMonthly ? `
@@ -560,7 +593,7 @@
       'Los importes están expresados a valores vigentes a la fecha y pueden variar si se actualizan las tarifas.',
     ].filter(Boolean);
 
-    document.getElementById('sheet').innerHTML = head + servicios + bands + monthly +
+    document.getElementById('sheet').innerHTML = head + hero + servicios + bands + monthly +
       `<div class="note">${notas.map(n => '• ' + esc(n)).join('<br>')}</div>`;
   }
 
@@ -645,7 +678,7 @@
       save(); renderDeudaCuota(); renderSheet();
     } else if (t.id === 'mesActual' || t.id === 'mesAdd') {
       state[t.id] = Math.max(1, parseInt(t.value, 10) || 1); save(); renderSheet();
-    } else if (['cliente', 'direccion', 'vendedor', 'fecha', 'showMonthly'].includes(t.id)) {
+    } else if (['cliente', 'direccion', 'vendedor', 'fecha', 'showMonthly', 'showKpis'].includes(t.id)) {
       renderSheet();
     }
   });
@@ -655,7 +688,7 @@
     if (t.id === 'promoSel') { state.promoId = t.value; save(); renderAll(); }
     if (t.id === 'promoAddSel') { state.promoAddId = t.value; save(); renderAll(); }
     if (t.id === 'editSel') { state.editId = t.value; save(); renderAll(); }
-    if (t.id === 'showMonthly') renderSheet();
+    if (t.id === 'showMonthly' || t.id === 'showKpis') renderSheet();
   });
   document.addEventListener('click', ev => {
     const t = ev.target.closest('button');
