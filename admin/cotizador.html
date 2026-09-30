@@ -63,6 +63,12 @@
     .kpi .l { font-size: 12px; color: var(--muted); }
     .kpi .v { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); }
     .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); min-width: 90px; }
+    .seg { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .seg label { display: flex; gap: 8px; align-items: center; margin: 0; padding: 9px 14px; border: 1px solid #ccd3df; border-radius: 99px; cursor: pointer; font-weight: 600; }
+    .seg label:has(input:checked) { border-color: var(--blue); background: #eef5ff; color: var(--blue); }
+    body:not(.existente) .only-existente { display: none !important; }
+    .sheet td.sub, .sheet .sub { color: var(--muted); font-size: 12px; font-weight: 400; }
+    .sheet tr.group td { background: #f3f5fa; font-weight: 700; color: var(--navy); }
     .bar span { display: block; height: 100%; background: var(--blue); }
 
     @media print {
@@ -88,12 +94,25 @@
     <!-- ===== Datos del cliente + promo ===== -->
     <div class="card">
       <h2>1. Cliente y promoción</h2>
+      <div class="seg" role="radiogroup" aria-label="Tipo de cliente">
+        <label><input type="radio" name="tipoCliente" value="nuevo"> Cliente nuevo</label>
+        <label><input type="radio" name="tipoCliente" value="existente"> Ya es cliente (agrega servicios o sigue en su promo)</label>
+      </div>
       <div class="grid2">
         <div><label for="cliente">Cliente</label><input type="text" id="cliente" placeholder="Nombre y apellido"></div>
         <div><label for="direccion">Dirección / localidad</label><input type="text" id="direccion" placeholder="Opcional"></div>
         <div><label for="vendedor">Asesor</label><input type="text" id="vendedor" placeholder="Opcional"></div>
         <div><label for="fecha">Fecha</label><input type="date" id="fecha"></div>
-        <div><label for="promoSel">Promoción</label><select id="promoSel"></select></div>
+      </div>
+      <div class="grid2" style="margin-top:12px">
+        <div><label for="promoSel" id="promoSelLabel">Promoción</label><select id="promoSel"></select></div>
+        <div class="only-existente"><label for="mesActual">¿En qué mes de esa promo está? <span class="hint" style="font-weight:400">(el de la próxima factura)</span></label>
+          <input type="number" id="mesActual" min="1" step="1"></div>
+      </div>
+      <div class="grid2 only-existente" style="margin-top:12px">
+        <div><label for="promoAddSel">Promoción para lo que agrega</label><select id="promoAddSel"></select></div>
+        <div id="mesAddBox"><label for="mesAdd">Lo nuevo arranca en el mes <span class="hint" style="font-weight:400">(de esa promo)</span></label>
+          <input type="number" id="mesAdd" min="1" step="1"></div>
       </div>
     </div>
 
@@ -102,13 +121,25 @@
       <h2>2. Servicios</h2>
       <div class="scroll">
         <table>
-          <thead><tr><th>Servicio</th><th>Tipo</th><th class="num">Precio lista</th><th class="num">Cantidad</th></tr></thead>
+          <thead><tr><th>Servicio</th><th>Tipo</th><th class="num">Precio lista</th><th class="num" id="qtyHead">Cantidad</th><th class="num only-existente">Agrega</th></tr></thead>
           <tbody id="qtyBody"></tbody>
         </table>
       </div>
+      <p class="hint only-existente">Las cuotas de instalación y los meses sin cargo de lo que <b>ya tiene</b> se cuentan desde el inicio de su promo; los de lo que <b>agrega</b>, desde ahora.</p>
       <div class="row" style="margin-top:12px">
         <button class="btn ghost" id="clearQty">Limpiar cantidades</button>
       </div>
+    </div>
+
+    <!-- ===== Plan de pago de deuda ===== -->
+    <div class="card">
+      <h2>3. Plan de pago de deuda <span class="hint" style="font-weight:400;font-size:13px">(opcional)</span></h2>
+      <div class="grid2">
+        <div><label for="deuda">Monto adeudado</label><input type="number" id="deuda" min="0" step="0.01" placeholder="0"></div>
+        <div><label for="deudaCuotas">Cantidad de cuotas</label><input type="number" id="deudaCuotas" min="1" step="1"></div>
+        <div><label>Valor de cada cuota</label><div id="deudaCuotaVal" style="padding:9px 0;font-weight:700;color:var(--navy)">—</div></div>
+      </div>
+      <p class="hint">Las cuotas se suman al abono desde la próxima factura. Dejá el monto en 0 si no corresponde.</p>
     </div>
 
     <!-- ===== Configuración ===== -->
@@ -136,7 +167,8 @@
           <button class="btn ghost small" id="applyFactor">Aplicar</button>
         </div>
 
-        <h3 style="font-size:15px;color:var(--navy)">Promoción seleccionada: tramos de descuento</h3>
+        <h3 style="font-size:15px;color:var(--navy)">Promociones: tramos de descuento</h3>
+        <div style="max-width:420px;margin-bottom:10px"><label for="editSel">Promo a editar</label><select id="editSel"></select></div>
         <div class="row" style="margin-bottom:10px">
           <div style="flex:1;min-width:220px"><label for="promoName">Nombre de la promo</label><input type="text" id="promoName"></div>
           <button class="btn blue small" id="newPromo">+ Nueva promo</button>
@@ -161,6 +193,7 @@
 
     <div class="row" style="margin-bottom:14px">
       <button class="btn" id="printBtn">🖨️ Imprimir / guardar PDF para el cliente</button>
+      <button class="btn blue" id="jpgBtn">📷 Descargar imagen (JPG) para WhatsApp</button>
       <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500">
         <input type="checkbox" id="showMonthly"> Incluir detalle mes a mes en la impresión
       </label>
@@ -224,72 +257,137 @@
         if (!s.v) {
           const fut = s.items.find(it => it.id === 'fut');
           if (fut && fut.tipo === 'desc') { fut.tipo = 'bonif'; fut.gratis = 4; }
-          s.v = 2;
         }
-        return s;
+        return { ...defaults(s.promos), ...s, v: 3 };
       }
     } catch (e) { /* sin almacenamiento: usar valores por defecto */ }
-    return { v: 2, items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS), promoId: DEFAULT_PROMOS[0].id, qty: {} };
+    return { ...defaults(DEFAULT_PROMOS), items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS) };
+  }
+  function defaults(promos) {
+    const first = promos[0].id;
+    return { v: 3, promoId: first, editId: first, promoAddId: first, tipoCliente: 'nuevo', mesActual: 1, mesAdd: 1, qty: {}, qtyAdd: {}, deuda: 0, deudaCuotas: 6 };
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignorar */ }
   }
-  const promo = () => state.promos.find(p => p.id === state.promoId) || state.promos[0];
+  const findPromo = id => state.promos.find(p => p.id === id);
+  const promo = () => findPromo(state.promoId) || state.promos[0];
+  const editPromo = () => findPromo(state.editId) || state.promos[0];
+  const promoAdd = () => state.promoAddId === 'none' ? null : (findPromo(state.promoAddId) || state.promos[0]);
+  const existente = () => state.tipoCliente === 'existente';
+  const promoLen = p => p ? p.etapas.reduce((a, e) => a + (Number(e.meses) || 0), 0) : 0;
+  const rango = (a, b, pre = 'Mes') => a === b ? `${pre} ${a}` : `${pre}es ${a} a ${b}`;
+
+  function deudaPlan() {
+    const monto = round2(Math.max(0, Number(state.deuda) || 0));
+    const cuotas = Math.max(1, parseInt(state.deudaCuotas, 10) || 1);
+    if (!monto) return null;
+    return { monto, cuotas, cuota: round2(monto / cuotas) };
+  }
 
   // ---------- Cálculo ----------
+  // Cada grupo de servicios tiene su promo y el mes de la promo en que arranca.
+  // Nuevo: un solo grupo desde el mes 1. Existente: lo que ya tiene (desde su mes actual) + lo que agrega.
   function compute() {
-    const p = promo();
-    const lines = state.items
-      .map(it => ({ ...it, qty: Number(state.qty[it.id]) || 0 }))
-      .filter(it => it.qty > 0);
+    const mkLines = q => state.items.map(it => ({ ...it, qty: Number(q[it.id]) || 0 })).filter(it => it.qty > 0);
+    const groups = [{ key: 'base', p: promo(), start: existente() ? Math.max(1, Number(state.mesActual) || 1) : 1, lines: mkLines(state.qty) }];
+    if (existente()) groups.push({ key: 'add', p: promoAdd(), start: promoAdd() ? Math.max(1, Number(state.mesAdd) || 1) : 1, lines: mkLines(state.qtyAdd) });
 
-    const promoMonths = p.etapas.reduce((a, e) => a + (Number(e.meses) || 0), 0);
-    const maxCuotas = Math.max(0, ...lines.filter(l => l.tipo === 'inst').map(l => Number(l.cuotas) || 1));
-    const maxGratis = Math.max(0, ...lines.filter(l => l.tipo === 'bonif').map(gratisDe));
-    const totalMonths = Math.max(promoMonths, maxCuotas, maxGratis + 1);
+    let totalMonths = 1;
+    groups.forEach(g => {
+      g.discountAt = [];
+      if (g.p) g.p.etapas.forEach(e => { for (let i = 0; i < (Number(e.meses) || 0); i++) g.discountAt.push(Number(e.desc) || 0); });
+      // Último mes de la promo (o de cuotas / meses sin cargo) de este grupo, contado desde hoy.
+      g.hasDesc = g.lines.some(l => l.tipo === 'desc');
+      const ends = [g.hasDesc ? g.discountAt.length : 0];
+      g.lines.forEach(l => {
+        if (l.tipo === 'inst') ends.push(Number(l.cuotas) || 1);
+        if (l.tipo === 'bonif') ends.push(gratisDe(l) + 1);
+      });
+      if (g.lines.length) totalMonths = Math.max(totalMonths, Math.max(...ends) - g.start + 1);
+    });
+
+    // Plan de pago de deuda: cuotas iguales sumadas al abono desde la próxima factura.
+    const deuda = deudaPlan();
+    if (deuda) totalMonths = Math.max(totalMonths, deuda.cuotas);
 
     const months = [];
-    let m = 1;
-    const discountAt = [];
-    p.etapas.forEach(e => { for (let i = 0; i < (Number(e.meses) || 0); i++) discountAt.push(Number(e.desc) || 0); });
-
-    for (m = 1; m <= totalMonths; m++) {
-      const desc = m <= discountAt.length ? discountAt[m - 1] : 0;
-      let servicios = 0, fijo = 0, inst = 0, bonif = 0, lista = 0;
-      lines.forEach(l => {
-        if (l.tipo === 'desc') { servicios += round2(l.precio * (1 - desc / 100)) * l.qty; lista += l.precio * l.qty; }
-        else if (l.tipo === 'fijo') { fijo += l.precio * l.qty; }
-        else if (l.tipo === 'inst') { const c = Number(l.cuotas) || 1; if (m <= c) inst += round2(l.precio / c) * l.qty; }
-        else if (l.tipo === 'bonif') { lista += l.precio * l.qty; if (m > gratisDe(l)) bonif += l.precio * l.qty; }
+    for (let m = 1; m <= totalMonths; m++) {
+      const row = { m, servicios: 0, fijo: 0, inst: 0, bonif: 0, lista: 0, total: 0, g: {} };
+      groups.forEach(g => {
+        const pm = g.start + m - 1; // mes de la promo de este grupo
+        const desc = pm <= g.discountAt.length ? g.discountAt[pm - 1] : 0;
+        const x = { pm, desc, servicios: 0, fijo: 0, inst: 0, bonif: 0, lista: 0 };
+        g.lines.forEach(l => {
+          if (l.tipo === 'desc') { x.servicios += round2(l.precio * (1 - desc / 100)) * l.qty; x.lista += l.precio * l.qty; }
+          else if (l.tipo === 'fijo') { x.fijo += l.precio * l.qty; }
+          else if (l.tipo === 'inst') { const c = Number(l.cuotas) || 1; if (pm <= c) x.inst += round2(l.precio / c) * l.qty; }
+          else if (l.tipo === 'bonif') { x.lista += l.precio * l.qty; if (pm > gratisDe(l)) x.bonif += l.precio * l.qty; }
+        });
+        x.total = x.servicios + x.fijo + x.inst + x.bonif;
+        row.g[g.key] = x;
+        ['servicios', 'fijo', 'inst', 'bonif', 'lista', 'total'].forEach(k => { row[k] += x[k]; });
       });
-      months.push({ m, desc, servicios, fijo, inst, bonif, lista, total: servicios + fijo + inst + bonif });
+      row.deuda = deuda && m <= deuda.cuotas ? deuda.cuota : 0;
+      row.total += row.deuda;
+      months.push(row);
     }
 
-    // Agrupar meses consecutivos con el mismo importe en tramos.
+    // Agrupar meses consecutivos con los mismos importes en tramos.
+    const sig = x => groups.map(g => `${g.hasDesc ? x.g[g.key].desc : '-'}|${x.g[g.key].total.toFixed(2)}`).join('/') + `/${x.deuda.toFixed(2)}`;
     const bands = [];
     months.forEach(x => {
       const last = bands[bands.length - 1];
-      if (last && last.desc === x.desc && Math.abs(last.total - x.total) < 0.005) { last.to = x.m; }
-      else bands.push({ from: x.m, to: x.m, ...x });
+      if (last && last.sig === sig(x)) { last.to = x.m; last.toRow = x; }
+      else bands.push({ ...x, from: x.m, to: x.m, sig: sig(x), toRow: x });
     });
 
-    // Precio sin promo (lo que paga al terminar todo).
+    const lines = groups.flatMap(g => g.lines);
     const after = lines.reduce((a, l) => a + (l.tipo === 'inst' ? 0 : l.precio * l.qty), 0);
     const totalPeriodo = months.reduce((a, x) => a + x.total, 0);
-    const totalLista = months.reduce((a, x) => a + x.lista + x.fijo + x.inst, 0);
+    const totalLista = months.reduce((a, x) => a + x.lista + x.fijo + x.inst + x.deuda, 0);
 
-    return { p, lines, months, bands, after, totalMonths, totalPeriodo, ahorro: totalLista - totalPeriodo };
+    return { groups, lines, deuda, months, bands, after, totalMonths, totalPeriodo, ahorro: totalLista - totalPeriodo };
   }
 
-  // ---------- Render: cantidades ----------
+  // ---------- Render: formulario ----------
   function renderQty() {
+    const ex = existente();
+    document.getElementById('qtyHead').textContent = ex ? 'Ya tiene' : 'Cantidad';
+    const input = (q, key, id) => `<input type="number" class="qty" min="0" step="1" data-qty="${id}" data-g="${key}" value="${Number(q[id]) || 0}">`;
     document.getElementById('qtyBody').innerHTML = state.items.map(it => `
-      <tr class="${(Number(state.qty[it.id]) || 0) > 0 ? 'selected' : ''}">
+      <tr class="${(Number(state.qty[it.id]) || 0) + (ex ? Number(state.qtyAdd[it.id]) || 0 : 0) > 0 ? 'selected' : ''}">
         <td>${esc(it.nombre)}</td>
         <td><span class="${TAG_CLASS[it.tipo]}">${it.tipo === 'inst' ? `${Number(it.cuotas) || 1} cuotas` : it.tipo === 'bonif' ? `Sin cargo ${gratisDe(it)} meses` : TIPOS[it.tipo]}</span></td>
         <td class="num">${fmt(it.precio)}</td>
-        <td class="num"><input type="number" class="qty" min="0" step="1" data-qty="${it.id}" value="${Number(state.qty[it.id]) || 0}"></td>
+        <td class="num">${input(state.qty, 'base', it.id)}</td>
+        <td class="num only-existente">${input(state.qtyAdd, 'add', it.id)}</td>
       </tr>`).join('');
+  }
+
+  function renderClient() {
+    const ex = existente();
+    document.body.classList.toggle('existente', ex);
+    document.querySelectorAll('input[name=tipoCliente]').forEach(r => { r.checked = r.value === state.tipoCliente; });
+    document.getElementById('promoSelLabel').textContent = ex ? 'Promoción en la que está el cliente' : 'Promoción';
+    const opts = sel => state.promos.map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('');
+    document.getElementById('promoSel').innerHTML = opts(promo().id);
+    document.getElementById('promoAddSel').innerHTML = opts(promoAdd() ? promoAdd().id : '') +
+      `<option value="none" ${state.promoAddId === 'none' ? 'selected' : ''}>Sin promo (precio de lista)</option>`;
+    document.getElementById('mesActual').value = state.mesActual;
+    document.getElementById('mesActual').max = promoLen(promo());
+    document.getElementById('mesAdd').value = state.mesAdd;
+    document.getElementById('mesAddBox').style.visibility = promoAdd() ? '' : 'hidden';
+    document.getElementById('deuda').value = state.deuda || '';
+    document.getElementById('deudaCuotas').value = state.deudaCuotas;
+    renderDeudaCuota();
+    document.getElementById('editSel').innerHTML = opts(editPromo().id);
+    document.getElementById('promoName').value = editPromo().nombre;
+  }
+
+  function renderDeudaCuota() {
+    const d = deudaPlan();
+    document.getElementById('deudaCuotaVal').textContent = d ? `${d.cuotas} × ${fmt(d.cuota)}` : '—';
   }
 
   // ---------- Render: configuración ----------
@@ -307,30 +405,27 @@
       </tr>`).join('');
   }
 
-  function renderPromoSel() {
-    document.getElementById('promoSel').innerHTML = state.promos.map(p =>
-      `<option value="${p.id}" ${p.id === promo().id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('');
-    document.getElementById('promoName').value = promo().nombre;
+  function stageRange(i) {
+    const et = editPromo().etapas;
+    const from = et.slice(0, i).reduce((a, e) => a + (Number(e.meses) || 0), 0) + 1;
+    const n = Number(et[i].meses) || 0;
+    return n > 0 ? (n === 1 ? `Mes ${from}` : `Meses ${from}–${from + n - 1}`) : '—';
   }
-
   function renderStages() {
-    let start = 1;
-    document.getElementById('stagesBody').innerHTML = promo().etapas.map((e, i) => {
-      const n = Number(e.meses) || 0, from = start, to = start + n - 1;
-      start += n;
-      return `<tr>
+    document.getElementById('stagesBody').innerHTML = editPromo().etapas.map((e, i) => `<tr>
         <td>${i + 1}</td>
         <td class="num"><input type="number" class="months" min="1" step="1" data-stage="${i}" data-f="meses" value="${e.meses}"></td>
         <td class="num"><input type="number" class="pct" min="0" max="100" step="1" data-stage="${i}" data-f="desc" value="${e.desc}"></td>
-        <td>${n > 0 ? (from === to ? `Mes ${from}` : `Meses ${from}–${to}`) : '—'}</td>
+        <td>${stageRange(i)}</td>
         <td><button class="btn ghost small" data-del-stage="${i}" title="Eliminar">✕</button></td>
-      </tr>`;
-    }).join('');
+      </tr>`).join('');
   }
 
   // ---------- Render: hoja para el cliente ----------
   function renderSheet() {
     const r = compute();
+    const ex = existente();
+    const [base, add] = r.groups;
     const cliente = document.getElementById('cliente').value.trim();
     const direccion = document.getElementById('direccion').value.trim();
     const vendedor = document.getElementById('vendedor').value.trim();
@@ -338,75 +433,106 @@
     const fecha = fechaVal ? new Date(fechaVal + 'T12:00:00').toLocaleDateString('es-AR') : '';
     const showMonthly = document.getElementById('showMonthly').checked;
 
+    const promoInfo = !ex
+      ? `<b>Promoción:</b> ${esc(base.p.nombre)}`
+      : [base.lines.length ? `<b>Servicios actuales:</b> ${esc(base.p.nombre)}, mes ${base.start} de ${promoLen(base.p)}` : '',
+         add.lines.length ? `<b>Servicios nuevos:</b> ${add.p ? `${esc(add.p.nombre)}, desde el mes ${add.start}` : 'sin promoción (precio de lista)'}` : '',
+        ].filter(Boolean).join(' &nbsp;·&nbsp; ');
+
     const head = `
       <div class="sheet-head">
         <img src="../assets/images/logo.png" alt="ISAIR">
         <div>
-          <h2>Presupuesto de abono mensual</h2>
+          <h2>${ex ? 'Cómo queda tu abono mensual' : 'Presupuesto de abono mensual'}</h2>
           <div class="meta">${fecha ? `Fecha: ${esc(fecha)}` : ''}${vendedor ? ` · Asesor: ${esc(vendedor)}` : ''}</div>
         </div>
       </div>
       ${cliente || direccion ? `<p style="margin:0 0 6px"><b>Cliente:</b> ${esc(cliente)}${direccion ? ` &nbsp;·&nbsp; <b>Dirección:</b> ${esc(direccion)}` : ''}</p>` : ''}
-      <p style="margin:0;color:var(--muted);font-size:13px"><b>Promoción:</b> ${esc(r.p.nombre)}</p>`;
+      <p style="margin:0;color:var(--muted);font-size:13px">${promoInfo}</p>`;
 
-    if (!r.lines.length) {
+    if (!r.lines.length && !r.deuda) {
       document.getElementById('sheet').innerHTML = head + `<div class="empty">Cargá al menos un servicio para ver la cotización.</div>`;
       return;
     }
 
-    const hasFijo = r.lines.some(l => l.tipo === 'fijo');
-    const hasInst = r.lines.some(l => l.tipo === 'inst');
-    const bonifLines = r.lines.filter(l => l.tipo === 'bonif');
-    const hasBonif = bonifLines.length > 0;
-    const bonifTitle = bonifLines.length === 1 ? esc(bonifLines[0].nombre) : 'Adicionales';
-    const bonifCell = v => v ? fmt(v) : 'Sin cargo';
-    const extraCols = hasFijo + hasInst + hasBonif;
-
-    const servicios = `
-      <h3>Servicios contratados</h3>
-      <table>
-        <thead><tr><th>Servicio</th><th class="num">Cant.</th><th class="num">Precio de lista</th><th>Condición</th></tr></thead>
-        <tbody>${r.lines.map(l => `
+    const condicion = (l, g) => {
+      if (l.tipo === 'desc') return g.p ? 'Con descuento de la promo' : 'Precio de lista (sin promo)';
+      if (l.tipo === 'fijo') return 'Precio fijo mensual (sin descuento)';
+      if (l.tipo === 'bonif') {
+        const rest = gratisDe(l) - g.start + 1;
+        const cuando = g.start === 1 ? `los primeros ${rest} meses` : rest === 1 ? 'el próximo mes' : `los próximos ${rest} meses`;
+        return rest > 0 ? `Sin cargo ${cuando}, luego ${fmt(l.precio * l.qty)} por mes`
+          : `${fmt(l.precio * l.qty)} por mes (ya terminó el período sin cargo)`;
+      }
+      const c = Number(l.cuotas) || 1, cuota = fmt(round2(l.precio / c) * l.qty), rest = c - g.start + 1;
+      if (g.start === 1) return `${c} cuotas de ${cuota}`;
+      return rest > 0 ? `Le quedan ${rest} de ${c} cuotas de ${cuota}` : 'Instalación ya pagada';
+    };
+    const lineRows = (g) => g.lines.map(l => `
           <tr>
             <td>${esc(l.nombre)}</td>
             <td class="num">${l.qty}</td>
             <td class="num">${fmt(l.precio * l.qty)}</td>
-            <td>${l.tipo === 'desc' ? 'Con descuento de la promo'
-                : l.tipo === 'fijo' ? 'Precio fijo mensual (sin descuento)'
-                : l.tipo === 'bonif' ? `Sin cargo los primeros ${gratisDe(l)} meses, luego ${fmt(l.precio * l.qty)} por mes`
-                : `${Number(l.cuotas) || 1} cuotas de ${fmt(round2(l.precio / (Number(l.cuotas) || 1)) * l.qty)}`}</td>
-          </tr>`).join('')}
+            <td>${condicion(l, g)}</td>
+          </tr>`).join('');
+    const servicios = `
+      <h3>${ex ? 'Servicios' : 'Servicios contratados'}</h3>
+      <table>
+        <thead><tr><th>Servicio</th><th class="num">Cant.</th><th class="num">Precio de lista</th><th>Condición</th></tr></thead>
+        <tbody>${!ex ? lineRows(base) : r.groups.filter(g => g.lines.length).map(g =>
+          `<tr class="group"><td colspan="4">${g.key === 'base' ? 'Lo que ya tenés' : 'Lo que agregás'}</td></tr>` + lineRows(g)).join('')}
+        ${r.deuda ? `<tr class="group"><td colspan="4">Plan de pago de deuda</td></tr>
+          <tr><td>Deuda a regularizar</td><td class="num">1</td><td class="num">${fmt(r.deuda.monto)}</td>
+            <td>${r.deuda.cuotas} cuotas de ${fmt(r.deuda.cuota)}</td></tr>` : ''}
         </tbody>
       </table>`;
 
+    // Dos modos de tabla: por grupo (ya tiene / agrega) o por tipo de cargo.
+    const byGroup = ex && base.lines.length > 0 && add.lines.length > 0;
+    const main = byGroup ? null : (r.groups.find(g => g.lines.length) || base);
+    const hasFijo = r.lines.some(l => l.tipo === 'fijo');
+    const hasInst = r.months.some(x => x.inst > 0);
+    const bonifLines = r.lines.filter(l => l.tipo === 'bonif');
+    const hasBonif = bonifLines.length > 0;
+    const bonifTitle = bonifLines.length === 1 ? esc(bonifLines[0].nombre) : 'Adicionales';
+    const bonifCell = v => v ? fmt(v) : 'Sin cargo';
+    const pct = (g, x) => g.hasDesc && x.g[g.key].desc ? `${x.g[g.key].desc}%` : '—';
+
+    const mesesCell = (from, to, row, toRow) => {
+      const a = row.g.base.pm, b = Math.min(toRow.g.base.pm, promoLen(base.p));
+      const sub = !(ex && base.lines.length && base.p) ? ''
+        : a > promoLen(base.p) ? '<div class="sub">tu promo actual ya terminó</div>'
+        : `<div class="sub">${a === b ? `mes ${a}` : `meses ${a} a ${b}`} de tu promo actual</div>`;
+      return `<td>${rango(from, to)}${sub}</td>`;
+    };
+
+    const cols = byGroup
+      ? [...(base.hasDesc ? [['Desc. actual', x => pct(base, x), 'desc']] : []), ['Lo que ya tenés', x => bonifCell(x.g.base.total)],
+         ...(add.hasDesc ? [['Desc. nuevo', x => pct(add, x), 'desc']] : []), ['Lo que agregás', x => bonifCell(x.g.add.total)]]
+      : [['Descuento', x => pct(main, x), 'desc'], ['Servicios', x => fmt(x.servicios)],
+         ...(hasFijo ? [['Cámaras', x => fmt(x.fijo)]] : []),
+         ...(hasBonif ? [[bonifTitle, x => bonifCell(x.bonif)]] : []),
+         ...(hasInst ? [['Cuota instalación', x => x.inst ? fmt(x.inst) : '—']] : [])];
+    if (r.deuda) cols.push(['Plan de pago', x => x.deuda ? fmt(x.deuda) : '—']);
+
     const maxTotal = Math.max(...r.bands.map(b => b.total), r.after);
     const bands = `
-      <h3>Cuánto vas a pagar cada mes</h3>
+      <h3>${ex ? 'Cuánto vas a pagar desde la próxima factura' : 'Cuánto vas a pagar cada mes'}</h3>
       <table class="bands">
-        <thead><tr>
-          <th>Meses</th><th class="num">Descuento</th><th class="num">Servicios</th>
-          ${hasFijo ? '<th class="num">Cámaras</th>' : ''}
-          ${hasBonif ? `<th class="num">${bonifTitle}</th>` : ''}
-          ${hasInst ? '<th class="num">Cuota instalación</th>' : ''}
-          <th class="num">Total por mes</th><th class="no-print"></th>
-        </tr></thead>
+        <thead><tr><th>Meses</th>${cols.map(c => `<th class="num">${c[0]}</th>`).join('')}<th class="num">Total por mes</th><th class="no-print"></th></tr></thead>
         <tbody>${r.bands.map(b => `
           <tr>
-            <td>${b.from === b.to ? `Mes ${b.from}` : `Meses ${b.from} a ${b.to}`}</td>
-            <td class="num desc">${b.desc ? `${b.desc}%` : '—'}</td>
-            <td class="num">${fmt(b.servicios)}</td>
-            ${hasFijo ? `<td class="num">${fmt(b.fijo)}</td>` : ''}
-            ${hasBonif ? `<td class="num">${bonifCell(b.bonif)}</td>` : ''}
-            ${hasInst ? `<td class="num">${b.inst ? fmt(b.inst) : '—'}</td>` : ''}
+            ${mesesCell(b.from, b.to, b, b.toRow)}
+            ${cols.map(c => `<td class="num ${c[2] || ''}">${c[1](b)}</td>`).join('')}
             <td class="num total">${fmt(b.total)}</td>
             <td class="no-print"><div class="bar"><span style="width:${(b.total / maxTotal * 100).toFixed(1)}%"></span></div></td>
           </tr>`).join('')}
         </tbody>
       </table>
-      <div class="after">Desde el mes <b>${r.totalMonths + 1}</b>, finalizada la promoción, el abono pasa a precio de lista:
-        <b>${fmt(r.after)}</b> por mes (a valores de hoy).</div>
+      ${!r.lines.length ? '' : `<div class="after">${ex ? `En el mes <b>${r.totalMonths + 1}</b> desde la próxima factura` : `Desde el mes <b>${r.totalMonths + 1}</b>`},
+        finalizada la promoción, el abono pasa a precio de lista: <b>${fmt(r.after)}</b> por mes (a valores de hoy).</div>`}
       <div class="kpis">
-        <div class="kpi"><div class="l">Total a pagar en ${r.totalMonths} meses</div><div class="v">${fmt(r.totalPeriodo)}</div></div>
+        <div class="kpi"><div class="l">Total a pagar en ${ex ? 'los próximos ' : ''}${r.totalMonths} meses</div><div class="v">${fmt(r.totalPeriodo)}</div></div>
         <div class="kpi"><div class="l">Promedio mensual</div><div class="v">${fmt(r.totalPeriodo / r.totalMonths)}</div></div>
         <div class="kpi"><div class="l">Ahorro con la promo</div><div class="v" style="color:#1b7f3b">${fmt(r.ahorro)}</div></div>
       </div>`;
@@ -414,36 +540,89 @@
     const monthly = showMonthly ? `
       <h3>Detalle mes a mes</h3>
       <table>
-        <thead><tr><th>Mes</th><th class="num">Desc.</th><th class="num">Servicios</th>
-          ${hasFijo ? '<th class="num">Cámaras</th>' : ''}${hasBonif ? `<th class="num">${bonifTitle}</th>` : ''}${hasInst ? '<th class="num">Instalación</th>' : ''}<th class="num">Total</th></tr></thead>
+        <thead><tr><th>Mes</th>${cols.map(c => `<th class="num">${c[0]}</th>`).join('')}<th class="num">Total</th></tr></thead>
         <tbody>${r.months.map(x => `
-          <tr><td>${x.m}</td><td class="num">${x.desc ? x.desc + '%' : '—'}</td><td class="num">${fmt(x.servicios)}</td>
-            ${hasFijo ? `<td class="num">${fmt(x.fijo)}</td>` : ''}${hasBonif ? `<td class="num">${bonifCell(x.bonif)}</td>` : ''}${hasInst ? `<td class="num">${x.inst ? fmt(x.inst) : '—'}</td>` : ''}
+          <tr><td>${x.m}${ex && base.lines.length && base.p ? ` <span class="sub">(promo ${x.g.base.pm})</span>` : ''}</td>
+            ${cols.map(c => `<td class="num">${c[1](x)}</td>`).join('')}
             <td class="num"><b>${fmt(x.total)}</b></td></tr>`).join('')}
         </tbody>
-        <tfoot><tr><td colspan="${3 + extraCols}">Total</td><td class="num">${fmt(r.totalPeriodo)}</td></tr></tfoot>
+        <tfoot><tr><td colspan="${1 + cols.length}">Total</td><td class="num">${fmt(r.totalPeriodo)}</td></tr></tfoot>
       </table>` : '';
 
     const notas = [
+      ex ? 'Los meses se cuentan desde la próxima factura. Tus servicios actuales siguen en el tramo de la promoción en el que están.' : '',
       'La promoción es escalonada: el descuento se aplica sobre el precio de lista de los servicios y va disminuyendo según los tramos indicados.',
+      byGroup ? '"Lo que ya tenés" y "Lo que agregás" incluyen servicios, cámaras, cuotas de instalación y adicionales de cada parte.' : '',
       hasFijo ? 'El abono de las cámaras es un precio fijo mensual y no tiene descuento.' : '',
-      ...bonifLines.map(l => `${l.nombre}: sin cargo los primeros ${gratisDe(l)} meses; a partir del mes ${gratisDe(l) + 1} se cobra su precio completo.`),
+      ...bonifLines.map(l => `${l.nombre}: sin cargo los primeros ${gratisDe(l)} meses desde que se contrata; después se cobra su precio completo.`),
+      r.deuda ? `La deuda de ${fmt(r.deuda.monto)} se abona en ${r.deuda.cuotas} cuotas que se suman al abono a partir de la próxima factura.` : '',
       hasInst ? 'El cargo de instalación de cámaras se abona en cuotas que se suman al abono de los primeros meses.' : '',
       'Los importes están expresados a valores vigentes a la fecha y pueden variar si se actualizan las tarifas.',
     ].filter(Boolean);
 
     document.getElementById('sheet').innerHTML = head + servicios + bands + monthly +
-      `<div class="note">${notas.map(n => '• ' + n).join('<br>')}</div>`;
+      `<div class="note">${notas.map(n => '• ' + esc(n)).join('<br>')}</div>`;
   }
 
-  function renderAll() { renderPromoSel(); renderStages(); renderItems(); renderQty(); renderSheet(); }
+  function renderAll() { renderClient(); renderStages(); renderItems(); renderQty(); renderSheet(); }
+
+  // ---------- Imagen JPG (para WhatsApp) ----------
+  function loadHtml2canvas() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    return new Promise((resolve, reject) => {
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      sc.onload = () => resolve(window.html2canvas);
+      sc.onerror = () => reject(new Error('No se pudo cargar html2canvas'));
+      document.head.appendChild(sc);
+    });
+  }
+
+  async function exportJpg(btn) {
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Generando imagen…';
+    try {
+      const html2canvas = await loadHtml2canvas();
+      await document.fonts.ready;
+      // Ancho fijo para que la imagen salga igual desde la PC o el celular.
+      const canvas = await html2canvas(document.getElementById('sheet'), {
+        scale: 2, backgroundColor: '#ffffff', windowWidth: 900,
+        ignoreElements: el => el.classList && el.classList.contains('no-print'),
+        onclone: doc => {
+          const sh = doc.getElementById('sheet');
+          sh.style.width = '860px'; sh.style.boxShadow = 'none'; sh.style.borderRadius = '0';
+        },
+      });
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.92));
+      const cliente = document.getElementById('cliente').value.trim().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
+      const name = `presupuesto${cliente ? '-' + cliente : ''}-${document.getElementById('fecha').value || 'isair'}.jpg`;
+      const file = new File([blob], name, { type: 'image/jpeg' });
+
+      // En el celular: abrir el menú de compartir (WhatsApp, etc.). En la PC: descargar.
+      const mobile = matchMedia('(pointer: coarse)').matches;
+      if (mobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: 'Presupuesto ISAIR' }); return; }
+        catch (e) { if (e.name === 'AbortError') return; }
+      }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    } catch (e) {
+      alert('No se pudo generar la imagen: ' + e.message);
+    } finally {
+      btn.disabled = false; btn.textContent = label;
+    }
+  }
 
   // ---------- Eventos ----------
   document.addEventListener('input', ev => {
     const t = ev.target;
     if (t.dataset.qty) {
-      state.qty[t.dataset.qty] = Math.max(0, parseInt(t.value, 10) || 0);
-      t.closest('tr').classList.toggle('selected', state.qty[t.dataset.qty] > 0);
+      const q = t.dataset.g === 'add' ? state.qtyAdd : state.qty;
+      q[t.dataset.qty] = Math.max(0, parseInt(t.value, 10) || 0);
+      const tr = t.closest('tr');
+      tr.classList.toggle('selected', [...tr.querySelectorAll('input.qty')].some(i => (parseInt(i.value, 10) || 0) > 0));
       save(); renderSheet();
     } else if (t.dataset.item !== undefined) {
       const it = state.items[+t.dataset.item], f = t.dataset.f;
@@ -453,54 +632,65 @@
       save(); renderQty(); renderSheet();
       if (f === 'tipo') renderItems();
     } else if (t.dataset.stage !== undefined) {
-      promo().etapas[+t.dataset.stage][t.dataset.f] = parseFloat(t.value) || 0;
+      editPromo().etapas[+t.dataset.stage][t.dataset.f] = parseFloat(t.value) || 0;
       save(); renderSheet();
       // Refrescar la columna "Meses" sin perder el foco del input.
-      let start = 1;
-      document.querySelectorAll('#stagesBody tr').forEach((tr, i) => {
-        const n = Number(promo().etapas[i].meses) || 0, from = start, to = start + n - 1;
-        start += n;
-        tr.children[3].textContent = n > 0 ? (from === to ? `Mes ${from}` : `Meses ${from}–${to}`) : '—';
-      });
+      document.querySelectorAll('#stagesBody tr').forEach((tr, i) => { tr.children[3].textContent = stageRange(i); });
     } else if (t.id === 'promoName') {
-      promo().nombre = t.value; save();
-      document.querySelector(`#promoSel option[value="${promo().id}"]`).textContent = t.value;
+      editPromo().nombre = t.value; save();
+      document.querySelectorAll(`option[value="${editPromo().id}"]`).forEach(o => { o.textContent = t.value; });
       renderSheet();
+    } else if (t.id === 'deuda' || t.id === 'deudaCuotas') {
+      state[t.id] = t.id === 'deuda' ? Math.max(0, parseFloat(t.value) || 0) : Math.max(1, parseInt(t.value, 10) || 1);
+      save(); renderDeudaCuota(); renderSheet();
+    } else if (t.id === 'mesActual' || t.id === 'mesAdd') {
+      state[t.id] = Math.max(1, parseInt(t.value, 10) || 1); save(); renderSheet();
     } else if (['cliente', 'direccion', 'vendedor', 'fecha', 'showMonthly'].includes(t.id)) {
       renderSheet();
     }
   });
   document.addEventListener('change', ev => {
-    if (ev.target.id === 'promoSel') { state.promoId = ev.target.value; save(); renderAll(); }
-    if (ev.target.id === 'showMonthly') renderSheet();
+    const t = ev.target;
+    if (t.name === 'tipoCliente') { state.tipoCliente = t.value; save(); renderAll(); }
+    if (t.id === 'promoSel') { state.promoId = t.value; save(); renderAll(); }
+    if (t.id === 'promoAddSel') { state.promoAddId = t.value; save(); renderAll(); }
+    if (t.id === 'editSel') { state.editId = t.value; save(); renderAll(); }
+    if (t.id === 'showMonthly') renderSheet();
   });
   document.addEventListener('click', ev => {
     const t = ev.target.closest('button');
     if (!t) return;
     if (t.dataset.delItem !== undefined) {
       const it = state.items[+t.dataset.delItem];
-      if (confirm(`¿Eliminar "${it.nombre}"?`)) { state.items.splice(+t.dataset.delItem, 1); delete state.qty[it.id]; save(); renderAll(); }
+      if (confirm(`¿Eliminar "${it.nombre}"?`)) {
+        state.items.splice(+t.dataset.delItem, 1); delete state.qty[it.id]; delete state.qtyAdd[it.id]; save(); renderAll();
+      }
     } else if (t.dataset.delStage !== undefined) {
-      if (promo().etapas.length > 1) { promo().etapas.splice(+t.dataset.delStage, 1); save(); renderStages(); renderSheet(); }
+      if (editPromo().etapas.length > 1) { editPromo().etapas.splice(+t.dataset.delStage, 1); save(); renderAll(); }
     } else switch (t.id) {
       case 'addItem': state.items.push({ id: uid(), nombre: 'Nuevo servicio', precio: 0, tipo: 'desc' }); save(); renderAll(); break;
       case 'addStage': {
-        const last = promo().etapas[promo().etapas.length - 1];
-        promo().etapas.push({ meses: last ? last.meses : 4, desc: last ? Math.max(0, last.desc - 5) : 0 });
-        save(); renderStages(); renderSheet(); break;
+        const et = editPromo().etapas, last = et[et.length - 1];
+        et.push({ meses: last ? last.meses : 4, desc: last ? Math.max(0, last.desc - 5) : 0 });
+        save(); renderAll(); break;
       }
       case 'newPromo': {
         const nombre = prompt('Nombre de la nueva promoción:', 'Nueva promo');
         if (!nombre) break;
-        const p = { id: uid(), nombre, etapas: clone(promo().etapas) };
-        state.promos.push(p); state.promoId = p.id; save(); renderAll(); break;
+        const p = { id: uid(), nombre, etapas: clone(editPromo().etapas) };
+        state.promos.push(p); state.editId = p.id; save(); renderAll(); break;
       }
-      case 'delPromo':
+      case 'delPromo': {
         if (state.promos.length < 2) { alert('Tiene que quedar al menos una promoción.'); break; }
-        if (confirm(`¿Eliminar "${promo().nombre}"?`)) {
-          state.promos = state.promos.filter(p => p.id !== promo().id); state.promoId = state.promos[0].id; save(); renderAll();
+        const del = editPromo();
+        if (confirm(`¿Eliminar "${del.nombre}"?`)) {
+          state.promos = state.promos.filter(p => p.id !== del.id);
+          const first = state.promos[0].id;
+          ['promoId', 'editId', 'promoAddId'].forEach(k => { if (state[k] === del.id) state[k] = first; });
+          save(); renderAll();
         }
         break;
+      }
       case 'applyFactor': {
         const f = parseFloat(document.getElementById('factor').value);
         if (!f || f <= 0) break;
@@ -511,11 +701,12 @@
       }
       case 'resetCfg':
         if (confirm('¿Restaurar precios y promociones originales? Se pierden los cambios.')) {
-          state.items = clone(DEFAULT_ITEMS); state.promos = clone(DEFAULT_PROMOS); state.promoId = DEFAULT_PROMOS[0].id; save(); renderAll();
+          state = { ...defaults(DEFAULT_PROMOS), items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS) }; save(); renderAll();
         }
         break;
-      case 'clearQty': state.qty = {}; save(); renderQty(); renderSheet(); break;
+      case 'clearQty': state.qty = {}; state.qtyAdd = {}; state.deuda = 0; save(); renderAll(); break;
       case 'printBtn': window.print(); break;
+      case 'jpgBtn': exportJpg(t); break;
     }
   });
 
