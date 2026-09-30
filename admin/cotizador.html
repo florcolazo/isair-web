@@ -39,6 +39,7 @@
     .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: #e8f5e9; color: #1b5e20; }
     .tag.fixed { background: #fff3e0; color: #8a4b00; }
     .tag.inst { background: #ede7f6; color: #4527a0; }
+    .tag.bonif { background: #e3f2fd; color: #0d47a1; }
     details > summary { cursor: pointer; font-family: 'Sora', sans-serif; font-weight: 600; color: var(--navy); font-size: 18px; }
     details[open] > summary { margin-bottom: 14px; }
     .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
@@ -117,13 +118,14 @@
         <h3 style="font-size:15px;color:var(--navy)">Lista de precios</h3>
         <div class="scroll">
           <table>
-            <thead><tr><th>Servicio</th><th>Tipo</th><th class="num">Precio</th><th class="num">Cuotas</th><th></th></tr></thead>
+            <thead><tr><th>Servicio</th><th>Tipo</th><th class="num">Precio</th><th class="num">Cuotas / meses</th><th></th></tr></thead>
             <tbody id="itemsBody"></tbody>
           </table>
         </div>
         <p class="hint">
           <b>Con descuento</b>: se le aplica el % de la promo. <b>Precio fijo</b>: se cobra siempre igual (ej. abono de cámara).
           <b>Instalación en cuotas</b>: el precio total se divide en las cuotas indicadas y se suma al abono los primeros meses.
+          <b>Sin cargo N meses</b>: no se cobra durante los primeros meses indicados y después se cobra el precio completo (sin descuento).
         </p>
         <div class="row" style="margin:10px 0 18px">
           <button class="btn blue small" id="addItem">+ Agregar servicio</button>
@@ -183,7 +185,7 @@
     { id: 'istv',  nombre: 'Servicio ISTV Move',                        precio: 28039.99,  tipo: 'desc' },
     { id: 'tv',    nombre: 'Servicio de TV',                            precio: 41288.00,  tipo: 'desc' },
     { id: 'stb',   nombre: '1 STB adicional',                           precio: 9300.00,   tipo: 'desc' },
-    { id: 'fut',   nombre: 'Fútbol Premium',                            precio: 27260.00,  tipo: 'desc' },
+    { id: 'fut',   nombre: 'Fútbol Premium',                            precio: 27260.00,  tipo: 'bonif', gratis: 4 },
     { id: 'mx2',   nombre: 'WiFi Mesh Premium x2',                      precio: 12103.21,  tipo: 'desc' },
     { id: 'mx3',   nombre: 'WiFi Mesh Premium x3',                      precio: 18132.09,  tipo: 'desc' },
     { id: 'mx4',   nombre: 'WiFi Mesh Premium x4',                      precio: 24176.15,  tipo: 'desc' },
@@ -201,8 +203,9 @@
       { meses: 4, desc: 45 }, { meses: 4, desc: 40 }, { meses: 4, desc: 35 } ] },
   ];
 
-  const TIPOS = { desc: 'Con descuento', fijo: 'Precio fijo', inst: 'Instalación en cuotas' };
-  const TAG_CLASS = { desc: 'tag', fijo: 'tag fixed', inst: 'tag inst' };
+  const TIPOS = { desc: 'Con descuento', fijo: 'Precio fijo', inst: 'Instalación en cuotas', bonif: 'Sin cargo N meses' };
+  const TAG_CLASS = { desc: 'tag', fijo: 'tag fixed', inst: 'tag inst', bonif: 'tag bonif' };
+  const gratisDe = it => Math.max(0, Number(it.gratis) || 0);
 
   const money = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmt = n => money.format(Math.round(n * 100) / 100);
@@ -216,9 +219,16 @@
   function load() {
     try {
       const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (s && Array.isArray(s.items) && Array.isArray(s.promos) && s.promos.length) return s;
+      if (s && Array.isArray(s.items) && Array.isArray(s.promos) && s.promos.length) {
+        if (!s.v) {
+          const fut = s.items.find(it => it.id === 'fut');
+          if (fut && fut.tipo === 'desc') { fut.tipo = 'bonif'; fut.gratis = 4; }
+          s.v = 2;
+        }
+        return s;
+      }
     } catch (e) { /* sin almacenamiento: usar valores por defecto */ }
-    return { items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS), promoId: DEFAULT_PROMOS[0].id, qty: {} };
+    return { v: 2, items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS), promoId: DEFAULT_PROMOS[0].id, qty: {} };
   }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignorar */ }
@@ -234,7 +244,8 @@
 
     const promoMonths = p.etapas.reduce((a, e) => a + (Number(e.meses) || 0), 0);
     const maxCuotas = Math.max(0, ...lines.filter(l => l.tipo === 'inst').map(l => Number(l.cuotas) || 1));
-    const totalMonths = Math.max(promoMonths, maxCuotas);
+    const maxGratis = Math.max(0, ...lines.filter(l => l.tipo === 'bonif').map(gratisDe));
+    const totalMonths = Math.max(promoMonths, maxCuotas, maxGratis + 1);
 
     const months = [];
     let m = 1;
@@ -243,13 +254,14 @@
 
     for (m = 1; m <= totalMonths; m++) {
       const desc = m <= discountAt.length ? discountAt[m - 1] : 0;
-      let servicios = 0, fijo = 0, inst = 0, lista = 0;
+      let servicios = 0, fijo = 0, inst = 0, bonif = 0, lista = 0;
       lines.forEach(l => {
         if (l.tipo === 'desc') { servicios += round2(l.precio * (1 - desc / 100)) * l.qty; lista += l.precio * l.qty; }
         else if (l.tipo === 'fijo') { fijo += l.precio * l.qty; }
         else if (l.tipo === 'inst') { const c = Number(l.cuotas) || 1; if (m <= c) inst += round2(l.precio / c) * l.qty; }
+        else if (l.tipo === 'bonif') { lista += l.precio * l.qty; if (m > gratisDe(l)) bonif += l.precio * l.qty; }
       });
-      months.push({ m, desc, servicios, fijo, inst, lista, total: servicios + fijo + inst });
+      months.push({ m, desc, servicios, fijo, inst, bonif, lista, total: servicios + fijo + inst + bonif });
     }
 
     // Agrupar meses consecutivos con el mismo importe en tramos.
@@ -273,7 +285,7 @@
     document.getElementById('qtyBody').innerHTML = state.items.map(it => `
       <tr class="${(Number(state.qty[it.id]) || 0) > 0 ? 'selected' : ''}">
         <td>${esc(it.nombre)}</td>
-        <td><span class="${TAG_CLASS[it.tipo]}">${it.tipo === 'inst' ? `${Number(it.cuotas) || 1} cuotas` : TIPOS[it.tipo]}</span></td>
+        <td><span class="${TAG_CLASS[it.tipo]}">${it.tipo === 'inst' ? `${Number(it.cuotas) || 1} cuotas` : it.tipo === 'bonif' ? `Sin cargo ${gratisDe(it)} meses` : TIPOS[it.tipo]}</span></td>
         <td class="num">${fmt(it.precio)}</td>
         <td class="num"><input type="number" class="qty" min="0" step="1" data-qty="${it.id}" value="${Number(state.qty[it.id]) || 0}"></td>
       </tr>`).join('');
@@ -288,7 +300,8 @@
           ${Object.entries(TIPOS).map(([k, v]) => `<option value="${k}" ${it.tipo === k ? 'selected' : ''}>${v}</option>`).join('')}
         </select></td>
         <td class="num"><input type="number" class="price" step="0.01" min="0" data-item="${i}" data-f="precio" value="${it.precio}"></td>
-        <td class="num">${it.tipo === 'inst' ? `<input type="number" class="months" min="1" step="1" data-item="${i}" data-f="cuotas" value="${Number(it.cuotas) || 6}">` : '—'}</td>
+        <td class="num">${it.tipo === 'inst' ? `<input type="number" class="months" min="1" step="1" data-item="${i}" data-f="cuotas" value="${Number(it.cuotas) || 6}">`
+          : it.tipo === 'bonif' ? `<input type="number" class="months" min="0" step="1" data-item="${i}" data-f="gratis" value="${gratisDe(it)}">` : '—'}</td>
         <td><button class="btn ghost small" data-del-item="${i}" title="Eliminar">✕</button></td>
       </tr>`).join('');
   }
@@ -342,6 +355,11 @@
 
     const hasFijo = r.lines.some(l => l.tipo === 'fijo');
     const hasInst = r.lines.some(l => l.tipo === 'inst');
+    const bonifLines = r.lines.filter(l => l.tipo === 'bonif');
+    const hasBonif = bonifLines.length > 0;
+    const bonifTitle = bonifLines.length === 1 ? esc(bonifLines[0].nombre) : 'Adicionales';
+    const bonifCell = v => v ? fmt(v) : 'Sin cargo';
+    const extraCols = hasFijo + hasInst + hasBonif;
 
     const servicios = `
       <h3>Servicios contratados</h3>
@@ -354,6 +372,7 @@
             <td class="num">${fmt(l.precio * l.qty)}</td>
             <td>${l.tipo === 'desc' ? 'Con descuento de la promo'
                 : l.tipo === 'fijo' ? 'Precio fijo mensual (sin descuento)'
+                : l.tipo === 'bonif' ? `Sin cargo los primeros ${gratisDe(l)} meses, luego ${fmt(l.precio * l.qty)} por mes`
                 : `${Number(l.cuotas) || 1} cuotas de ${fmt(round2(l.precio / (Number(l.cuotas) || 1)) * l.qty)}`}</td>
           </tr>`).join('')}
         </tbody>
@@ -366,6 +385,7 @@
         <thead><tr>
           <th>Meses</th><th class="num">Descuento</th><th class="num">Servicios</th>
           ${hasFijo ? '<th class="num">Cámaras</th>' : ''}
+          ${hasBonif ? `<th class="num">${bonifTitle}</th>` : ''}
           ${hasInst ? '<th class="num">Cuota instalación</th>' : ''}
           <th class="num">Total por mes</th><th class="no-print"></th>
         </tr></thead>
@@ -375,6 +395,7 @@
             <td class="num desc">${b.desc ? `${b.desc}%` : '—'}</td>
             <td class="num">${fmt(b.servicios)}</td>
             ${hasFijo ? `<td class="num">${fmt(b.fijo)}</td>` : ''}
+            ${hasBonif ? `<td class="num">${bonifCell(b.bonif)}</td>` : ''}
             ${hasInst ? `<td class="num">${b.inst ? fmt(b.inst) : '—'}</td>` : ''}
             <td class="num total">${fmt(b.total)}</td>
             <td class="no-print"><div class="bar"><span style="width:${(b.total / maxTotal * 100).toFixed(1)}%"></span></div></td>
@@ -393,18 +414,19 @@
       <h3>Detalle mes a mes</h3>
       <table>
         <thead><tr><th>Mes</th><th class="num">Desc.</th><th class="num">Servicios</th>
-          ${hasFijo ? '<th class="num">Cámaras</th>' : ''}${hasInst ? '<th class="num">Instalación</th>' : ''}<th class="num">Total</th></tr></thead>
+          ${hasFijo ? '<th class="num">Cámaras</th>' : ''}${hasBonif ? `<th class="num">${bonifTitle}</th>` : ''}${hasInst ? '<th class="num">Instalación</th>' : ''}<th class="num">Total</th></tr></thead>
         <tbody>${r.months.map(x => `
           <tr><td>${x.m}</td><td class="num">${x.desc ? x.desc + '%' : '—'}</td><td class="num">${fmt(x.servicios)}</td>
-            ${hasFijo ? `<td class="num">${fmt(x.fijo)}</td>` : ''}${hasInst ? `<td class="num">${x.inst ? fmt(x.inst) : '—'}</td>` : ''}
+            ${hasFijo ? `<td class="num">${fmt(x.fijo)}</td>` : ''}${hasBonif ? `<td class="num">${bonifCell(x.bonif)}</td>` : ''}${hasInst ? `<td class="num">${x.inst ? fmt(x.inst) : '—'}</td>` : ''}
             <td class="num"><b>${fmt(x.total)}</b></td></tr>`).join('')}
         </tbody>
-        <tfoot><tr><td colspan="${3 + hasFijo + hasInst}">Total</td><td class="num">${fmt(r.totalPeriodo)}</td></tr></tfoot>
+        <tfoot><tr><td colspan="${3 + extraCols}">Total</td><td class="num">${fmt(r.totalPeriodo)}</td></tr></tfoot>
       </table>` : '';
 
     const notas = [
       'La promoción es escalonada: el descuento se aplica sobre el precio de lista de los servicios y va disminuyendo según los tramos indicados.',
       hasFijo ? 'El abono de las cámaras es un precio fijo mensual y no tiene descuento.' : '',
+      ...bonifLines.map(l => `${l.nombre}: sin cargo los primeros ${gratisDe(l)} meses; a partir del mes ${gratisDe(l) + 1} se cobra su precio completo.`),
       hasInst ? 'El cargo de instalación de cámaras se abona en cuotas que se suman al abono de los primeros meses.' : '',
       'Los importes están expresados a valores vigentes a la fecha y pueden variar si se actualizan las tarifas.',
     ].filter(Boolean);
@@ -424,8 +446,9 @@
       save(); renderSheet();
     } else if (t.dataset.item !== undefined) {
       const it = state.items[+t.dataset.item], f = t.dataset.f;
-      it[f] = (f === 'precio' || f === 'cuotas') ? (parseFloat(t.value) || 0) : t.value;
+      it[f] = (f === 'precio' || f === 'cuotas' || f === 'gratis') ? (parseFloat(t.value) || 0) : t.value;
       if (f === 'tipo' && it.tipo === 'inst' && !it.cuotas) it.cuotas = 6;
+      if (f === 'tipo' && it.tipo === 'bonif' && it.gratis == null) it.gratis = 4;
       save(); renderQty(); renderSheet();
       if (f === 'tipo') renderItems();
     } else if (t.dataset.stage !== undefined) {
