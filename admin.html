@@ -171,7 +171,10 @@
 
       <!-- Barra de Acciones Final -->
       <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap:15px;">
-        <a href="admin/cobertura.html" target="_blank" style="color: var(--blue); font-weight:600; text-decoration: none;">🗺️ Abrir Mapa de Cobertura</a>
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+          <a href="admin/cobertura.html" target="_blank" style="color: var(--blue); font-weight:600; text-decoration: none;">🗺️ Abrir Mapa de Cobertura</a>
+          <a href="admin/cotizador.html" target="_blank" style="color: var(--blue); font-weight:600; text-decoration: none;">🧮 Abrir Cotizador de Promociones</a>
+        </div>
         <button class="btn" @click="saveData" :disabled="isSaving">{{ isSaving ? 'Guardando en la nube...' : '💾 Guardar Todos los Cambios' }}</button>
       </div>
       

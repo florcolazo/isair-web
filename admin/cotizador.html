@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Cotizador de Promociones - ISAIR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --blue: #0072ff; --navy: #1f2d5a; --red: #e62a22; --paper: #f4f6fa; --text: #1a1a2e; --muted: #667085; --line: #e3e7ef; --soft: #fdeee6; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--paper); color: var(--text); margin: 0; padding: 16px; }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    h1, h2, h3 { font-family: 'Sora', sans-serif; }
+    h1 { color: var(--navy); margin: 8px 0 4px; font-size: 26px; }
+    .sub { color: var(--muted); margin: 0 0 20px; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.06); padding: 20px; margin-bottom: 18px; }
+    .card h2 { margin: 0 0 14px; font-size: 18px; color: var(--navy); }
+    .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+    input[type=text], input[type=number], input[type=date], select { width: 100%; padding: 9px 10px; border: 1px solid #ccd3df; border-radius: 8px; font: inherit; font-size: 14px; background: #fff; }
+    input[type=number] { text-align: right; }
+    input.qty { width: 80px; background: var(--soft); }
+    input.price { width: 130px; }
+    input.pct { width: 80px; }
+    input.months { width: 80px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: var(--red); color: #fff; text-align: left; padding: 8px 10px; font-weight: 600; white-space: nowrap; }
+    td { padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    td.num, th.num { text-align: right; white-space: nowrap; }
+    tr.selected td { background: #f0f6ff; }
+    .scroll { overflow-x: auto; }
+    .btn { display: inline-block; padding: 9px 16px; background: var(--red); color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn:hover { filter: brightness(.92); }
+    .btn.blue { background: var(--blue); }
+    .btn.ghost { background: #fff; color: var(--navy); border: 1px solid #ccd3df; }
+    .btn.small { padding: 5px 10px; font-size: 12px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: #e8f5e9; color: #1b5e20; }
+    .tag.fixed { background: #fff3e0; color: #8a4b00; }
+    .tag.inst { background: #ede7f6; color: #4527a0; }
+    details > summary { cursor: pointer; font-family: 'Sora', sans-serif; font-weight: 600; color: var(--navy); font-size: 18px; }
+    details[open] > summary { margin-bottom: 14px; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .empty { color: var(--muted); padding: 20px; text-align: center; }
+
+    /* ---------- Hoja para el cliente ---------- */
+    .sheet { background: #fff; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,.06); padding: 28px; }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 3px solid var(--navy); padding-bottom: 12px; margin-bottom: 16px; }
+    .sheet-head img { height: 54px; }
+    .sheet-head h2 { margin: 0; color: var(--navy); font-size: 20px; text-align: right; }
+    .sheet-head .meta { text-align: right; color: var(--muted); font-size: 13px; }
+    .sheet h3 { color: var(--navy); font-size: 15px; margin: 20px 0 8px; }
+    .sheet th { background: var(--navy); }
+    .sheet tfoot td { font-weight: 700; background: #eef1f8; }
+    .bands td.total { font-weight: 700; font-size: 16px; color: var(--navy); }
+    .bands .desc { font-weight: 700; color: var(--red); }
+    .after { margin-top: 12px; padding: 10px 14px; background: #f6f7fb; border-left: 4px solid var(--navy); border-radius: 6px; font-size: 14px; }
+    .note { font-size: 11.5px; color: var(--muted); margin-top: 18px; line-height: 1.5; }
+    .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 14px; }
+    .kpi { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+    .kpi .l { font-size: 12px; color: var(--muted); }
+    .kpi .v { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); }
+    .bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--line); min-width: 90px; }
+    .bar span { display: block; height: 100%; background: var(--blue); }
+
+    @media print {
+      @page { size: A4; margin: 12mm; }
+      body { background: #fff; padding: 0; }
+      .no-print { display: none !important; }
+      .sheet { box-shadow: none; padding: 0; border-radius: 0; }
+      th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sheet tfoot td, .after, .bar, .bar span { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      table { font-size: 12px; }
+      tr { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="no-print">
+    <h1>Cotizador de promociones</h1>
+    <p class="sub">Cargá los servicios del cliente y la promo. Se calcula el abono mensual de cada tramo, incluyendo cámaras y cuotas de instalación, listo para imprimir.</p>
+
+    <!-- ===== Datos del cliente + promo ===== -->
+    <div class="card">
+      <h2>1. Cliente y promoción</h2>
+      <div class="grid2">
+        <div><label for="cliente">Cliente</label><input type="text" id="cliente" placeholder="Nombre y apellido"></div>
+        <div><label for="direccion">Dirección / localidad</label><input type="text" id="direccion" placeholder="Opcional"></div>
+        <div><label for="vendedor">Asesor</label><input type="text" id="vendedor" placeholder="Opcional"></div>
+        <div><label for="fecha">Fecha</label><input type="date" id="fecha"></div>
+        <div><label for="promoSel">Promoción</label><select id="promoSel"></select></div>
+      </div>
+    </div>
+
+    <!-- ===== Servicios ===== -->
+    <div class="card">
+      <h2>2. Servicios</h2>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Servicio</th><th>Tipo</th><th class="num">Precio lista</th><th class="num">Cantidad</th></tr></thead>
+          <tbody id="qtyBody"></tbody>
+        </table>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" id="clearQty">Limpiar cantidades</button>
+      </div>
+    </div>
+
+    <!-- ===== Configuración ===== -->
+    <div class="card">
+      <details id="cfgDetails">
+        <summary>⚙️ Precios y promociones (configuración)</summary>
+
+        <h3 style="font-size:15px;color:var(--navy)">Lista de precios</h3>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Servicio</th><th>Tipo</th><th class="num">Precio</th><th class="num">Cuotas</th><th></th></tr></thead>
+            <tbody id="itemsBody"></tbody>
+          </table>
+        </div>
+        <p class="hint">
+          <b>Con descuento</b>: se le aplica el % de la promo. <b>Precio fijo</b>: se cobra siempre igual (ej. abono de cámara).
+          <b>Instalación en cuotas</b>: el precio total se divide en las cuotas indicadas y se suma al abono los primeros meses.
+        </p>
+        <div class="row" style="margin:10px 0 18px">
+          <button class="btn blue small" id="addItem">+ Agregar servicio</button>
+          <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500">
+            Aplicar aumento a todos ×<input type="number" id="factor" class="pct" step="0.01" value="1.02">
+          </label>
+          <button class="btn ghost small" id="applyFactor">Aplicar</button>
+        </div>
+
+        <h3 style="font-size:15px;color:var(--navy)">Promoción seleccionada: tramos de descuento</h3>
+        <div class="row" style="margin-bottom:10px">
+          <div style="flex:1;min-width:220px"><label for="promoName">Nombre de la promo</label><input type="text" id="promoName"></div>
+          <button class="btn blue small" id="newPromo">+ Nueva promo</button>
+          <button class="btn ghost small" id="delPromo">Eliminar promo</button>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Tramo</th><th class="num">Duración (meses)</th><th class="num">Descuento %</th><th>Meses</th><th></th></tr></thead>
+            <tbody id="stagesBody"></tbody>
+          </table>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn blue small" id="addStage">+ Agregar tramo</button>
+        </div>
+
+        <div class="row" style="margin-top:22px;border-top:1px solid var(--line);padding-top:14px">
+          <button class="btn ghost small" id="resetCfg">Restaurar valores originales</button>
+          <span class="hint">Los cambios se guardan automáticamente en este navegador.</span>
+        </div>
+      </details>
+    </div>
+
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn" id="printBtn">🖨️ Imprimir / guardar PDF para el cliente</button>
+      <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500">
+        <input type="checkbox" id="showMonthly"> Incluir detalle mes a mes en la impresión
+      </label>
+    </div>
+  </div>
+
+  <!-- ===== Hoja imprimible ===== -->
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+(function () {
+  const STORAGE_KEY = 'isair-cotizador-v1';
+
+  // Precios de octubre (septiembre × 1,02; Fútbol Premium sin aumento).
+  const DEFAULT_ITEMS = [
+    { id: 'f300',  nombre: 'Fibra óptica 300 MB',                       precio: 69408.45,  tipo: 'desc' },
+    { id: 'f800',  nombre: 'Fibra óptica 800 MB',                       precio: 175062.71, tipo: 'desc' },
+    { id: 'onu',   nombre: 'Mantenimiento y soporte ONU WiFi',          precio: 5312.20,   tipo: 'desc' },
+    { id: 'ba15',  nombre: 'Internet banda ancha 15 Plus',              precio: 52713.02,  tipo: 'desc' },
+    { id: 'ba6',   nombre: 'Internet banda ancha 6 Plus',               precio: 52713.02,  tipo: 'desc' },
+    { id: 'rout',  nombre: 'Mantenimiento y soporte / Router WiFi',     precio: 4205.49,   tipo: 'desc' },
+    { id: 'istv',  nombre: 'Servicio ISTV Move',                        precio: 28039.99,  tipo: 'desc' },
+    { id: 'tv',    nombre: 'Servicio de TV',                            precio: 41288.00,  tipo: 'desc' },
+    { id: 'stb',   nombre: '1 STB adicional',                           precio: 9300.00,   tipo: 'desc' },
+    { id: 'fut',   nombre: 'Fútbol Premium',                            precio: 27260.00,  tipo: 'desc' },
+    { id: 'mx2',   nombre: 'WiFi Mesh Premium x2',                      precio: 12103.21,  tipo: 'desc' },
+    { id: 'mx3',   nombre: 'WiFi Mesh Premium x3',                      precio: 18132.09,  tipo: 'desc' },
+    { id: 'mx4',   nombre: 'WiFi Mesh Premium x4',                      precio: 24176.15,  tipo: 'desc' },
+    { id: 'cam',   nombre: 'IS Cam (abono por cámara)',                 precio: 9752.32,   tipo: 'fijo' },
+    { id: 'insti', nombre: 'Instalación cámara IS x1 (interna)',        precio: 55719.19,  tipo: 'inst', cuotas: 6 },
+    { id: 'inste', nombre: 'Instalación cámara IS x1 (externa)',        precio: 111438.37, tipo: 'inst', cuotas: 6 },
+  ];
+
+  const DEFAULT_PROMOS = [
+    { id: 'p65', nombre: 'Promo escalonada 65% – 24 meses', etapas: [
+      { meses: 4, desc: 65 }, { meses: 4, desc: 60 }, { meses: 4, desc: 55 },
+      { meses: 4, desc: 50 }, { meses: 4, desc: 45 }, { meses: 4, desc: 40 } ] },
+    { id: 'p60', nombre: 'Promo escalonada 60% – 24 meses', etapas: [
+      { meses: 4, desc: 60 }, { meses: 4, desc: 55 }, { meses: 4, desc: 50 },
+      { meses: 4, desc: 45 }, { meses: 4, desc: 40 }, { meses: 4, desc: 35 } ] },
+  ];
+
+  const TIPOS = { desc: 'Con descuento', fijo: 'Precio fijo', inst: 'Instalación en cuotas' };
+  const TAG_CLASS = { desc: 'tag', fijo: 'tag fixed', inst: 'tag inst' };
+
+  const money = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt = n => money.format(Math.round(n * 100) / 100);
+  const round2 = n => Math.round(n * 100) / 100;
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const clone = o => JSON.parse(JSON.stringify(o));
+  const uid = () => Math.random().toString(36).slice(2, 9);
+
+  let state = load();
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (s && Array.isArray(s.items) && Array.isArray(s.promos) && s.promos.length) return s;
+    } catch (e) { /* sin almacenamiento: usar valores por defecto */ }
+    return { items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS), promoId: DEFAULT_PROMOS[0].id, qty: {} };
+  }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) { /* ignorar */ }
+  }
+  const promo = () => state.promos.find(p => p.id === state.promoId) || state.promos[0];
+
+  // ---------- Cálculo ----------
+  function compute() {
+    const p = promo();
+    const lines = state.items
+      .map(it => ({ ...it, qty: Number(state.qty[it.id]) || 0 }))
+      .filter(it => it.qty > 0);
+
+    const promoMonths = p.etapas.reduce((a, e) => a + (Number(e.meses) || 0), 0);
+    const maxCuotas = Math.max(0, ...lines.filter(l => l.tipo === 'inst').map(l => Number(l.cuotas) || 1));
+    const totalMonths = Math.max(promoMonths, maxCuotas);
+
+    const months = [];
+    let m = 1;
+    const discountAt = [];
+    p.etapas.forEach(e => { for (let i = 0; i < (Number(e.meses) || 0); i++) discountAt.push(Number(e.desc) || 0); });
+
+    for (m = 1; m <= totalMonths; m++) {
+      const desc = m <= discountAt.length ? discountAt[m - 1] : 0;
+      let servicios = 0, fijo = 0, inst = 0, lista = 0;
+      lines.forEach(l => {
+        if (l.tipo === 'desc') { servicios += round2(l.precio * (1 - desc / 100)) * l.qty; lista += l.precio * l.qty; }
+        else if (l.tipo === 'fijo') { fijo += l.precio * l.qty; }
+        else if (l.tipo === 'inst') { const c = Number(l.cuotas) || 1; if (m <= c) inst += round2(l.precio / c) * l.qty; }
+      });
+      months.push({ m, desc, servicios, fijo, inst, lista, total: servicios + fijo + inst });
+    }
+
+    // Agrupar meses consecutivos con el mismo importe en tramos.
+    const bands = [];
+    months.forEach(x => {
+      const last = bands[bands.length - 1];
+      if (last && last.desc === x.desc && Math.abs(last.total - x.total) < 0.005) { last.to = x.m; }
+      else bands.push({ from: x.m, to: x.m, ...x });
+    });
+
+    // Precio sin promo (lo que paga al terminar todo).
+    const after = lines.reduce((a, l) => a + (l.tipo === 'inst' ? 0 : l.precio * l.qty), 0);
+    const totalPeriodo = months.reduce((a, x) => a + x.total, 0);
+    const totalLista = months.reduce((a, x) => a + x.lista + x.fijo + x.inst, 0);
+
+    return { p, lines, months, bands, after, totalMonths, totalPeriodo, ahorro: totalLista - totalPeriodo };
+  }
+
+  // ---------- Render: cantidades ----------
+  function renderQty() {
+    document.getElementById('qtyBody').innerHTML = state.items.map(it => `
+      <tr class="${(Number(state.qty[it.id]) || 0) > 0 ? 'selected' : ''}">
+        <td>${esc(it.nombre)}</td>
+        <td><span class="${TAG_CLASS[it.tipo]}">${it.tipo === 'inst' ? `${Number(it.cuotas) || 1} cuotas` : TIPOS[it.tipo]}</span></td>
+        <td class="num">${fmt(it.precio)}</td>
+        <td class="num"><input type="number" class="qty" min="0" step="1" data-qty="${it.id}" value="${Number(state.qty[it.id]) || 0}"></td>
+      </tr>`).join('');
+  }
+
+  // ---------- Render: configuración ----------
+  function renderItems() {
+    document.getElementById('itemsBody').innerHTML = state.items.map((it, i) => `
+      <tr>
+        <td><input type="text" data-item="${i}" data-f="nombre" value="${esc(it.nombre)}"></td>
+        <td><select data-item="${i}" data-f="tipo">
+          ${Object.entries(TIPOS).map(([k, v]) => `<option value="${k}" ${it.tipo === k ? 'selected' : ''}>${v}</option>`).join('')}
+        </select></td>
+        <td class="num"><input type="number" class="price" step="0.01" min="0" data-item="${i}" data-f="precio" value="${it.precio}"></td>
+        <td class="num">${it.tipo === 'inst' ? `<input type="number" class="months" min="1" step="1" data-item="${i}" data-f="cuotas" value="${Number(it.cuotas) || 6}">` : '—'}</td>
+        <td><button class="btn ghost small" data-del-item="${i}" title="Eliminar">✕</button></td>
+      </tr>`).join('');
+  }
+
+  function renderPromoSel() {
+    document.getElementById('promoSel').innerHTML = state.promos.map(p =>
+      `<option value="${p.id}" ${p.id === promo().id ? 'selected' : ''}>${esc(p.nombre)}</option>`).join('');
+    document.getElementById('promoName').value = promo().nombre;
+  }
+
+  function renderStages() {
+    let start = 1;
+    document.getElementById('stagesBody').innerHTML = promo().etapas.map((e, i) => {
+      const n = Number(e.meses) || 0, from = start, to = start + n - 1;
+      start += n;
+      return `<tr>
+        <td>${i + 1}</td>
+        <td class="num"><input type="number" class="months" min="1" step="1" data-stage="${i}" data-f="meses" value="${e.meses}"></td>
+        <td class="num"><input type="number" class="pct" min="0" max="100" step="1" data-stage="${i}" data-f="desc" value="${e.desc}"></td>
+        <td>${n > 0 ? (from === to ? `Mes ${from}` : `Meses ${from}–${to}`) : '—'}</td>
+        <td><button class="btn ghost small" data-del-stage="${i}" title="Eliminar">✕</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ---------- Render: hoja para el cliente ----------
+  function renderSheet() {
+    const r = compute();
+    const cliente = document.getElementById('cliente').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    const vendedor = document.getElementById('vendedor').value.trim();
+    const fechaVal = document.getElementById('fecha').value;
+    const fecha = fechaVal ? new Date(fechaVal + 'T12:00:00').toLocaleDateString('es-AR') : '';
+    const showMonthly = document.getElementById('showMonthly').checked;
+
+    const head = `
+      <div class="sheet-head">
+        <img src="../assets/images/logo.png" alt="ISAIR">
+        <div>
+          <h2>Presupuesto de abono mensual</h2>
+          <div class="meta">${fecha ? `Fecha: ${esc(fecha)}` : ''}${vendedor ? ` · Asesor: ${esc(vendedor)}` : ''}</div>
+        </div>
+      </div>
+      ${cliente || direccion ? `<p style="margin:0 0 6px"><b>Cliente:</b> ${esc(cliente)}${direccion ? ` &nbsp;·&nbsp; <b>Dirección:</b> ${esc(direccion)}` : ''}</p>` : ''}
+      <p style="margin:0;color:var(--muted);font-size:13px"><b>Promoción:</b> ${esc(r.p.nombre)}</p>`;
+
+    if (!r.lines.length) {
+      document.getElementById('sheet').innerHTML = head + `<div class="empty">Cargá al menos un servicio para ver la cotización.</div>`;
+      return;
+    }
+
+    const hasFijo = r.lines.some(l => l.tipo === 'fijo');
+    const hasInst = r.lines.some(l => l.tipo === 'inst');
+
+    const servicios = `
+      <h3>Servicios contratados</h3>
+      <table>
+        <thead><tr><th>Servicio</th><th class="num">Cant.</th><th class="num">Precio de lista</th><th>Condición</th></tr></thead>
+        <tbody>${r.lines.map(l => `
+          <tr>
+            <td>${esc(l.nombre)}</td>
+            <td class="num">${l.qty}</td>
+            <td class="num">${fmt(l.precio * l.qty)}</td>
+            <td>${l.tipo === 'desc' ? 'Con descuento de la promo'
+                : l.tipo === 'fijo' ? 'Precio fijo mensual (sin descuento)'
+                : `${Number(l.cuotas) || 1} cuotas de ${fmt(round2(l.precio / (Number(l.cuotas) || 1)) * l.qty)}`}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+
+    const maxTotal = Math.max(...r.bands.map(b => b.total), r.after);
+    const bands = `
+      <h3>Cuánto vas a pagar cada mes</h3>
+      <table class="bands">
+        <thead><tr>
+          <th>Meses</th><th class="num">Descuento</th><th class="num">Servicios</th>
+          ${hasFijo ? '<th class="num">Cámaras</th>' : ''}
+          ${hasInst ? '<th class="num">Cuota instalación</th>' : ''}
+          <th class="num">Total por mes</th><th class="no-print"></th>
+        </tr></thead>
+        <tbody>${r.bands.map(b => `
+          <tr>
+            <td>${b.from === b.to ? `Mes ${b.from}` : `Meses ${b.from} a ${b.to}`}</td>
+            <td class="num desc">${b.desc ? `${b.desc}%` : '—'}</td>
+            <td class="num">${fmt(b.servicios)}</td>
+            ${hasFijo ? `<td class="num">${fmt(b.fijo)}</td>` : ''}
+            ${hasInst ? `<td class="num">${b.inst ? fmt(b.inst) : '—'}</td>` : ''}
+            <td class="num total">${fmt(b.total)}</td>
+            <td class="no-print"><div class="bar"><span style="width:${(b.total / maxTotal * 100).toFixed(1)}%"></span></div></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="after">Desde el mes <b>${r.totalMonths + 1}</b>, finalizada la promoción, el abono pasa a precio de lista:
+        <b>${fmt(r.after)}</b> por mes (a valores de hoy).</div>
+      <div class="kpis">
+        <div class="kpi"><div class="l">Total a pagar en ${r.totalMonths} meses</div><div class="v">${fmt(r.totalPeriodo)}</div></div>
+        <div class="kpi"><div class="l">Promedio mensual</div><div class="v">${fmt(r.totalPeriodo / r.totalMonths)}</div></div>
+        <div class="kpi"><div class="l">Ahorro con la promo</div><div class="v" style="color:#1b7f3b">${fmt(r.ahorro)}</div></div>
+      </div>`;
+
+    const monthly = showMonthly ? `
+      <h3>Detalle mes a mes</h3>
+      <table>
+        <thead><tr><th>Mes</th><th class="num">Desc.</th><th class="num">Servicios</th>
+          ${hasFijo ? '<th class="num">Cámaras</th>' : ''}${hasInst ? '<th class="num">Instalación</th>' : ''}<th class="num">Total</th></tr></thead>
+        <tbody>${r.months.map(x => `
+          <tr><td>${x.m}</td><td class="num">${x.desc ? x.desc + '%' : '—'}</td><td class="num">${fmt(x.servicios)}</td>
+            ${hasFijo ? `<td class="num">${fmt(x.fijo)}</td>` : ''}${hasInst ? `<td class="num">${x.inst ? fmt(x.inst) : '—'}</td>` : ''}
+            <td class="num"><b>${fmt(x.total)}</b></td></tr>`).join('')}
+        </tbody>
+        <tfoot><tr><td colspan="${3 + hasFijo + hasInst}">Total</td><td class="num">${fmt(r.totalPeriodo)}</td></tr></tfoot>
+      </table>` : '';
+
+    const notas = [
+      'La promoción es escalonada: el descuento se aplica sobre el precio de lista de los servicios y va disminuyendo según los tramos indicados.',
+      hasFijo ? 'El abono de las cámaras es un precio fijo mensual y no tiene descuento.' : '',
+      hasInst ? 'El cargo de instalación de cámaras se abona en cuotas que se suman al abono de los primeros meses.' : '',
+      'Los importes están expresados a valores vigentes a la fecha y pueden variar si se actualizan las tarifas.',
+    ].filter(Boolean);
+
+    document.getElementById('sheet').innerHTML = head + servicios + bands + monthly +
+      `<div class="note">${notas.map(n => '• ' + n).join('<br>')}</div>`;
+  }
+
+  function renderAll() { renderPromoSel(); renderStages(); renderItems(); renderQty(); renderSheet(); }
+
+  // ---------- Eventos ----------
+  document.addEventListener('input', ev => {
+    const t = ev.target;
+    if (t.dataset.qty) {
+      state.qty[t.dataset.qty] = Math.max(0, parseInt(t.value, 10) || 0);
+      t.closest('tr').classList.toggle('selected', state.qty[t.dataset.qty] > 0);
+      save(); renderSheet();
+    } else if (t.dataset.item !== undefined) {
+      const it = state.items[+t.dataset.item], f = t.dataset.f;
+      it[f] = (f === 'precio' || f === 'cuotas') ? (parseFloat(t.value) || 0) : t.value;
+      if (f === 'tipo' && it.tipo === 'inst' && !it.cuotas) it.cuotas = 6;
+      save(); renderQty(); renderSheet();
+      if (f === 'tipo') renderItems();
+    } else if (t.dataset.stage !== undefined) {
+      promo().etapas[+t.dataset.stage][t.dataset.f] = parseFloat(t.value) || 0;
+      save(); renderSheet();
+      // Refrescar la columna "Meses" sin perder el foco del input.
+      let start = 1;
+      document.querySelectorAll('#stagesBody tr').forEach((tr, i) => {
+        const n = Number(promo().etapas[i].meses) || 0, from = start, to = start + n - 1;
+        start += n;
+        tr.children[3].textContent = n > 0 ? (from === to ? `Mes ${from}` : `Meses ${from}–${to}`) : '—';
+      });
+    } else if (t.id === 'promoName') {
+      promo().nombre = t.value; save();
+      document.querySelector(`#promoSel option[value="${promo().id}"]`).textContent = t.value;
+      renderSheet();
+    } else if (['cliente', 'direccion', 'vendedor', 'fecha', 'showMonthly'].includes(t.id)) {
+      renderSheet();
+    }
+  });
+  document.addEventListener('change', ev => {
+    if (ev.target.id === 'promoSel') { state.promoId = ev.target.value; save(); renderAll(); }
+    if (ev.target.id === 'showMonthly') renderSheet();
+  });
+  document.addEventListener('click', ev => {
+    const t = ev.target.closest('button');
+    if (!t) return;
+    if (t.dataset.delItem !== undefined) {
+      const it = state.items[+t.dataset.delItem];
+      if (confirm(`¿Eliminar "${it.nombre}"?`)) { state.items.splice(+t.dataset.delItem, 1); delete state.qty[it.id]; save(); renderAll(); }
+    } else if (t.dataset.delStage !== undefined) {
+      if (promo().etapas.length > 1) { promo().etapas.splice(+t.dataset.delStage, 1); save(); renderStages(); renderSheet(); }
+    } else switch (t.id) {
+      case 'addItem': state.items.push({ id: uid(), nombre: 'Nuevo servicio', precio: 0, tipo: 'desc' }); save(); renderAll(); break;
+      case 'addStage': {
+        const last = promo().etapas[promo().etapas.length - 1];
+        promo().etapas.push({ meses: last ? last.meses : 4, desc: last ? Math.max(0, last.desc - 5) : 0 });
+        save(); renderStages(); renderSheet(); break;
+      }
+      case 'newPromo': {
+        const nombre = prompt('Nombre de la nueva promoción:', 'Nueva promo');
+        if (!nombre) break;
+        const p = { id: uid(), nombre, etapas: clone(promo().etapas) };
+        state.promos.push(p); state.promoId = p.id; save(); renderAll(); break;
+      }
+      case 'delPromo':
+        if (state.promos.length < 2) { alert('Tiene que quedar al menos una promoción.'); break; }
+        if (confirm(`¿Eliminar "${promo().nombre}"?`)) {
+          state.promos = state.promos.filter(p => p.id !== promo().id); state.promoId = state.promos[0].id; save(); renderAll();
+        }
+        break;
+      case 'applyFactor': {
+        const f = parseFloat(document.getElementById('factor').value);
+        if (!f || f <= 0) break;
+        if (confirm(`¿Multiplicar todos los precios por ${f}? (Para excluir un servicio, corregí su precio después.)`)) {
+          state.items.forEach(it => { it.precio = round2(it.precio * f); }); save(); renderAll();
+        }
+        break;
+      }
+      case 'resetCfg':
+        if (confirm('¿Restaurar precios y promociones originales? Se pierden los cambios.')) {
+          state.items = clone(DEFAULT_ITEMS); state.promos = clone(DEFAULT_PROMOS); state.promoId = DEFAULT_PROMOS[0].id; save(); renderAll();
+        }
+        break;
+      case 'clearQty': state.qty = {}; save(); renderQty(); renderSheet(); break;
+      case 'printBtn': window.print(); break;
+    }
+  });
+
+  document.getElementById('fecha').value = new Date().toISOString().slice(0, 10);
+  renderAll();
+})();
+</script>
+</body>
+</html>
