@@ -1,4 +1,4 @@
-import type { SelectedPlan, Zone, Prices } from '../types';
+import type { Banner, SelectedPlan, Zone, Prices } from '../types';
 import Hero             from '../components/Hero';
 import CoverageChecker  from '../components/CoverageChecker';
 import { FibraPlans, WirelessPlans } from '../components/Plans';
@@ -6,7 +6,7 @@ import ServicesPromo    from '../components/ServicesPromo';
 
 interface Props {
   prices: Prices;
-  banners: {id: string, imagen: string}[];
+  banners: Banner[];
   zone: Zone;
   prefillAddr: string;
   setZone: (zone: Zone) => void;
@@ -24,7 +24,7 @@ export default function HomePage({
 }: Props) {
   return (
     <>
-      <Hero onSelectPlan={handleSelect} banners={banners} />
+      <Hero banners={banners} />
       <CoverageChecker
         onZoneDetected={setZone}
         onAddressFound={setPrefill}

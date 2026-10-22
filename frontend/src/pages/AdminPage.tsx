@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Prices } from '../types';
+import type { Banner, Prices } from '../types';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -8,7 +8,8 @@ export default function AdminPage() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
   const [prices, setPrices] = useState<Prices>({});
-  const [banners, setBanners] = useState<{id: string, imagen: string}[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [bannerLink, setBannerLink] = useState('#formulario');
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'ok' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -75,7 +76,7 @@ export default function AdminPage() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ imagen: base64 })
+          body: JSON.stringify({ imagen: base64, enlace: bannerLink })
         });
         
         if (!res.ok) throw new Error('Error al subir banner');
@@ -83,6 +84,7 @@ export default function AdminPage() {
         // Reload banners
         const newBanners = await fetch(`${API_URL}/api/agencias/${agenciaId}/banners`).then(r => r.json());
         setBanners(newBanners);
+        setBannerLink('#formulario');
       } catch (err: any) {
         alert(err.message);
       }
@@ -219,7 +221,17 @@ export default function AdminPage() {
           Subí imágenes para que vayan pasando en la cabecera de la página principal.
         </p>
         
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '20px', display: 'grid', gap: '10px' }}>
+          <label style={{ display: 'grid', gap: '6px', color: '#555', fontSize: '14px' }}>
+            Enlace al hacer clic (opcional)
+            <input
+              type="text"
+              value={bannerLink}
+              onChange={e => setBannerLink(e.target.value)}
+              placeholder="#formulario o https://ejemplo.com"
+              style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '6px' }}
+            />
+          </label>
           <label style={{ display: 'inline-block', background: '#10b950', color: '#fff', padding: '10px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
             + Subir nueva imagen
             <input type="file" accept="image/*" onChange={handleBannerUpload} style={{ display: 'none' }} />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { SelectedPlan, Zone, Prices } from './types';
+import type { Banner, SelectedPlan, Zone, Prices } from './types';
 import Navbar        from './components/Navbar';
 import HomePage      from './pages/HomePage';
 import Footer        from './components/Footer';
@@ -9,7 +9,7 @@ export default function App() {
   const [zone, setZone]           = useState<Zone>(null);
   const [prices, setPrices]       = useState<Prices>({});
   const [prefillAddr, setPrefill] = useState('');
-  const [banners, setBanners]     = useState<{id: string, imagen: string}[]>([]);
+  const [banners, setBanners]     = useState<Banner[]>([]);
 
   // Cargar precios y banners dinámicos
   useEffect(() => {

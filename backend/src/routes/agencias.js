@@ -2,6 +2,8 @@ const express  = require('express');
 const crypto   = require('crypto');
 const { getDB } = require('../db');
 const { authMiddleware } = require('../middleware/auth');
+const { normalizeBannerLink } = require('../banner-links');
+const { detectZone } = require('../coverage');
 
 const router = express.Router();
 
@@ -45,8 +47,34 @@ router.put('/:id/precios', authMiddleware, async (req, res) => {
 
 // ── Cobertura ─────────────────────────────────────────────────
 
-// GET /api/agencias/:id/coverage  (público — el mapa lo consume)
-router.get('/:id/coverage', async (req, res) => {
+async function loadCoverage(agenciaId) {
+  const db = getDB();
+  const row = await db.get('SELECT geojson FROM coverage WHERE agencia_id = ?', [agenciaId]);
+  return row ? JSON.parse(row.geojson) : { type: 'FeatureCollection', features: [] };
+}
+
+// GET /api/agencias/:id/coverage/check?lat=..&lng=..  (público — solo dice qué zona hay, no las zonas)
+router.get('/:id/coverage/check', async (req, res) => {
+  const lat = Number(req.query.lat);
+  const lng = Number(req.query.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return res.status(400).json({ error: 'lat y lng son requeridos' });
+  }
+  try {
+    const { features = [] } = await loadCoverage(req.params.id);
+    res.json({ zona: detectZone(lat, lng, features) });
+  } catch {
+    res.status(500).json({ error: 'GeoJSON corrupto' });
+  }
+});
+
+// GET /api/agencias/:id/coverage  (requiere JWT — lo usa el editor de cobertura)
+router.get('/:id/coverage', authMiddleware, async (req, res) => {
+  const { agencia_id: tokenAgencia, es_superadmin } = req.user;
+  if (!es_superadmin && tokenAgencia !== req.params.id) {
+    return res.status(403).json({ error: 'No tenés permiso para ver esta agencia' });
+  }
+
   const db = getDB();
   const row = await db.get('SELECT * FROM coverage WHERE agencia_id = ?', [req.params.id]);
   if (!row) {
@@ -91,7 +119,7 @@ router.put('/:id/coverage', authMiddleware, async (req, res) => {
 // GET /api/agencias/:id/banners
 router.get('/:id/banners', async (req, res) => {
   const db = getDB();
-  const rows = await db.all('SELECT id, imagen FROM banners WHERE agencia_id = ? ORDER BY orden ASC, created_at ASC', [req.params.id]);
+  const rows = await db.all('SELECT id, imagen, enlace FROM banners WHERE agencia_id = ? ORDER BY orden ASC, created_at ASC', [req.params.id]);
   res.json(rows);
 });
 
@@ -104,14 +132,17 @@ router.post('/:id/banners', authMiddleware, async (req, res) => {
     return res.status(403).json({ error: 'No tenés permiso para editar esta agencia' });
   }
 
-  const { imagen } = req.body;
+  const { imagen, enlace } = req.body;
   if (!imagen || !imagen.startsWith('data:image/')) {
     return res.status(400).json({ error: 'Formato de imagen inválido' });
   }
 
   const db = getDB();
   const bannerId = crypto.randomUUID();
-  await db.run('INSERT INTO banners (id, agencia_id, imagen) VALUES (?, ?, ?)', [bannerId, id, imagen]);
+  await db.run(
+    'INSERT INTO banners (id, agencia_id, imagen, enlace) VALUES (?, ?, ?, ?)',
+    [bannerId, id, imagen, normalizeBannerLink(enlace)]
+  );
   
   res.json({ ok: true, id: bannerId });
 });

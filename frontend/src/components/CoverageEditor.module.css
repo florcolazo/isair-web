@@ -28,6 +28,7 @@
   gap: 10px;
   margin-left: 8px;
   flex: 1;
+  flex-wrap: wrap;
 }
 .zoneLabel { font-size: 12px; color: rgba(255,255,255,.55); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; white-space: nowrap; }
 
@@ -226,3 +227,53 @@
 @media (max-width: 640px) {
   .sidebar { display: none; }
 }
+
+/* ── Pincel ── */
+.zoneBtn:disabled { opacity: .4; cursor: not-allowed; }
+
+.widthControl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,.55);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.widthControl input { width: 110px; accent-color: #10b950; }
+.widthControl strong {
+  color: #fff;
+  font-size: 13px;
+  letter-spacing: 0;
+  min-width: 44px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: rgba(16,185,80,.08);
+  border: 1px solid rgba(16,185,80,.25);
+  border-radius: 10px;
+}
+.stats strong { font-size: 18px; color: #10b950; }
+.stats span   { font-size: 11px; color: rgba(255,255,255,.5); }
+
+.loadError {
+  padding: 12px 14px;
+  background: rgba(230,42,34,.1);
+  border: 1px solid rgba(230,42,34,.35);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255,255,255,.85);
+}
+.loadError p { margin: 0 0 8px; }
+.loadError a { color: #fff; font-weight: 700; }

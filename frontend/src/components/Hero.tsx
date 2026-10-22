@@ -1,34 +1,33 @@
-import type { SelectedPlan } from '../types';
-import { spawnSoccerBall } from '../utils';
+import type { Banner } from '../types';
 import styles from './Hero.module.css';
 
 interface Props {
-  onSelectPlan: (plan: SelectedPlan) => void;
-  banners?: {id: string, imagen: string}[];
+  banners?: Banner[];
 }
 
-export default function Hero({ onSelectPlan, banners = [] }: Props) {
-  const handleBannerClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onSelectPlan({ name: '', price: '', futbol: true });
-    for (let i = 0; i < 30; i++) spawnSoccerBall();
-    document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' });
-  };
+export default function Hero({ banners = [] }: Props) {
+  const sliderBanners: Banner[] = [
+    { id: 'is-tv-mothers-month', imagen: '/banner-istv.png', enlace: '#formulario' },
+    ...banners,
+  ];
 
   return (
     <section className={styles.hero}>
       {/* Banners */}
       {banners.length > 0 ? (
         <div className={styles.slider}>
-          {banners.map(b => (
-            <div key={b.id} className={styles.slide}>
-              <img src={b.imagen} alt="Banner Promocional" />
-            </div>
-          ))}
+          {sliderBanners.map(b => {
+            const image = <img src={b.imagen} alt={b.id === 'is-tv-mothers-month' ? 'Promoción IS TV' : 'Banner Promocional'} />;
+            return (
+              <div key={b.id} className={styles.slide}>
+                {b.enlace ? <a href={b.enlace} className={styles.slideLink}>{image}</a> : image}
+              </div>
+            );
+          })}
         </div>
       ) : (
-        <a href="#formulario" onClick={handleBannerClick} className={styles.bannerLink}>
-          <img src="/banner-promo.png" alt="Promoción Fútbol" className={styles.banner} />
+        <a href="#formulario" className={styles.bannerLink}>
+          <img src="/banner-istv.png" alt="Promoción IS TV" className={styles.banner} />
         </a>
       )}
 

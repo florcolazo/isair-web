@@ -124,10 +124,3 @@
   .inputRow { flex-direction: column; }
   .widget { padding: 22px; }
 }
-
-/* Map wrapper — full width below the top row */
-.mapWrapper {
-  margin-top: 40px;
-  position: relative;
-  z-index: 1;
-}

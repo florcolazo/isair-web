@@ -1,0 +1,123 @@
+{
+  "actualizado": "2026-10-20T00:00:00.000Z",
+  "items": [
+    {
+      "id": "f300",
+      "nombre": "Fibra óptica 300 MB",
+      "precio": 69408.45,
+      "tipo": "desc"
+    },
+    {
+      "id": "f800",
+      "nombre": "Fibra óptica 800 MB",
+      "precio": 175062.71,
+      "tipo": "desc"
+    },
+    {
+      "id": "instnet",
+      "nombre": "Instalación servicio de internet",
+      "precio": 0,
+      "tipo": "free"
+    },
+    {
+      "id": "onu",
+      "nombre": "Mantenimiento y soporte ONU WiFi",
+      "precio": 5312.2,
+      "tipo": "desc"
+    },
+    {
+      "id": "ba30",
+      "nombre": "Internet banda ancha 30 MB Plus",
+      "precio": 52713.02,
+      "tipo": "desc"
+    },
+    {
+      "id": "rout",
+      "nombre": "Mantenimiento y soporte / Router WiFi",
+      "precio": 4205.49,
+      "tipo": "desc"
+    },
+    {
+      "id": "istv",
+      "nombre": "Servicio ISTV Move",
+      "precio": 28039.99,
+      "tipo": "desc"
+    },
+    {
+      "id": "tv",
+      "nombre": "Servicio de TV Full",
+      "precio": 41288,
+      "tipo": "desc",
+      "detalle": "Incluye convertidor Android"
+    },
+    {
+      "id": "stb",
+      "nombre": "1 STB adicional",
+      "precio": 9300,
+      "tipo": "desc"
+    },
+    {
+      "id": "fut",
+      "nombre": "Fútbol Premium",
+      "precio": 27260,
+      "tipo": "bonif",
+      "gratis": 4
+    },
+    {
+      "id": "mx2",
+      "nombre": "WiFi Mesh Premium x2",
+      "precio": 12103.21,
+      "tipo": "desc"
+    },
+    {
+      "id": "mx3",
+      "nombre": "WiFi Mesh Premium x3",
+      "precio": 18132.09,
+      "tipo": "desc"
+    },
+    {
+      "id": "mx4",
+      "nombre": "WiFi Mesh Premium x4",
+      "precio": 24176.15,
+      "tipo": "desc"
+    },
+    {
+      "id": "cam",
+      "nombre": "IS Cam (abono por cámara)",
+      "precio": 9752.32,
+      "tipo": "fijo"
+    },
+    {
+      "id": "insti",
+      "nombre": "Instalación cámara IS x1 (interna)",
+      "precio": 55719.19,
+      "tipo": "inst",
+      "cuotas": 6
+    },
+    {
+      "id": "inste",
+      "nombre": "Instalación cámara IS x1 (externa)",
+      "precio": 111438.37,
+      "tipo": "inst",
+      "cuotas": 6
+    }
+  ],
+  "promos": [
+    {
+      "id": "p65",
+      "nombre": "Promo escalonada 65%",
+      "inicio": 65,
+      "baja": 5,
+      "cada": 4,
+      "duracion": 24
+    },
+    {
+      "id": "p60",
+      "nombre": "Promo escalonada 60%",
+      "inicio": 60,
+      "baja": 5,
+      "cada": 4,
+      "duracion": 24
+    }
+  ]
+}

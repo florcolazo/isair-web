@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
-import type { Zone, GeoFeature } from '../types';
-import { detectZone, geocodeAddress } from '../utils';
-import CoverageMap from './CoverageMap';
+import { useState } from 'react';
+import type { Zone } from '../types';
+import { geocodeAddress } from '../utils';
 import styles from './CoverageChecker.module.css';
 
 interface Props {
@@ -9,39 +8,27 @@ interface Props {
   onAddressFound?: (addr: string) => void;
 }
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const AGENCIA = import.meta.env.VITE_AGENCIA_ID || 'sanjose';
+
 export default function CoverageChecker({ onZoneDetected, onAddressFound }: Props) {
   const [address, setAddress]   = useState('');
   const [zone, setZone]         = useState<Zone>(null);
   const [loading, setLoading]   = useState(false);
-  const [markerLat, setLat]     = useState<number | null>(null);
-  const [markerLng, setLng]     = useState<number | null>(null);
-  const featuresRef             = useRef<GeoFeature[] | null>(null);
-
-  useEffect(() => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-    const AGENCIA = import.meta.env.VITE_AGENCIA_ID || 'sanjose';
-    
-    fetch(`${API_URL}/api/agencias/${AGENCIA}/coverage`)
-      .then(res => res.json())
-      .then(data => { featuresRef.current = data.features || []; })
-      .catch(e => console.error('Error cargando zonas:', e));
-  }, []);
 
   const run = async () => {
     if (!address.trim()) return;
-    if (!featuresRef.current) { alert('Sistema de cobertura cargando, reintentá.'); return; }
     setLoading(true);
     setZone(null);
-    setLat(null);
-    setLng(null);
     try {
       const { lat, lng } = await geocodeAddress(address);
-      const z = detectZone(lat, lng, featuresRef.current);
-      setZone(z);
-      onZoneDetected(z);
-      setLat(lat);
-      setLng(lng);
-      if (z !== 'sin_cobertura' && z !== 'error') onAddressFound?.(address.trim());
+      // El servidor tiene las zonas y solo responde cuál corresponde a este punto
+      const res = await fetch(`${API_URL}/api/agencias/${AGENCIA}/coverage/check?lat=${lat}&lng=${lng}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { zona } = await res.json() as { zona: Zone };
+      setZone(zona);
+      onZoneDetected(zona);
+      if (zona !== 'sin_cobertura' && zona !== 'error') onAddressFound?.(address.trim());
     } catch {
       setZone('error');
       onZoneDetected('error');
@@ -114,10 +101,6 @@ export default function CoverageChecker({ onZoneDetected, onAddressFound }: Prop
           </div>
         </div>
 
-        {/* Map — full width below */}
-        <div className={styles.mapWrapper}>
-          <CoverageMap markerLat={markerLat} markerLng={markerLng} />
-        </div>
       </div>
     </section>
   );

@@ -24,6 +24,12 @@ export interface SelectedPlan {
   futbol: boolean;
 }
 
+export interface Banner {
+  id: string;
+  imagen: string;
+  enlace?: string | null;
+}
+
 export interface FormData {
   nombre: string;
   telefono: string;
@@ -32,15 +38,6 @@ export interface FormData {
   dni: string;
   horarios: string;
   acceptedTerms: boolean;
-}
-
-export interface GeoFeature {
-  type: 'Feature';
-  properties: { zona: string; nombre: string };
-  geometry: {
-    type: 'Polygon';
-    coordinates: number[][][];
-  };
 }
 
 export type Prices = Record<string, number>;

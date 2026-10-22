@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
+import type { Feature, Polygon } from 'geojson';
+import { addBaseLayers } from './baseLayers';
+import {
+  type Area,
+  addArea, subtractArea, strokeToArea, areaFromFeatures, areaToFeatures, areaParts, areaHectares,
+} from './coverageGeometry';
 import styles from './CoverageEditor.module.css';
 
 // Fix Leaflet default icons
@@ -13,153 +19,239 @@ L.Icon.Default.mergeOptions({
   shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-type ZoneType = 'fibra';
+type Tool = 'pincel' | 'borrador' | 'mover';
 
-interface DrawnZone {
-  id: string;
-  type: ZoneType;
-  layer: L.Polygon;
+const FIBRA_COLOR  = '#10b950';
+const ERASE_COLOR  = '#e62a22';
+const FIBRA_PROPS  = { zona: 'fibra', nombre: 'Zona Fibra Óptica', descripcion: 'Fibra Óptica - San José, Entre Ríos' };
+const MAX_HISTORY  = 40;
+
+const CENTER: L.LatLngTuple = [-32.208, -58.217];
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const AGENCIA = import.meta.env.VITE_AGENCIA_ID || 'sanjose';
+
+// Metros que ocupa un píxel en pantalla, para que el trazo se vea del ancho real
+function metersPerPixel(map: L.Map): number {
+  const lat = map.getCenter().lat;
+  return 40075016.686 * Math.abs(Math.cos(lat * Math.PI / 180)) / Math.pow(2, map.getZoom() + 8);
 }
-
-const ZONE_CONFIG: Record<ZoneType, { color: string; fill: string; label: string; emoji: string }> = {
-  fibra: { color: '#10b950', fill: '#10b950', label: 'Fibra Óptica', emoji: '🟢' },
-};
-
-const CENTER: L.LatLngTuple = [-32.185, -58.174];
 
 export default function CoverageEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef       = useRef<L.Map | null>(null);
-  const drawnRef     = useRef<L.FeatureGroup | null>(null);
-  const [zones, setZones]         = useState<DrawnZone[]>([]);
-  const [, setSaved]              = useState(false);
-  const activeZoneRef             = useRef<ZoneType>('fibra');
+  const areaLayerRef = useRef<L.GeoJSON | null>(null);
 
+  // La zona de fibra vive en un ref (la usan los eventos del mapa) y se copia a estado para la UI
+  const areaRef       = useRef<Area>(null);
+  const otherRef      = useRef<Feature[]>([]);   // zonas que no son fibra: se guardan tal cual
+  const historyRef    = useRef<Area[]>([]);
+  const [area, setAreaState]      = useState<Area>(null);
+  const [canUndo, setCanUndo]     = useState(false);
+  const [dirty, setDirty]         = useState(false);
+  const [loaded, setLoaded]       = useState(false);
+  // Si no se pudo cargar lo guardado no se deja guardar: pisaría la cobertura existente
+  const [loadError, setLoadError] = useState<string | null>(null);
 
+  const [tool, setTool]           = useState<Tool>('pincel');
+  const [width, setWidth]         = useState(100);
+  const toolRef  = useRef<Tool>('pincel');
+  const widthRef = useRef(100);
+
+  const [status, setStatus] = useState<'idle' | 'saving' | 'ok' | 'error'>('idle');
+
+  const render = (a: Area) => {
+    areaLayerRef.current?.clearLayers();
+    if (a) areaLayerRef.current?.addData(a);
+  };
+
+  // Aplica un cambio guardando el estado anterior para poder deshacer
+  const commit = useCallback((next: Area) => {
+    historyRef.current = [...historyRef.current.slice(-(MAX_HISTORY - 1)), areaRef.current];
+    areaRef.current = next;
+    render(next);
+    setAreaState(next);
+    setCanUndo(true);
+    setDirty(true);
+  }, []);
+
+  const undo = useCallback(() => {
+    if (historyRef.current.length === 0) return;
+    const prev = historyRef.current[historyRef.current.length - 1];
+    historyRef.current = historyRef.current.slice(0, -1);
+    areaRef.current = prev;
+    render(prev);
+    setAreaState(prev);
+    setCanUndo(historyRef.current.length > 0);
+    setDirty(true);
+  }, []);
+
+  useEffect(() => { toolRef.current = tool; }, [tool]);
+  useEffect(() => { widthRef.current = width; }, [width]);
+
+  // Mover el mapa solo con la herramienta "mover"; con pincel/borrador arrastrar pinta
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (tool === 'mover') map.dragging.enable(); else map.dragging.disable();
+    map.getContainer().style.cursor = tool === 'mover' ? '' : 'crosshair';
+  }, [tool, loaded]);
+
+  // Ctrl+Z para deshacer
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [undo]);
+
+  // Avisar antes de cerrar la pestaña con cambios sin guardar
+  useEffect(() => {
+    if (!dirty) return;
+    const onLeave = (e: BeforeUnloadEvent) => { e.preventDefault(); };
+    window.addEventListener('beforeunload', onLeave);
+    return () => window.removeEventListener('beforeunload', onLeave);
+  }, [dirty]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
     const map = L.map(containerRef.current, {
       center: CENTER,
-      zoom: 15,
+      zoom: 16,
       scrollWheelZoom: true,
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap',
-      maxZoom: 20,
+    addBaseLayers(map);
+
+    const areaLayer = L.geoJSON(undefined, {
+      interactive: false,
+      style: { color: FIBRA_COLOR, fillColor: FIBRA_COLOR, fillOpacity: 0.3, weight: 2 },
     }).addTo(map);
+    areaLayerRef.current = areaLayer;
 
-    const drawnItems = new L.FeatureGroup();
-    drawnItems.addTo(map);
-    drawnRef.current = drawnItems;
-
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-    const AGENCIA = import.meta.env.VITE_AGENCIA_ID || 'sanjose';
-
-    // Load existing coverage from API as reference (semi-transparent)
-    fetch(`${API_URL}/api/agencias/${AGENCIA}/coverage`)
-      .then(r => r.json())
-      .then(gj => {
-        L.geoJSON(gj, {
-          style: (f) => {
-            const z = f?.properties?.zona as ZoneType;
-            const c = ZONE_CONFIG[z];
-            return { color: c?.color ?? '#888', fillOpacity: 0.07, weight: 1.5, dashArray: '6,4' };
-          },
-        })
-          .bindPopup('Zona existente (referencia)')
-          .addTo(map);
+    // Cargar la cobertura guardada para seguir editándola
+    const token = localStorage.getItem('isair_admin_token');
+    fetch(`${API_URL}/api/agencias/${AGENCIA}/coverage`, {
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+    })
+      .then(r => {
+        if (r.status === 401 || r.status === 403) throw new Error('auth');
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
       })
-      .catch(() => {});
+      .then(gj => {
+        const features: Feature[] = gj.features ?? [];
+        otherRef.current = features.filter(f => f.properties?.zona !== 'fibra');
+        const a = areaFromFeatures(features.filter(f => f.properties?.zona === 'fibra'));
+        areaRef.current = a;
+        render(a);
+        setAreaState(a);
+      })
+      .catch(e => {
+        console.error('Error cargando cobertura:', e);
+        setLoadError(e.message === 'auth'
+          ? 'Tenés que iniciar sesión en el panel de administración para editar la cobertura.'
+          : 'No se pudo cargar la cobertura guardada. Revisá la conexión y recargá la página.');
+      })
+      .finally(() => setLoaded(true));
 
-    // Draw control
+    // ── Pincel / borrador ──
+    // Círculo que sigue al mouse mostrando el ancho del pincel
+    const cursor = L.circle(CENTER, { radius: 1, interactive: false, weight: 1.5, fillOpacity: 0.15 });
+    let stroke: L.Polyline | null = null;
+    let path: [number, number][] = [];
+
+    const brushColor = () => (toolRef.current === 'borrador' ? ERASE_COLOR : FIBRA_COLOR);
+
+    const finishStroke = () => {
+      if (!stroke) return;
+      stroke.remove();
+      stroke = null;
+      const shape = strokeToArea(path, widthRef.current);
+      path = [];
+      if (!shape) return;
+      commit(toolRef.current === 'borrador'
+        ? subtractArea(areaRef.current, shape)
+        : addArea(areaRef.current, shape));
+    };
+
+    map.on('mousedown', (e: L.LeafletMouseEvent) => {
+      if (toolRef.current === 'mover' || e.originalEvent.button !== 0) return;
+      path = [[e.latlng.lat, e.latlng.lng]];
+      stroke = L.polyline([e.latlng], {
+        color: brushColor(),
+        weight: widthRef.current / metersPerPixel(map),
+        opacity: 0.45,
+        lineCap: 'round',
+        lineJoin: 'round',
+        interactive: false,
+      }).addTo(map);
+    });
+
+    map.on('mousemove', (e: L.LeafletMouseEvent) => {
+      if (toolRef.current === 'mover') {
+        cursor.remove();
+        return;
+      }
+      cursor.setLatLng(e.latlng).setRadius(widthRef.current / 2).setStyle({ color: brushColor(), fillColor: brushColor() });
+      if (!map.hasLayer(cursor)) cursor.addTo(map);
+      if (stroke) {
+        path.push([e.latlng.lat, e.latlng.lng]);
+        stroke.addLatLng(e.latlng);
+      }
+    });
+
+    map.on('mouseout', () => cursor.remove());
+    map.on('mouseup', finishStroke);
+    document.addEventListener('mouseup', finishStroke);
+
+    // ── Polígono: para marcar un barrio entero de una vez ──
     const drawControl = new L.Control.Draw({
-      edit:  { featureGroup: drawnItems },
-      draw:  {
-        polygon:   {
-          shapeOptions: { color: ZONE_CONFIG[activeZoneRef.current].color, fillOpacity: 0.25, weight: 2.5 },
+      draw: {
+        polygon: {
+          shapeOptions: { color: FIBRA_COLOR, fillOpacity: 0.25, weight: 2.5 },
           showArea: false,
           allowIntersection: false,
         },
-        rectangle:  false,
-        circle:     false,
+        rectangle:    false,
+        circle:       false,
         circlemarker: false,
-        marker:     false,
-        polyline:   false,
+        marker:       false,
+        polyline:     false,
       },
     });
     drawControl.addTo(map);
 
-    // On polygon created
+    // Mientras se dibuja un polígono, el arrastre no tiene que pintar
+    map.on(L.Draw.Event.DRAWSTART, () => setTool('mover'));
+
     map.on(L.Draw.Event.CREATED, (e) => {
-      const layer = e.layer as L.Polygon;
-      const zone  = activeZoneRef.current;
-      const cfg   = ZONE_CONFIG[zone];
-
-      layer.setStyle({ color: cfg.color, fillColor: cfg.fill, fillOpacity: 0.25, weight: 2.5 });
-      drawnItems.addLayer(layer);
-
-      const id = crypto.randomUUID();
-      // Store zone type on the layer for later
-      (layer as unknown as Record<string, unknown>)._zoneType = zone;
-      (layer as unknown as Record<string, unknown>)._zoneId   = id;
-
-      layer.bindPopup(`<strong>${cfg.emoji} ${cfg.label}</strong>`);
-
-      setZones(prev => [...prev, { id, type: zone, layer }]);
-      setSaved(false);
-    });
-
-    // On delete
-    map.on(L.Draw.Event.DELETED, (e) => {
-      const deletedLayers = (e as unknown as { layers: L.LayerGroup }).layers;
-      deletedLayers.eachLayer((layer) => {
-        const id = (layer as unknown as Record<string, unknown>)._zoneId as string;
-        if (id) setZones(prev => prev.filter(z => z.id !== id));
-      });
-      setSaved(false);
+      const poly = (e.layer as L.Polygon).toGeoJSON() as Feature<Polygon>;
+      commit(addArea(areaRef.current, poly));
     });
 
     mapRef.current = map;
-    return () => { map.remove(); mapRef.current = null; };
-  }, []);
-
-
-
-  const [status, setStatus] = useState<'idle' | 'saving' | 'ok' | 'error'>('idle');
-
-  const buildGeoJSON = () => {
-    const features = zones.map(z => {
-      const cfg     = ZONE_CONFIG[z.type];
-      const latlngs = (z.layer.getLatLngs()[0] as L.LatLng[]);
-      const coords  = latlngs.map(p => [p.lng, p.lat]);
-      if (coords.length && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1])) {
-        coords.push(coords[0]);
-      }
-      return {
-        type: 'Feature',
-        properties: { zona: z.type, nombre: `Zona ${cfg.label}`, descripcion: `${cfg.label} - San José, Entre Ríos` },
-        geometry: { type: 'Polygon', coordinates: [coords] },
-      };
-    });
-    return {
-      _comment:       'Zonas de cobertura ISAIR - San José, Entre Ríos, Argentina',
-      _instrucciones: 'Editá los polígonos en https://geojson.io para ajustar a la cobertura real.',
-      type: 'FeatureCollection',
-      features,
+    return () => {
+      document.removeEventListener('mouseup', finishStroke);
+      map.remove();
+      mapRef.current = null;
     };
-  };
+  }, [commit]);
+
+  const buildGeoJSON = () => ({
+    _comment:       'Zonas de cobertura ISAIR - San José, Entre Ríos, Argentina',
+    _instrucciones: 'Editá la cobertura desde el editor del panel de administración.',
+    type: 'FeatureCollection',
+    features: [...otherRef.current, ...areaToFeatures(areaRef.current, FIBRA_PROPS)],
+  });
 
   const handleSave = async () => {
-    if (zones.length === 0) return;
+    if (!areaRef.current && !confirm('No hay ninguna zona de fibra marcada. ¿Guardar igual y dejar la cobertura vacía?')) return;
     setStatus('saving');
-    setSaved(false);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-      const AGENCIA = import.meta.env.VITE_AGENCIA_ID || 'sanjose';
-      const token   = localStorage.getItem('isair_admin_token');
+      const token = localStorage.getItem('isair_admin_token');
 
       if (!token) {
         alert('No estás autenticado. Por favor, iniciá sesión en el panel de administrador primero.');
@@ -169,7 +261,7 @@ export default function CoverageEditor() {
 
       const res = await fetch(`${API_URL}/api/agencias/${AGENCIA}/coverage`, {
         method: 'PUT',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -178,7 +270,7 @@ export default function CoverageEditor() {
       const data = await res.json();
       if (data.ok) {
         setStatus('ok');
-        setSaved(true);
+        setDirty(false);
         setTimeout(() => setStatus('idle'), 3000);
       } else {
         setStatus('error');
@@ -196,15 +288,14 @@ export default function CoverageEditor() {
     URL.revokeObjectURL(url);
   };
 
+  const hectares = areaHectares(area);
+  const parts    = areaParts(area);
 
-  const handleDeleteZone = (id: string) => {
-    const zone = zones.find(z => z.id === id);
-    if (zone && drawnRef.current) {
-      drawnRef.current.removeLayer(zone.layer);
-      setZones(prev => prev.filter(z => z.id !== id));
-      setSaved(false);
-    }
-  };
+  const TOOLS: { id: Tool; icon: string; label: string; color: string }[] = [
+    { id: 'pincel',   icon: '🖌️', label: 'Pincel',   color: FIBRA_COLOR },
+    { id: 'borrador', icon: '🧽', label: 'Borrador', color: ERASE_COLOR },
+    { id: 'mover',    icon: '✋', label: 'Mover',    color: '#0072ff' },
+  ];
 
   return (
     <div className={styles.root}>
@@ -212,33 +303,54 @@ export default function CoverageEditor() {
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
           <span className={styles.toolbarTitle}>🗺️ Editor de Cobertura</span>
-          <span className={styles.toolbarSub}>Dibujá polígonos cuadra por cuadra</span>
+          <span className={styles.toolbarSub}>Pintá las calles que tienen Fibra Óptica</span>
         </div>
 
         <div className={styles.zonePicker}>
-          <span className={styles.zoneDot} style={{ background: '#10b950' }} />
-          <span className={styles.zoneLabel}>Dibujando zonas de</span>
-          <strong style={{ color: '#10b950', fontSize: '14px' }}>Fibra Óptica</strong>
-          <span style={{ fontSize: '12px', color: 'rgba(255,255,255,.4)', marginLeft: 4 }}>
-            (La cobertura inalámbrica llega a toda la zona)
-          </span>
+          {TOOLS.map(t => (
+            <button
+              key={t.id}
+              className={`${styles.zoneBtn} ${tool === t.id ? styles.zoneBtnActive : ''}`}
+              style={tool === t.id ? { borderColor: t.color, background: `${t.color}33` } : undefined}
+              onClick={() => setTool(t.id)}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+
+          <label className={styles.widthControl}>
+            <span>Ancho</span>
+            <input
+              type="range"
+              min={30}
+              max={250}
+              step={10}
+              value={width}
+              onChange={e => setWidth(Number(e.target.value))}
+            />
+            <strong>{width} m</strong>
+          </label>
+
+          <button className={styles.zoneBtn} onClick={undo} disabled={!canUndo} title="Deshacer (Ctrl+Z)">
+            ↩️ Deshacer
+          </button>
         </div>
 
         <div className={styles.exportGroup}>
           <button
             className={`${styles.exportBtn} ${status === 'ok' ? styles.exportSaved : status === 'error' ? styles.exportError : ''}`}
             onClick={handleSave}
-            disabled={zones.length === 0 || status === 'saving'}
+            disabled={!dirty || !!loadError || status === 'saving'}
           >
             {status === 'saving' ? '💾 Guardando…'
               : status === 'ok'  ? '✅ ¡Guardado!'
               : status === 'error' ? '❌ Error al guardar'
-              : '💾 Guardar en proyecto'}
+              : dirty ? '💾 Guardar cambios' : '💾 Sin cambios'}
           </button>
           <button
             className={styles.downloadBtn}
             onClick={handleDownload}
-            disabled={zones.length === 0}
+            disabled={!area}
             title="Descargar GeoJSON como archivo"
           >⬇️</button>
         </div>
@@ -249,48 +361,49 @@ export default function CoverageEditor() {
         <div className={styles.mapContainer}>
           <div ref={containerRef} className={styles.map} />
           <div className={styles.hint}>
-            <span>🖊️ Usá el ícono de polígono en el mapa para dibujar</span>
+            <span>
+              {tool === 'pincel'   ? '🖌️ Mantené apretado el clic y pasá por las calles con fibra'
+                : tool === 'borrador' ? '🧽 Pasá por encima de lo que quieras borrar'
+                : '✋ Arrastrá para mover el mapa'}
+            </span>
           </div>
         </div>
 
-        {/* Zone list */}
+        {/* Sidebar */}
         <div className={styles.sidebar}>
-          <div className={styles.sidebarTitle}>Zonas dibujadas <span className={styles.badge}>{zones.length}</span></div>
+          <div className={styles.sidebarTitle}>Cobertura de fibra</div>
 
-          {zones.length === 0 ? (
+          {!loaded ? (
+            <div className={styles.emptyState}><p>Cargando cobertura…</p></div>
+          ) : loadError ? (
+            <div className={styles.loadError}>
+              <p>⚠️ {loadError}</p>
+              <a href="admin.html">Ir al panel →</a>
+            </div>
+          ) : !area ? (
             <div className={styles.emptyState}>
               <p>Todavía no hay zonas.</p>
-              <p>Seleccioná el tipo de zona y hacé clic en el ícono de polígono en el mapa para empezar a dibujar.</p>
+              <p>Elegí el pincel y pasá por las calles que tienen fibra.</p>
             </div>
           ) : (
-            <ul className={styles.zoneList}>
-              {zones.map((z, i) => (
-                <li key={z.id} className={styles.zoneItem}>
-                  <span className={styles.zoneDot} style={{ background: ZONE_CONFIG[z.type].color }} />
-                  <div className={styles.zoneInfo}>
-                    <strong>{ZONE_CONFIG[z.type].emoji} {ZONE_CONFIG[z.type].label}</strong>
-                    <span>Zona #{i + 1}</span>
-                  </div>
-                  <button
-                    className={styles.deleteBtn}
-                    onClick={() => handleDeleteZone(z.id)}
-                    title="Eliminar zona"
-                  >✕</button>
-                </li>
-              ))}
-            </ul>
+            <div className={styles.stats}>
+              <div><strong>{hectares.toLocaleString('es-AR', { maximumFractionDigits: 1 })} ha</strong><span>≈ {Math.round(hectares)} manzanas</span></div>
+              <div><strong>{parts}</strong><span>{parts === 1 ? 'sector' : 'sectores separados'}</span></div>
+            </div>
           )}
 
           <div className={styles.instructions}>
             <p>📌 <strong>Cómo usar:</strong></p>
             <ol>
-              <li>Hacé clic en el ícono <strong>✏️ polígono</strong> en el mapa</li>
-              <li>Hacé clic en cada esquina de cuadra para trazar la zona de fibra</li>
-              <li>Doble clic para cerrar el polígono</li>
-              <li>Repetí para cada sector con fibra</li>
-              <li>Exportá el GeoJSON y reemplazá <code>public/coverage.geojson</code></li>
+              <li>Con el <strong>🖌️ Pincel</strong>, mantené apretado el clic y recorré las calles con fibra</li>
+              <li>Con <strong>100 m</strong> de ancho se cubren las casas de los dos lados de la calle</li>
+              <li>Lo que pintás se suma a lo que ya estaba; las partes que se tocan se unen solas</li>
+              <li>Si te equivocás: <strong>↩️ Deshacer</strong> (Ctrl+Z) o el <strong>🧽 Borrador</strong></li>
+              <li>Para moverte por el mapa usá <strong>✋ Mover</strong> o la rueda del mouse para el zoom</li>
+              <li>Al terminar, tocá <strong>💾 Guardar cambios</strong></li>
             </ol>
-            <p style={{ marginTop: '10px' }}>💡 <strong>Nota:</strong> La inalámbrica llega a toda la zona — no hace falta marcarla.</p>
+            <p style={{ marginTop: '10px' }}>💡 Para un barrio entero, el ícono de <strong>polígono</strong> del mapa marca toda el área de una vez.</p>
+            <p>💡 La inalámbrica llega a toda la zona — no hace falta marcarla.</p>
           </div>
         </div>
       </div>

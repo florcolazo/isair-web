@@ -1,63 +1,52 @@
 // ============================================================
-//  ISAIR · Utilidades: cobertura geográfica + WhatsApp URL
+//  ISAIR · Utilidades: geocodificación + WhatsApp URL
 // ============================================================
-import type { GeoFeature, Zone, SelectedPlan, FormData } from './types';
+import type { SelectedPlan, FormData } from './types';
 import { WA_BASE } from './data';
-
-// ── Algoritmo punto-en-polígono (ray casting) ────────────────
-function pointInPolygon(point: [number, number], polygon: number[][][]): boolean {
-  const [px, py] = point;
-  let inside = false;
-
-  for (const ring of polygon) {
-    let j = ring.length - 1;
-    for (let i = 0; i < ring.length; j = i++) {
-      const [xi, yi] = ring[i];
-      const [xj, yj] = ring[j];
-      const intersect =
-        yi > py !== yj > py &&
-        px < ((xj - xi) * (py - yi)) / (yj - yi) + xi;
-      if (intersect) inside = !inside;
-    }
-  }
-  return inside;
-}
-
-// ── Detectar zona según lat/lng ──────────────────────────────
-export function detectZone(lat: number, lng: number, features: GeoFeature[]): Zone {
-  const point: [number, number] = [lng, lat]; // GeoJSON: [lng, lat]
-
-  for (const f of features) {
-    if (f.properties.zona === 'fibra' && pointInPolygon(point, f.geometry.coordinates))
-      return 'fibra';
-  }
-  for (const f of features) {
-    if (f.properties.zona === 'inalambrica' && pointInPolygon(point, f.geometry.coordinates))
-      return 'inalambrica';
-  }
-  return 'sin_cobertura';
-}
+import { GOOGLE_KEY, googleGeocode } from './googleMaps';
 
 // ── Geocodificar ─────────────────────────────────────────────
-// Diccionario local de emergencia para calles sin ningún dato online
-const LOCAL_STREETS: Record<string, { lat: number; lng: number }> = {
-  'belgrano':      { lat: -32.1850, lng: -58.1740 },
-  'san martin':    { lat: -32.1845, lng: -58.1760 },
-  'san martín':    { lat: -32.1845, lng: -58.1760 },
-  '25 de mayo':    { lat: -32.1855, lng: -58.1750 },
-};
 
-const SAN_JOSE_CENTER = { lat: -32.185, lng: -58.174 };
+// Recuadro que cubre San José (ER) con margen; fuera de esto la dirección no es de acá
+const SAN_JOSE_BOUNDS = { north: -32.17, south: -32.25, east: -58.17, west: -58.27 };
+
+function insideSanJose({ lat, lng }: { lat: number; lng: number }): boolean {
+  const b = SAN_JOSE_BOUNDS;
+  return lat < b.north && lat > b.south && lng < b.east && lng > b.west;
+}
 
 /**
- * Intento 1 — GeoRef (API oficial de datos.gob.ar)
- * Tiene el nomenclador completo nacional, incluye calles de San José ER.
+ * Intento 1 — Google Geocoding
+ * Solo acepta resultados a nivel casa o esquina; si Google solo encuentra la calle
+ * o la ciudad, sigue con GeoRef.
+ */
+async function googleSearch(address: string): Promise<{ lat: number; lng: number } | null> {
+  if (!GOOGLE_KEY) return null;
+  try {
+    const results = await googleGeocode(`${address}, San José, Entre Ríos, Argentina`, SAN_JOSE_BOUNDS);
+    for (const r of results) {
+      const precise =
+        r.geometry.location_type === 'ROOFTOP' ||
+        r.geometry.location_type === 'RANGE_INTERPOLATED' ||
+        r.types.includes('intersection');
+      const loc = r.geometry.location.toJSON();
+      if (precise && insideSanJose(loc)) return loc;
+    }
+    return null;
+  } catch (e) {
+    console.warn('Google Geocoding falló, se usa GeoRef:', e);
+    return null;
+  }
+}
+
+/**
+ * Intento 2 — GeoRef (API oficial de datos.gob.ar), limitado a la localidad San José
  */
 async function georefSearch(address: string): Promise<{ lat: number; lng: number } | null> {
   try {
     const url = `https://apis.datos.gob.ar/georef/api/direcciones?` +
       `direccion=${encodeURIComponent(address)}` +
-      `&provincia=entre+rios&departamento=colon&max=1&formato=json`;
+      `&provincia=entre+rios&departamento=colon&localidad_censal=san+jose&max=1&formato=json`;
     const resp = await fetch(url);
     if (!resp.ok) return null;
     const data = await resp.json();
@@ -68,67 +57,38 @@ async function georefSearch(address: string): Promise<{ lat: number; lng: number
 }
 
 /**
- * Intento 2 — Nominatim (OpenStreetMap) con viewbox de San José
+ * Intento 3 — Nominatim (OpenStreetMap), solo resultados con altura dentro de San José
  */
-const SAN_JOSE_VIEWBOX = '-58.21,-32.22,-58.14,-32.15';
-
 async function nominatimSearch(q: string): Promise<{ lat: number; lng: number } | null> {
   try {
+    const b = SAN_JOSE_BOUNDS;
     const url = `https://nominatim.openstreetmap.org/search?` +
       `q=${encodeURIComponent(q)}` +
-      `&format=json&limit=3&countrycodes=ar` +
-      `&viewbox=${SAN_JOSE_VIEWBOX}&bounded=0`;
-    const resp = await fetch(url, {
-      headers: { 'User-Agent': 'ISAIR-Internet-Services/1.0 (isaircolon1@gmail.com)' },
-    });
+      `&format=json&limit=3&countrycodes=ar&addressdetails=1` +
+      `&viewbox=${b.west},${b.south},${b.east},${b.north}&bounded=1`;
+    const resp = await fetch(url);
     if (!resp.ok) return null;
-    const data = await resp.json();
-    if (!data.length) return null;
-    const local = data.find((d: { lat: string; lon: string }) => {
-      const lat = parseFloat(d.lat), lng = parseFloat(d.lon);
-      return lat > -32.22 && lat < -32.15 && lng > -58.21 && lng < -58.14;
-    });
-    const best = local ?? data[0];
-    return { lat: parseFloat(best.lat), lng: parseFloat(best.lon) };
+    const data: { lat: string; lon: string; address?: { house_number?: string } }[] = await resp.json();
+    const best = data.find(d => d.address?.house_number);
+    return best ? { lat: parseFloat(best.lat), lng: parseFloat(best.lon) } : null;
   } catch { return null; }
 }
 
 /**
- * Intento 3 — diccionario local hardcodeado
+ * Devuelve la ubicación exacta de la dirección en San José.
+ * Si ningún servicio la encuentra con precisión, lanza un error en vez de
+ * inventar una ubicación aproximada (que daría un resultado de cobertura falso).
  */
-function localStreetLookup(address: string): { lat: number; lng: number } | null {
-  const lower = address.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  for (const [key, coords] of Object.entries(LOCAL_STREETS)) {
-    const normalKey = key.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    if (lower.includes(normalKey)) return coords;
-  }
-  return null;
-}
-
 export async function geocodeAddress(rawAddress: string): Promise<{ lat: number; lng: number }> {
   const input = rawAddress.trim();
 
-  // 1️⃣ GeoRef — nomenclador oficial argentino (más preciso para San José ER)
-  const r1 = await georefSearch(input);
-  if (r1) return r1;
+  const result =
+    await googleSearch(input) ??
+    await georefSearch(input) ??
+    await nominatimSearch(`${input}, San José, Entre Ríos, Argentina`);
 
-  // 2️⃣ GeoRef sin el número (solo calle)
-  const streetOnly = input.replace(/\d+/g, '').trim();
-  if (streetOnly !== input) {
-    const r2 = await georefSearch(streetOnly);
-    if (r2) return r2;
-  }
-
-  // 3️⃣ Nominatim como segundo intento
-  const r3 = await nominatimSearch(`${input}, San José, Entre Ríos, Argentina`);
-  if (r3) return r3;
-
-  // 4️⃣ Diccionario local de emergencia
-  const local = localStreetLookup(input);
-  if (local) return local;
-
-  // 5️⃣ Centro de San José (nunca falla)
-  return SAN_JOSE_CENTER;
+  if (!result) throw new Error(`No se encontró la dirección: ${input}`);
+  return result;
 }
 
 // ── Formatear precio ─────────────────────────────────────────

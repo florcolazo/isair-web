@@ -62,6 +62,12 @@ async function initDB() {
     );
   `);
 
+  // Migrar instalaciones creadas antes de que los banners tuvieran enlace.
+  const bannerColumns = await dbInstance.all('PRAGMA table_info(banners)');
+  if (!bannerColumns.some((column) => column.name === 'enlace')) {
+    await dbInstance.exec('ALTER TABLE banners ADD COLUMN enlace TEXT');
+  }
+
   // ── Seed: crear superadmin si no existe ──────────────────────
   const SUPERADMIN_PWD = process.env.SUPERADMIN_PASSWORD || 'admin1234';
   const existing = await dbInstance.get('SELECT id FROM agencias WHERE id = ?', ['superadmin']);
@@ -87,4 +93,3 @@ function getDB() {
 }
 
 module.exports = { initDB, getDB };
-
