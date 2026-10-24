@@ -28,14 +28,6 @@ const SAN_JOSE_ZOOM   = 13;
 // Frontera de latitud que separa San José de otras agencias en la misma colección
 const LAT_LIMITE_SAN_JOSE = -32.38;
 
-// Colores por tipo de servicio
-const COLORES = {
-  'fibra':       '#0072ff',
-  'inalambrica': '#28a745',
-  'tv':          '#e62a22',
-  'completa':    '#6f42c1',
-};
-
 const mapEl = document.getElementById('map');
 const LINK_PLANES_FIBRA = mapEl.dataset.planesFibra || 'index.html#fibra';
 
@@ -50,14 +42,14 @@ agregarVistas(map);
 
 // Marcador de la casa
 let casaMarker = null;
-// Capas de zonas
+// Capas de zonas: no se agregan al mapa (solo el mapa limpio),
+// se usan para saber si la casa marcada tiene fibra
 let zonasLayers = [];
 
 // ── Cargar zonas desde Firebase ──────────────────────
 const db = getFirestore(initializeApp(firebaseConfig));
 
 onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
-  zonasLayers.forEach(l => map.removeLayer(l));
   zonasLayers = [];
 
   snapshot.forEach((doc) => {
@@ -73,17 +65,7 @@ onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
     const lat = primerPuntoLat(geojson.geometry || geojson);
     if (lat !== null && lat < LAT_LIMITE_SAN_JOSE) return;
 
-    const color = COLORES[zona.tipo] || '#0072ff';
-    const layer = L.geoJSON(geojson, {
-      interactive: false, // el clic lo recibe el mapa para marcar la casa
-      style: {
-        color:       color,
-        fillColor:   color,
-        fillOpacity: 0.3,
-        weight:      2.5,
-        opacity:     0.9,
-      }
-    }).addTo(map);
+    const layer = L.geoJSON(geojson);
     layer.tipoZona   = zona.tipo;
     layer.nombreZona = zona.nombre || 'Fibra Óptica';
 
