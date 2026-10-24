@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.0.2">
+  <link rel="stylesheet" href="styles.css?v=1.0.5">
 
   <style>
     /* ── Mapa público ── */
@@ -48,33 +48,6 @@
       max-width: 560px;
       margin: 0 auto;
       line-height: 1.6;
-    }
-
-    /* Leyenda de colores */
-    .map-legend {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      flex-wrap: wrap;
-      padding: 20px 24px;
-      background: #fff;
-      border-bottom: 1px solid #e0e4ec;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #1a1a2e;
-    }
-
-    .legend-dot {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      flex-shrink: 0;
     }
 
     /* Mapa */
@@ -300,7 +273,7 @@
   <section class="cobertura-hero">
     <p class="eyebrow">📍 Mapa de Cobertura</p>
     <h1>¿Tenemos Fibra Óptica en tu calle?</h1>
-    <p>Buscá tu casa en el mapa y tocala para saber si tenés fibra. El servicio inalámbrico llega a toda el área de San José.</p>
+    <p>Escribí tu dirección, usá tu ubicación o tocá tu casa en el mapa para saber si tenés fibra. El servicio inalámbrico llega a toda el área de San José.</p>
   </section>
 
   <!-- RESULTADO -->
@@ -314,23 +287,26 @@
     </div>
   </div>
 
-  <!-- LEYENDA -->
-  <div class="map-legend">
-    <div class="legend-item">
-      <div class="legend-dot" style="background:#0072ff; opacity:.8;"></div>
-      Zona con Fibra Óptica
+  <!-- MAPA + BUSCADOR -->
+  <div class="map-shell">
+    <div class="map-search" role="search">
+      <div class="map-search-bar">
+        <svg class="map-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="mapSearch" type="search" placeholder="Buscá tu dirección" autocomplete="off" enterkeyhint="search" aria-label="Buscar dirección" aria-autocomplete="list" aria-controls="mapSearchList" aria-expanded="false">
+        <button id="mapSearchClear" type="button" class="map-search-clear" aria-label="Borrar búsqueda" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+        <span class="map-search-sep" aria-hidden="true"></span>
+        <button id="mapLocate" type="button" class="map-locate" title="Usar mi ubicación">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>
+          <span>Mi ubicación</span>
+        </button>
+      </div>
+      <ul id="mapSearchList" class="map-search-list" role="listbox" hidden></ul>
+      <p id="mapSearchMsg" class="map-search-msg" role="status" hidden></p>
     </div>
-    <div class="legend-item" style="color:#5b6472;">
-      <div class="legend-dot" style="background:#28a745; opacity:.5;"></div>
-      Inalámbrica (toda el área)
-    </div>
-    <div class="legend-item" style="color:#0072ff;">
-      👆 Tocá el mapa para marcar tu casa
-    </div>
+    <div id="map"></div>
   </div>
-
-  <!-- MAPA -->
-  <div id="map"></div>
 
   <!-- CTA -->
   <section class="map-cta">
@@ -379,6 +355,10 @@
             <a href="contacto.html">Contactanos</a>
             <a href="cobertura.html">Cobertura</a>
             <a href="internet.html">Planes</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Servicios-TIC.pdf" target="_blank" rel="noopener">Reglamento de clientes</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Anexo.pdf" target="_blank" rel="noopener">Anexos</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/09/Contrato-Prestacion_v3.pdf" target="_blank" rel="noopener">Términos y Condiciones del Servicio de Telecomunicaciones</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/ISCAM_Terminos-y-Condiciones.pdf" target="_blank" rel="noopener">Términos y Condiciones del Servicio IS-CAM</a>
           </div>
           
           <div class="foot-social" style="margin-top: 24px;">
@@ -411,9 +391,10 @@
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.16.0/dist/Leaflet.GoogleMutant.js"></script>
 
   <!-- Mapa de cobertura (Firebase + Leaflet) -->
-  <script type="module" src="mapa-cobertura.js?v=1.0.2"></script>
+  <script type="module" src="mapa-cobertura.js?v=1.0.9"></script>
 
   <script>
     // Footer año
@@ -430,6 +411,6 @@
     });
   </script>
 
-  <script src="main.js?v=1.0.3"></script>
+  <script src="main.js?v=1.0.4"></script>
 </body>
 </html>

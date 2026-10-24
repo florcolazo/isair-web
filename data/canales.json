@@ -1,0 +1,760 @@
+{
+  "secciones": [
+    {
+      "id": "general",
+      "titulo": "Interés general",
+      "canales": [
+        {
+          "numero": 209,
+          "nombre": "América",
+          "logo": "canales/209-america.png"
+        },
+        {
+          "numero": 210,
+          "nombre": "Telefe",
+          "logo": "canales/210-telefe.png"
+        },
+        {
+          "numero": 211,
+          "nombre": "TV Pública",
+          "logo": "canales/211-tv-publica.png"
+        },
+        {
+          "numero": 212,
+          "nombre": "El Trece",
+          "logo": "canales/212-el-trece.png"
+        },
+        {
+          "numero": 213,
+          "nombre": "El Nueve",
+          "logo": "canales/213-el-nueve.png"
+        },
+        {
+          "numero": 214,
+          "nombre": "TN",
+          "logo": "canales/214-tn.png"
+        },
+        {
+          "numero": 215,
+          "nombre": "A24",
+          "logo": "canales/215-a24.png"
+        },
+        {
+          "numero": 216,
+          "nombre": "C5N",
+          "logo": "canales/216-c5n.png"
+        },
+        {
+          "numero": 217,
+          "nombre": "Crónica TV",
+          "logo": "canales/217-cronica-tv.png"
+        },
+        {
+          "numero": 218,
+          "nombre": "Canal 26",
+          "logo": "canales/218-canal-26.png"
+        },
+        {
+          "numero": 219,
+          "nombre": "IP Noticias",
+          "logo": "canales/219-ip-noticias.png"
+        },
+        {
+          "numero": 220,
+          "nombre": "LN+",
+          "logo": "canales/220-ln.png"
+        },
+        {
+          "numero": 221,
+          "nombre": "CN23",
+          "logo": "canales/221-cn23.png"
+        },
+        {
+          "numero": 222,
+          "nombre": "Encuentro",
+          "logo": "canales/222-encuentro.png"
+        },
+        {
+          "numero": 223,
+          "nombre": "TEC TV",
+          "logo": "canales/223-tec-tv.png"
+        },
+        {
+          "numero": 225,
+          "nombre": "Construir TV",
+          "logo": "canales/225-construir-tv.png"
+        },
+        {
+          "numero": 643,
+          "nombre": "Canal Rural",
+          "logo": "canales/643-canal-rural.png"
+        },
+        {
+          "numero": 644,
+          "nombre": "TD",
+          "logo": "canales/644-td.png"
+        },
+        {
+          "numero": 645,
+          "nombre": "Argentinísima",
+          "logo": "canales/645-argentinisima.png"
+        }
+      ]
+    },
+    {
+      "id": "deportes",
+      "titulo": "Deportes",
+      "canales": [
+        {
+          "numero": 300,
+          "nombre": "DeporTV",
+          "logo": "canales/300-deportv.png"
+        },
+        {
+          "numero": 301,
+          "nombre": "TyC Sports",
+          "logo": "canales/301-tyc-sports.png"
+        },
+        {
+          "numero": 302,
+          "nombre": "ESPN",
+          "logo": "canales/302-espn.png"
+        },
+        {
+          "numero": 303,
+          "nombre": "ESPN 2",
+          "logo": "canales/303-espn-2.png"
+        },
+        {
+          "numero": 304,
+          "nombre": "ESPN 3",
+          "logo": "canales/304-espn-3.png"
+        },
+        {
+          "numero": 305,
+          "nombre": "ESPN 4",
+          "logo": "canales/305-espn-4.png"
+        },
+        {
+          "numero": 306,
+          "nombre": "Fox Sports",
+          "logo": "canales/306-fox-sports.png"
+        },
+        {
+          "numero": 307,
+          "nombre": "Fox Sports 2",
+          "logo": "canales/307-fox-sports-2.png"
+        },
+        {
+          "numero": 308,
+          "nombre": "Fox Sports 3",
+          "logo": "canales/308-fox-sports-3.png"
+        },
+        {
+          "numero": 309,
+          "nombre": "El Garage TV",
+          "logo": "canales/309-el-garage-tv.png"
+        },
+        {
+          "numero": 310,
+          "nombre": "Golf Channel",
+          "logo": "canales/310-golf-channel.png"
+        },
+        {
+          "numero": 311,
+          "nombre": "Discovery Turbo",
+          "logo": "canales/311-discovery-turbo.png"
+        },
+        {
+          "numero": 325,
+          "nombre": "TyC Sports 2",
+          "logo": "canales/325-tyc-sports-2.png"
+        }
+      ]
+    },
+    {
+      "id": "series",
+      "titulo": "Series y películas",
+      "canales": [
+        {
+          "numero": 500,
+          "nombre": "Cine.Ar",
+          "logo": "canales/500-cine-ar.png"
+        },
+        {
+          "numero": 504,
+          "nombre": "Space",
+          "logo": "canales/504-space.png"
+        },
+        {
+          "numero": 505,
+          "nombre": "Cinecanal",
+          "logo": "canales/505-cinecanal.png"
+        },
+        {
+          "numero": 506,
+          "nombre": "TNT",
+          "logo": "canales/506-tnt.png"
+        },
+        {
+          "numero": 507,
+          "nombre": "TNT Series",
+          "logo": "canales/507-tnt-series.png"
+        },
+        {
+          "numero": 508,
+          "nombre": "FX",
+          "logo": "canales/508-fx.png"
+        },
+        {
+          "numero": 509,
+          "nombre": "Star Channel",
+          "logo": "canales/509-star-channel.png"
+        },
+        {
+          "numero": 510,
+          "nombre": "Sony Channel",
+          "logo": "canales/510-sony-channel.png"
+        },
+        {
+          "numero": 511,
+          "nombre": "Warner TV",
+          "logo": "canales/511-warner-tv.png"
+        },
+        {
+          "numero": 512,
+          "nombre": "Sony Movies",
+          "logo": "canales/512-sony-movies.png"
+        },
+        {
+          "numero": 513,
+          "nombre": "AXN",
+          "logo": "canales/513-axn.png"
+        },
+        {
+          "numero": 514,
+          "nombre": "USA",
+          "logo": "canales/514-usa.png"
+        },
+        {
+          "numero": 515,
+          "nombre": "A&E",
+          "logo": "canales/515-a-e.png"
+        },
+        {
+          "numero": 517,
+          "nombre": "TNT Novelas",
+          "logo": "canales/517-tnt-novelas.png"
+        },
+        {
+          "numero": 518,
+          "nombre": "TCM",
+          "logo": "canales/518-tcm.png"
+        },
+        {
+          "numero": 519,
+          "nombre": "AMC",
+          "logo": "canales/519-amc.png"
+        },
+        {
+          "numero": 521,
+          "nombre": "Universal TV",
+          "logo": "canales/521-universal-tv.png"
+        },
+        {
+          "numero": 522,
+          "nombre": "Studio Universal",
+          "logo": "canales/522-studio-universal.png"
+        },
+        {
+          "numero": 526,
+          "nombre": "Comedy Central",
+          "logo": "canales/526-comedy-central.png"
+        },
+        {
+          "numero": 555,
+          "nombre": "Cinemax",
+          "logo": "canales/555-cinemax.png"
+        },
+        {
+          "numero": 657,
+          "nombre": "Film & Arts",
+          "logo": "canales/657-film-arts.png"
+        }
+      ]
+    },
+    {
+      "id": "documentales",
+      "titulo": "Documentales y estilo de vida",
+      "canales": [
+        {
+          "numero": 520,
+          "nombre": "AMC Series",
+          "logo": "canales/520-amc-series.png"
+        },
+        {
+          "numero": 524,
+          "nombre": "Lifetime",
+          "logo": "canales/524-lifetime.png"
+        },
+        {
+          "numero": 525,
+          "nombre": "Adult Swim",
+          "logo": "canales/525-adult-swim.png"
+        },
+        {
+          "numero": 601,
+          "nombre": "El Gourmet",
+          "logo": "canales/601-el-gourmet.png"
+        },
+        {
+          "numero": 602,
+          "nombre": "HGTV",
+          "logo": "canales/602-hgtv.png"
+        },
+        {
+          "numero": 603,
+          "nombre": "Food Network",
+          "logo": "canales/603-food-network.png"
+        },
+        {
+          "numero": 604,
+          "nombre": "E!",
+          "logo": "canales/604-e.png"
+        },
+        {
+          "numero": 605,
+          "nombre": "Home & Health",
+          "logo": "canales/605-home-health.png"
+        },
+        {
+          "numero": 607,
+          "nombre": "TLC",
+          "logo": "canales/607-tlc.png"
+        },
+        {
+          "numero": 550,
+          "nombre": "National Geographic",
+          "logo": "canales/550-national-geographic.png"
+        },
+        {
+          "numero": 551,
+          "nombre": "Discovery Channel",
+          "logo": "canales/551-discovery-channel.png"
+        },
+        {
+          "numero": 552,
+          "nombre": "Animal Planet",
+          "logo": "canales/552-animal-planet.png"
+        },
+        {
+          "numero": 553,
+          "nombre": "Discovery Theater",
+          "logo": "canales/553-discovery-theater.png"
+        },
+        {
+          "numero": 554,
+          "nombre": "History",
+          "logo": "canales/554-history.png"
+        },
+        {
+          "numero": 555,
+          "nombre": "Investigation Discovery",
+          "logo": "canales/555-investigation-discovery.png"
+        },
+        {
+          "numero": 560,
+          "nombre": "Discovery World",
+          "logo": "canales/560-discovery-world.png"
+        },
+        {
+          "numero": 562,
+          "nombre": "Discovery Science",
+          "logo": "canales/562-discovery-science.png"
+        }
+      ]
+    },
+    {
+      "id": "infantiles",
+      "titulo": "Infantiles",
+      "canales": [
+        {
+          "numero": 400,
+          "nombre": "Paka Paka",
+          "logo": "canales/400-paka-paka.png"
+        },
+        {
+          "numero": 401,
+          "nombre": "Disney Channel",
+          "logo": "canales/401-disney-channel.png"
+        },
+        {
+          "numero": 402,
+          "nombre": "Nickelodeon",
+          "logo": "canales/402-nickelodeon.png"
+        },
+        {
+          "numero": 403,
+          "nombre": "Cartoon Network",
+          "logo": "canales/403-cartoon-network.png"
+        },
+        {
+          "numero": 405,
+          "nombre": "Discovery Kids",
+          "logo": "canales/405-discovery-kids.png"
+        },
+        {
+          "numero": 406,
+          "nombre": "Cartoonito",
+          "logo": "canales/406-cartoonito.png"
+        },
+        {
+          "numero": 409,
+          "nombre": "Tooncast",
+          "logo": "canales/409-tooncast.png"
+        },
+        {
+          "numero": 410,
+          "nombre": "Nick Jr.",
+          "logo": "canales/410-nick-jr.png"
+        },
+        {
+          "numero": 411,
+          "nombre": "DreamWorks",
+          "logo": "canales/411-dreamworks.png"
+        },
+        {
+          "numero": 413,
+          "nombre": "Disney Junior",
+          "logo": "canales/413-disney-junior.png"
+        },
+        {
+          "numero": 414,
+          "nombre": "Baby TV",
+          "logo": "canales/414-baby-tv.png"
+        },
+        {
+          "numero": 415,
+          "nombre": "Xtrim Kids",
+          "logo": "canales/415-xtrim-kids.png"
+        }
+      ]
+    },
+    {
+      "id": "internacional",
+      "titulo": "Internacionales",
+      "canales": [
+        {
+          "numero": 516,
+          "nombre": "Europa Europa",
+          "logo": "canales/516-europa-europa.png"
+        },
+        {
+          "numero": 560,
+          "nombre": "Be TV",
+          "logo": "canales/560-be-tv.png"
+        },
+        {
+          "numero": 611,
+          "nombre": "Telemundo",
+          "logo": "canales/611-telemundo.png"
+        },
+        {
+          "numero": 750,
+          "nombre": "CNN en Español",
+          "logo": "canales/750-cnn-en-espanol.png"
+        },
+        {
+          "numero": 756,
+          "nombre": "Telesur",
+          "logo": "canales/756-telesur.png"
+        },
+        {
+          "numero": 757,
+          "nombre": "CNN International",
+          "logo": "canales/757-cnn-international.png"
+        },
+        {
+          "numero": 771,
+          "nombre": "RT en Español",
+          "logo": "canales/771-rt-en-espanol.png"
+        },
+        {
+          "numero": 772,
+          "nombre": "NHK World",
+          "logo": "canales/772-nhk-world.png"
+        }
+      ]
+    },
+    {
+      "id": "regionales",
+      "titulo": "Regionales",
+      "canales": [
+        {
+          "numero": 35,
+          "nombre": "Galaxy TV",
+          "logo": "canales/35-galaxy-tv.png"
+        },
+        {
+          "numero": 61,
+          "nombre": "Power Max",
+          "logo": "canales/61-power-max.png"
+        },
+        {
+          "numero": 62,
+          "nombre": "TR Medios",
+          "logo": "canales/62-tr-medios.png"
+        },
+        {
+          "numero": 65,
+          "nombre": "Canal Sur",
+          "logo": "canales/65-canal-sur.png"
+        },
+        {
+          "numero": 66,
+          "nombre": "Aire",
+          "logo": "canales/66-aire.png"
+        },
+        {
+          "numero": 67,
+          "nombre": "Klick TV",
+          "logo": "canales/67-klick-tv.png"
+        },
+        {
+          "numero": 68,
+          "nombre": "Elonce",
+          "logo": "canales/68-elonce.png"
+        },
+        {
+          "numero": 85,
+          "nombre": "Canal 9 Paraná",
+          "logo": "canales/85-canal-9-parana.png"
+        },
+        {
+          "numero": 86,
+          "nombre": "Litus",
+          "logo": "canales/86-litus.png"
+        },
+        {
+          "numero": 87,
+          "nombre": "Telefe Santa Fe",
+          "logo": "canales/87-telefe-santa-fe.png"
+        },
+        {
+          "numero": 88,
+          "nombre": "Aires FM",
+          "logo": "canales/88-aires-fm.png"
+        },
+        {
+          "numero": 127,
+          "nombre": "Cadena 3",
+          "logo": "canales/127-cadena-3.png"
+        },
+        {
+          "numero": 134,
+          "nombre": "Cadena 3 Rosario",
+          "logo": "canales/134-cadena-3-rosario.png"
+        },
+        {
+          "numero": 135,
+          "nombre": "Cosquín Rock Radio",
+          "logo": "canales/135-cosquin-rock-radio.png"
+        },
+        {
+          "numero": 146,
+          "nombre": "SJ Stream",
+          "logo": "canales/146-sj-stream.png"
+        }
+      ]
+    },
+    {
+      "id": "federales",
+      "titulo": "Federales",
+      "canales": [
+        {
+          "numero": 84,
+          "nombre": "RTS",
+          "logo": "canales/84-rts.png"
+        },
+        {
+          "numero": 902,
+          "nombre": "Canal E",
+          "logo": "canales/902-canal-e.png"
+        },
+        {
+          "numero": 903,
+          "nombre": "24/7 Canal de Noticias",
+          "logo": "canales/903-24-7-canal-de-noticias.png"
+        },
+        {
+          "numero": 906,
+          "nombre": "RTN",
+          "logo": "canales/906-rtn.png"
+        },
+        {
+          "numero": 907,
+          "nombre": "BVC",
+          "logo": "canales/907-bvc.png"
+        },
+        {
+          "numero": 910,
+          "nombre": "Aldea TV",
+          "logo": "canales/910-aldea-tv.png"
+        },
+        {
+          "numero": 911,
+          "nombre": "Canal 5 Satelital",
+          "logo": "canales/911-canal-5-satelital.png"
+        },
+        {
+          "numero": 912,
+          "nombre": "Canal Support",
+          "logo": "canales/912-canal-support.png"
+        },
+        {
+          "numero": 913,
+          "nombre": "Canal C",
+          "logo": "canales/913-canal-c.png"
+        },
+        {
+          "numero": 916,
+          "nombre": "Canal C",
+          "logo": "canales/916-canal-c.png"
+        },
+        {
+          "numero": 917,
+          "nombre": "Sicardi TV",
+          "logo": "canales/917-sicardi-tv.png"
+        }
+      ]
+    },
+    {
+      "id": "musica",
+      "titulo": "Música",
+      "canales": [
+        {
+          "numero": 700,
+          "nombre": "MTV",
+          "logo": "canales/700-mtv.png"
+        },
+        {
+          "numero": 705,
+          "nombre": "HTV",
+          "logo": "canales/705-htv.png"
+        },
+        {
+          "numero": 707,
+          "nombre": "CM",
+          "logo": "canales/707-cm.png"
+        },
+        {
+          "numero": 710,
+          "nombre": "Extreme TV",
+          "logo": "canales/710-extreme-tv.png"
+        },
+        {
+          "numero": 712,
+          "nombre": "XM TV",
+          "logo": "canales/712-xm-tv.png"
+        },
+        {
+          "numero": 713,
+          "nombre": "El Folklórico",
+          "logo": "canales/713-el-folklorico.png"
+        }
+      ]
+    },
+    {
+      "id": "religiosos",
+      "titulo": "Religiosos",
+      "canales": [
+        {
+          "numero": 800,
+          "nombre": "Canal Luz",
+          "logo": "canales/800-canal-luz.png"
+        },
+        {
+          "numero": 801,
+          "nombre": "María Visión",
+          "logo": "canales/801-maria-vision.png"
+        },
+        {
+          "numero": 802,
+          "nombre": "Aliento Visión",
+          "logo": "canales/802-aliento-vision.png"
+        },
+        {
+          "numero": 803,
+          "nombre": "EWTN",
+          "logo": "canales/803-ewtn.png"
+        },
+        {
+          "numero": 905,
+          "nombre": "Sophia TV",
+          "logo": "canales/905-sophia-tv.png"
+        },
+        {
+          "numero": 914,
+          "nombre": "Radio María TV",
+          "logo": "canales/914-radio-maria-tv.png"
+        }
+      ]
+    }
+  ],
+  "premium": [
+    {
+      "titulo": "Pack Fútbol",
+      "canales": [
+        {
+          "nombre": "ESPN Premium",
+          "logo": "canales/espn-premium.png"
+        },
+        {
+          "nombre": "TNT Sports",
+          "logo": "canales/tnt-sports.png"
+        }
+      ]
+    },
+    {
+      "titulo": "HBO Premium",
+      "canales": [
+        {
+          "nombre": "HBO",
+          "logo": "canales/hbo.png"
+        },
+        {
+          "nombre": "HBO 2",
+          "logo": "canales/hbo-2.png"
+        },
+        {
+          "nombre": "HBO Plus",
+          "logo": "canales/hbo-plus.png"
+        },
+        {
+          "nombre": "HBO Family",
+          "logo": "canales/hbo-family.png"
+        },
+        {
+          "nombre": "HBO Xtreme",
+          "logo": "canales/hbo-xtreme.png"
+        },
+        {
+          "nombre": "HBO Pop",
+          "logo": "canales/hbo-pop.png"
+        },
+        {
+          "nombre": "HBO Mundi",
+          "logo": "canales/hbo-mundi.png"
+        },
+        {
+          "nombre": "HBO Signature",
+          "logo": "canales/hbo-signature.png"
+        },
+        {
+          "nombre": "HBO Max",
+          "logo": "canales/hbo-max.png"
+        }
+      ]
+    }
+  ]
+}

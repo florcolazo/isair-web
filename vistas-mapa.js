@@ -16,8 +16,10 @@ const esri = (servicio, opciones = {}) => L.tileLayer(
  * Agrega el selector de vistas al mapa.
  * @param {L.Map} map
  * @param {string} inicial  'calles' | 'satelite' | 'sateliteCalles' | 'relieve'
+ * @param {object} opciones  opciones extra de L.control.layers (ej: { collapsed: true })
+ * @returns {() => void} función que saca estas vistas del mapa
  */
-export function agregarVistas(map, inicial = 'calles') {
+export function agregarVistas(map, inicial = 'calles', opciones = {}) {
   const vistas = {
     calles: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -38,7 +40,7 @@ export function agregarVistas(map, inicial = 'calles') {
   };
 
   vistas[inicial].addTo(map);
-  L.control.layers({
+  const control = L.control.layers({
     '🗺️ Calles': vistas.calles,
     '🛰️ Satélite': vistas.satelite,
     '🛰️ Satélite con calles': vistas.sateliteCalles,
@@ -46,5 +48,11 @@ export function agregarVistas(map, inicial = 'calles') {
   }, null, {
     collapsed: window.innerWidth < 600, // en el celular queda como ícono para no tapar el mapa
     position: 'topright',
+    ...opciones,
   }).addTo(map);
+
+  return () => {
+    Object.values(vistas).forEach(v => map.removeLayer(v));
+    control.remove();
+  };
 }

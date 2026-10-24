@@ -64,12 +64,25 @@ fetch('data/planes.json?v=' + new Date().getTime())
 
     // 1.2. Actualizar banner promocional dinámicamente
     const bannerBtn = document.getElementById('promoBannerBtn');
-    const bannerImg = document.getElementById('promoBannerImg');
+    let bannerImg = document.getElementById('promoBannerImg');
     if (bannerBtn && bannerImg) {
       if (data.sitio.banner_mostrar !== false && data.sitio.banner_imagen) {
         bannerBtn.style.display = "block";
-        bannerImg.src = data.sitio.banner_imagen;
-        bannerImg.alt = data.sitio.banner_alt || "Promoción";
+        // Si el banner es un video (.mp4/.webm), reemplazar la imagen por un <video>
+        if (/\.(mp4|webm)(\?|$)/i.test(data.sitio.banner_imagen)) {
+          const video = document.createElement('video');
+          video.id = 'promoBannerImg';
+          video.src = data.sitio.banner_imagen;
+          video.autoplay = video.muted = video.loop = video.playsInline = true;
+          video.style.cssText = bannerImg.style.cssText;
+          video.style.maxHeight = 'none'; // mostrar el video entero, sin recortar el texto
+          video.setAttribute('aria-label', data.sitio.banner_alt || "Promoción");
+          bannerImg.replaceWith(video);
+          bannerImg = video;
+        } else {
+          bannerImg.src = data.sitio.banner_imagen;
+          bannerImg.alt = data.sitio.banner_alt || "Promoción";
+        }
         bannerBtn.href = data.sitio.banner_link || "#formulario";
       } else {
         bannerBtn.style.display = "none";

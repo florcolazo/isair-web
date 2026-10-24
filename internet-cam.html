@@ -103,6 +103,19 @@
         margin-top: 20px;
       }
     }
+    /* Una sola tarjeta: imagen a la izquierda y texto a la derecha */
+    .futbol-container.solo { grid-template-columns: 1fr; max-width: 1000px; }
+    @media (min-width: 851px) {
+      .futbol-container.solo .futbol-card {
+        display: grid;
+        grid-template-columns: 1fr 1.1fr;
+        column-gap: 40px;
+        align-items: center;
+      }
+      .futbol-container.solo .futbol-image-container { margin-bottom: 0; }
+      .cam-intro-texto h2,
+      .cam-intro-texto > p { text-align: left !important; }
+    }
     .futbol-card {
       background: #fff;
       border-radius: 12px;
@@ -239,6 +252,126 @@
     .btn-secondary-link:hover {
       background: #c41f18;
     }
+
+    /* ---------- Costos IS CAM ---------- */
+    .cam-costos { padding: 30px 0 40px; background: var(--paper); text-align: center; }
+    .cam-combos { padding: 40px 0 100px; background: var(--paper); text-align: center; }
+    .cam-combos .eyebrow { color: var(--blue); }
+    .cam-combos h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(24px, 3.4vw, 34px);
+      color: var(--ink);
+      margin: 8px 0 40px;
+    }
+    .cam-combos h2 { margin-bottom: 12px; }
+    .cam-combos-sub {
+      max-width: 620px;
+      margin: 0 auto 40px;
+      color: var(--muted);
+      font-size: 15.5px;
+      line-height: 1.55;
+    }
+    .cam-combos-sub strong { color: var(--ink); }
+    .cam-combos .plans-grid { text-align: left; }
+    .cam-incluida {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0 14px;
+      padding: 7px 12px;
+      border-radius: 10px;
+      background: #fdecea;
+      color: var(--ink);
+      font-size: 13px;
+    }
+    .cam-incluida strong { color: var(--red); }
+    .cam-incluida svg {
+      width: 18px; height: 18px; flex-shrink: 0;
+      fill: none; stroke: var(--red); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .cam-costos .eyebrow { color: var(--red); }
+    .cam-costos h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(24px, 3.4vw, 34px);
+      color: var(--ink);
+      max-width: 720px;
+      margin: 8px auto 28px;
+    }
+    .cam-costos svg {
+      width: 22px; height: 22px;
+      fill: none; stroke: currentColor; stroke-width: 1.8;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+    .cam-beneficios {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px;
+      margin: 0 auto 36px; padding: 0; list-style: none;
+    }
+    .cam-beneficios li { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 15px; }
+    .cam-beneficios strong { font-weight: 600; }
+    .cam-icono {
+      display: grid; place-items: center;
+      width: 40px; height: 40px; border-radius: 12px;
+      background: #fdecea; color: var(--red);
+    }
+    .cam-precios {
+      display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 16px;
+      max-width: 1000px; margin: 0 auto; text-align: left;
+    }
+    .cam-precio {
+      padding: 26px 24px; border: 1px solid var(--line); border-radius: 18px; background: #fff;
+    }
+    .cam-precio.destacado {
+      background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+      border-color: transparent; color: #fff;
+    }
+    .cam-precio-label {
+      font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+    }
+    .cam-precio.destacado .cam-precio-label { color: rgba(255,255,255,.7); }
+    .cam-precio-valor {
+      display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px;
+      margin: 10px 0 10px;
+      font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; color: var(--ink);
+    }
+    .cam-precio.destacado .cam-precio-valor { color: #fff; }
+    .cam-precio-valor small { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); }
+    .cam-precio.destacado .cam-precio-valor small { color: rgba(255,255,255,.7); }
+    .cam-precio p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+    .cam-precio p strong { color: var(--ink); }
+    .cam-precio.destacado p { color: rgba(255,255,255,.82); }
+
+    .cam-pedido {
+      display: flex; flex-direction: row;   /* styles.css pone todos los form en columna */
+      align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 18px 28px;
+      max-width: 1000px; margin: 16px auto 0; padding: 20px 24px;
+      border: 1px solid var(--line); border-radius: 18px; background: #fff; text-align: left;
+    }
+    .cam-pedido-campo, .cam-pedido-total { display: flex; flex-direction: column; gap: 8px; }
+    .cam-pedido-label { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .cam-segmento { display: inline-flex; padding: 4px; border-radius: 12px; background: #f0f2f7; }
+    .cam-segmento input { position: absolute; opacity: 0; pointer-events: none; }
+    .cam-segmento span {
+      display: block; padding: 8px 18px; border-radius: 9px;
+      font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; transition: background .15s, color .15s;
+    }
+    .cam-segmento input:checked + span { background: #fff; color: var(--ink); box-shadow: 0 1px 4px rgba(5,27,68,.12); }
+    .cam-segmento input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 1px; }
+    .cam-cantidad { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 12px; }
+    .cam-cantidad button {
+      width: 42px; height: 42px; border: 0; background: none;
+      font-size: 20px; color: var(--ink); cursor: pointer;
+    }
+    .cam-cantidad button:disabled { color: #c3c9d4; cursor: default; }
+    .cam-cantidad output { min-width: 32px; text-align: center; font-size: 16px; font-weight: 700; color: var(--ink); }
+    .cam-pedido-total strong { font-family: 'Sora', sans-serif; font-size: 22px; color: var(--ink); line-height: 42px; }
+    .cam-pedido-btn { margin-left: auto; }
+    .cam-nota { max-width: 1000px; margin: 14px auto 0; font-size: 12.5px; color: var(--muted); }
+
+    @media (max-width: 800px) {
+      .cam-precios { grid-template-columns: 1fr; }
+      .cam-beneficios { display: grid; grid-template-columns: 1fr 1fr; text-align: left; }
+      .cam-pedido-btn { width: 100%; margin-left: 0; text-align: center; }
+    }
 </style>
 </head>
 <body>
@@ -360,7 +493,7 @@
   
   <!-- SECCIÓN CENTRAL DE INFORMACIÓN Y FORMULARIO -->
   <section style="padding: 0 0 40px 0; background: var(--paper); position: relative; z-index: 5;">
-    <div class="futbol-container">
+    <div class="futbol-container solo">
       
       <!-- Detalle e Imagen -->
       <div class="futbol-card" style="border-top: 4px solid var(--red);">
@@ -368,70 +501,105 @@
           <img src="camera.jpg" alt="Nueva IS CAM Auto Vigilancia" class="futbol-image">
         </div>
         
-        <h2 style="font-family: 'Sora', sans-serif; font-size: 26px; color: var(--ink); margin-bottom: 10px; text-align: center;">PROTEGÉ LO QUE MÁS QUERÉS</h2>
-        <p style="font-family: 'Inter', sans-serif; font-size: 15px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; text-align: center;">
-          Con nuestro servicio de cámaras en la nube, podés monitorear tu casa o negocio las 24hs desde cualquier dispositivo.
-        </p>
-        
-        <ul class="futbol-features">
-          <li>Detección inteligente de personas, mascotas y vehículos.</li>
-          <li>Acceso a la app desde el celular en tiempo real.</li>
-          <li>Registro de eventos con fotos y grabación en la nube.</li>
-          <li>Botón de pánico y control de zonas de vigilancia.</li>
-        </ul>
-        
-        <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 10px;">
-          * El valor mensual incluye el servicio de grabación en la nube. Instalación sujeta a disponibilidad técnica.
-        </p>
-      </div>
-
-      <!-- Opciones / Formulario de sumarse -->
-      <div class="futbol-card">
-        <!-- OPCIÓN 1: YA SOY CLIENTE -->
-        <h3 class="form-title">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:#25D366;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-          Opción 1: Sumar IS CAM
-        </h3>
-        <p class="form-subtitle">Si ya sos cliente de Internet Services, completá tus datos para solicitar la instalación de cámaras de forma inmediata.</p>
-        
-        <form id="camForm">
-          <div class="form-group">
-            <label for="nroCliente">Número de Cliente</label>
-            <input type="text" id="nroCliente" required placeholder="Ej: 1489">
-          </div>
+        <div class="cam-intro-texto">
+          <h2 style="font-family: 'Sora', sans-serif; font-size: 26px; color: var(--ink); margin-bottom: 10px; text-align: center;">PROTEGÉ LO QUE MÁS QUERÉS</h2>
+          <p style="font-family: 'Inter', sans-serif; font-size: 15px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; text-align: center;">
+            Con nuestro servicio de cámaras en la nube, podés monitorear tu casa o negocio las 24hs desde cualquier dispositivo.
+          </p>
           
-          <div class="form-group">
-            <label for="nombreCliente">Nombre y Apellido</label>
-            <input type="text" id="nombreCliente" required placeholder="Ej: Juan Carlos Pérez">
-          </div>
+          <ul class="futbol-features">
+            <li>Detección inteligente de personas, mascotas y vehículos.</li>
+            <li>Acceso a la app desde el celular en tiempo real.</li>
+            <li>Registro de eventos con fotos y grabación en la nube.</li>
+            <li>Botón de pánico y control de zonas de vigilancia.</li>
+          </ul>
           
-          <div class="form-group">
-            <label for="emailCliente">Correo Electrónico</label>
-            <input type="email" id="emailCliente" required placeholder="Ej: juan.perez@email.com">
-          </div>
-          
-          <button type="submit" class="btn-submit-wa" style="margin-top: 12px;">
-            <svg viewBox="0 0 24 24" style="fill: #fff; width: 20px; height: 20px; margin-right: 8px;">
-      <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z" />
-    </svg>
-            <span>Solicitar por WhatsApp</span>
-          </button>
-        </form>
-
-        <div class="option-divider"></div>
-
-        <!-- OPCIÓN 2: NO SOY CLIENTE -->
-        <h3 class="non-client-title">Opción 2: No soy cliente</h3>
-        <p class="form-subtitle" style="margin-bottom: 20px;">Para poder contratar IS CAM, primero necesitás contar con nuestro abono base de Internet o suscribirte a nuestros Combos Full.</p>
-        <a href="combos-full.html" class="btn-secondary-link">Ver Planes y Combos</a>
+          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 10px;">
+            * El valor mensual incluye el servicio de grabación en la nube. Instalación sujeta a disponibilidad técnica.
+          </p>
+        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- GRILA DE PLANES -->
-  <section style="padding: 60px 0 100px 0; background: var(--paper);">
+  <!-- COSTOS IS CAM -->
+  <section class="cam-costos">
     <div class="wrap">
+      <p class="eyebrow">¿Ya sos cliente? Sumá cámaras</p>
+      <h2>Todo desde tu celular, y nosotros nos ocupamos del resto</h2>
+
+      <ul class="cam-beneficios">
+        <li>
+          <span class="cam-icono"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg></span>
+          <strong>Mirá todo desde el celular</strong>
+        </li>
+        <li>
+          <span class="cam-icono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></span>
+          <strong>Alertas de movimiento</strong>
+        </li>
+        <li>
+          <span class="cam-icono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg></span>
+          <strong>Activá la alarma</strong>
+        </li>
+        <li>
+          <span class="cam-icono"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg></span>
+          <strong>Mantenimiento incluido</strong>
+        </li>
+      </ul>
+
+      <div class="cam-precios">
+        <div class="cam-precio destacado">
+          <span class="cam-precio-label">Abono mensual</span>
+          <div class="cam-precio-valor"><span id="camAbono">—</span><small>/ mes</small></div>
+          <p>Por cámara. Incluye mantenimiento y, si el equipo falla, lo revisamos y lo reemplazamos sin costo adicional*.</p>
+        </div>
+        <div class="cam-precio">
+          <span class="cam-precio-label">Instalación interna</span>
+          <div class="cam-precio-valor"><span id="camInternaCuota">—</span><small id="camInternaCuotas">cuotas</small></div>
+          <p>o <strong id="camInterna">—</strong> en un pago.</p>
+        </div>
+        <div class="cam-precio">
+          <span class="cam-precio-label">Instalación externa</span>
+          <div class="cam-precio-valor"><span id="camExternaCuota">—</span><small id="camExternaCuotas">cuotas</small></div>
+          <p>o <strong id="camExterna">—</strong> en un pago.</p>
+        </div>
+      </div>
+
+      <!-- Pedido por WhatsApp: tipo de instalación y cantidad de cámaras -->
+      <form class="cam-pedido" id="camPedido">
+        <div class="cam-pedido-campo">
+          <span class="cam-pedido-label">Instalación</span>
+          <div class="cam-segmento" role="radiogroup" aria-label="Tipo de instalación">
+            <label><input type="radio" name="instalacion" value="interna" checked><span>Interna</span></label>
+            <label><input type="radio" name="instalacion" value="externa"><span>Externa</span></label>
+          </div>
+        </div>
+        <div class="cam-pedido-campo">
+          <span class="cam-pedido-label">Cámaras</span>
+          <div class="cam-cantidad">
+            <button type="button" id="camMenos" aria-label="Una cámara menos">−</button>
+            <output id="camCantidad" aria-live="polite">1</output>
+            <button type="button" id="camMas" aria-label="Una cámara más">+</button>
+          </div>
+        </div>
+        <div class="cam-pedido-total">
+          <span class="cam-pedido-label">Abono total</span>
+          <strong id="camTotal">—</strong>
+        </div>
+        <button type="submit" class="btn btn-red cam-pedido-btn">Pedir mis cámaras</button>
+      </form>
+
+      <p class="cam-nota">* Según las condiciones del servicio. Para contratar IS CAM necesitás tener Internet de Internet Services.</p>
+    </div>
+  </section>
+
+  <!-- COMBOS CON IS CAM (clientes nuevos) -->
+  <section class="cam-combos">
+    <div class="wrap">
+      <p class="eyebrow">¿Todavía no sos cliente?</p>
+      <h2>Combos con Internet + IS CAM</h2>
+      <p class="cam-combos-sub">Todos los combos incluyen <strong>1 cámara</strong>. La instalación de la cámara (interna o externa) <strong>no está incluida</strong> en el precio y se abona aparte.</p>
       <div class="plans-grid" id="camPlansGrid">
         <!-- Render dinámico desde JS -->
       </div>
@@ -477,6 +645,10 @@
             <a href="contacto.html">Contactanos</a>
             <a href="cobertura.html">Cobertura</a>
             <a href="internet.html">Planes</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Servicios-TIC.pdf" target="_blank" rel="noopener">Reglamento de clientes</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Anexo.pdf" target="_blank" rel="noopener">Anexos</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/09/Contrato-Prestacion_v3.pdf" target="_blank" rel="noopener">Términos y Condiciones del Servicio de Telecomunicaciones</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/ISCAM_Terminos-y-Condiciones.pdf" target="_blank" rel="noopener">Términos y Condiciones del Servicio IS-CAM</a>
           </div>
           
           <div class="foot-social" style="margin-top: 24px;">
@@ -541,30 +713,43 @@
         if (document.getElementById('floatWaLink')) document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
 
         
-        // Formulario IS CAM para enviar a WhatsApp
-        const camForm = document.getElementById('camForm');
-        if(camForm) {
-          camForm.addEventListener('submit', function(e) {
+        // Costos de IS CAM (data/planes.json → camaras)
+        const cam = data.camaras;
+        if (cam) {
+          const pesos = n => '$' + n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          document.getElementById('camAbono').textContent = pesos(cam.abono_mensual);
+          document.getElementById('camInterna').textContent = pesos(cam.instalacion_interna);
+          document.getElementById('camInternaCuota').textContent = pesos(cam.instalacion_interna_valor_cuota);
+          document.getElementById('camInternaCuotas').textContent = cam.instalacion_interna_cuotas + ' cuotas';
+          document.getElementById('camExterna').textContent = pesos(cam.instalacion_externa);
+          document.getElementById('camExternaCuota').textContent = pesos(cam.instalacion_externa_valor_cuota);
+          document.getElementById('camExternaCuotas').textContent = cam.instalacion_externa_cuotas + ' cuotas';
+
+          const pedido = document.getElementById('camPedido');
+          const salida = document.getElementById('camCantidad');
+          let cantidad = 1;
+          const actualizar = () => {
+            salida.textContent = cantidad;
+            document.getElementById('camMenos').disabled = cantidad <= 1;
+            document.getElementById('camTotal').textContent = pesos(cam.abono_mensual * cantidad) + ' / mes';
+          };
+          document.getElementById('camMenos').addEventListener('click', () => { if (cantidad > 1) { cantidad--; actualizar(); } });
+          document.getElementById('camMas').addEventListener('click', () => { if (cantidad < 20) { cantidad++; actualizar(); } });
+          actualizar();
+
+          pedido.addEventListener('submit', e => {
             e.preventDefault();
-            const nro = document.getElementById('nroCliente').value.trim();
-            const nom = document.getElementById('nombreCliente').value.trim();
-            const mail = document.getElementById('emailCliente').value.trim();
-            
-            let msg = `Hola! Soy cliente de Internet Services (Nro: ${nro}).\n`;
-            msg += `Mi nombre es ${nom} (${mail}).\n`;
-            msg += `Me interesa solicitar la activación y los costos del servicio IS CAM para mi domicilio.`;
-            
-            const waNumber = data.sitio.whatsapp || "5493442578899";
-            const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
-            
-            window.open(url, '_blank');
+            const tipo = pedido.querySelector('input[name="instalacion"]:checked').value;
+            const msg = `Hola! Quiero contratar IS CAM: ${cantidad} ${cantidad === 1 ? 'cámara' : 'cámaras'} con instalación ${tipo}.`;
+            window.open(`https://wa.me/${data.sitio.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
           });
         }
 
+        // Combos con IS CAM para clientes nuevos
         const camPlanes = data.planes.filter(p => {
           const nameLower = p.nombre.toLowerCase();
           return nameLower.includes('cam') || nameLower.includes('cámara') || nameLower.includes('seguridad');
-        });
+        }).sort((a, b) => a.precio - b.precio);
 
         const grid = document.getElementById('camPlansGrid');
         grid.innerHTML = '';
@@ -607,7 +792,7 @@
           let planNameHtml = '';
           if (plan.nombre.includes(' + ')) {
             const parts = plan.nombre.split(' + ');
-            planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts[1]}`;
+            planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts.slice(1).join(" + ")}`;
           } else {
             planNameHtml = plan.nombre;
           }
@@ -617,6 +802,10 @@
             <div class="plan-price">
               <span class="amount">${priceFormatted}</span>
               <span class="per">/ mes</span>
+            </div>
+            <div class="cam-incluida">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12l3 3v7H3z"/><path d="M18 11l3-2v8l-3-2"/><circle cx="9" cy="12" r="2.5"/></svg>
+              <span><strong>1 cámara incluida</strong> · instalación aparte</span>
             </div>
           `;
 

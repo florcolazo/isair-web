@@ -3,6 +3,7 @@
    mapa-cobertura.js — Mapa de cobertura (inicio y cobertura.html)
 
    Necesita Leaflet cargado antes y un <div id="map">.
+   Si la página tiene el buscador (#mapSearch), lo conecta.
    Atributo opcional en #map:
      data-planes-fibra  → link del botón cuando hay fibra (default "index.html#fibra")
    Si la página tiene la tarjeta #coverageResult, también se actualiza.
@@ -10,7 +11,8 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { agregarVistas } from "./vistas-mapa.js?v=1.0.0";
+import { agregarVistas } from "./vistas-mapa.js?v=1.0.2";
+import { iniciarBuscador, cargarGoogle, siGoogleFalla } from "./buscador-direccion.js?v=1.0.4";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGHZLbAnFb4SpX9XqSEmIyLN0B7703U4A",
@@ -35,10 +37,35 @@ const LINK_PLANES_FIBRA = mapEl.dataset.planesFibra || 'index.html#fibra';
 const map = L.map(mapEl, {
   center: SAN_JOSE_CENTER,
   zoom: SAN_JOSE_ZOOM,
-  zoomControl: true,
+  zoomControl: false,
 });
+// Arriba a la izquierda va el buscador: el zoom pasa abajo a la derecha
+L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-agregarVistas(map);
+// Mapa base: Google (Mapa / Satélite), igual que las direcciones del buscador.
+// Mientras carga, o si Google falla, quedan las vistas de OpenStreetMap / Esri.
+let quitarVistasOsm = agregarVistas(map, 'calles', { collapsed: true });
+
+cargarGoogle()
+  .then(() => {
+    if (!L.gridLayer.googleMutant) return;   // no cargó el plugin: queda OpenStreetMap
+    const mapa     = L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 20 });
+    const satelite = L.gridLayer.googleMutant({ type: 'hybrid', maxZoom: 20 });
+    quitarVistasOsm();
+    mapa.addTo(map);
+    const control = L.control.layers({ '🗺️ Mapa': mapa, '🛰️ Satélite': satelite }, null, {
+      collapsed: true,
+      position: 'topright',
+    }).addTo(map);
+
+    siGoogleFalla(() => {
+      map.removeLayer(mapa);
+      map.removeLayer(satelite);
+      control.remove();
+      quitarVistasOsm = agregarVistas(map, 'calles', { collapsed: true });
+    });
+  })
+  .catch(err => console.warn('Mapa de Google no disponible, se usa OpenStreetMap:', err));
 
 // Marcador de la casa
 let casaMarker = null;
@@ -105,7 +132,10 @@ function marcarPunto(lat, lon) {
     ? `✅ <strong>¡Tenés Fibra Óptica!</strong><br>Zona: ${zona}`
     : '📶 Fibra no confirmada acá.<br>Tenés servicio <strong>inalámbrico</strong>.';
 
-  casaMarker.bindPopup(`<div style="font-family:'Inter',sans-serif; font-size:13px; line-height:1.5;"><strong>Tu casa</strong><br>${resumen}<br>${boton}<br><em style="color:#888; font-size:11px;">Podés arrastrar el marcador para ajustarlo.</em></div>`).openPopup();
+  casaMarker.bindPopup(`<div style="font-family:'Inter',sans-serif; font-size:13px; line-height:1.5;"><strong>Tu casa</strong><br>${resumen}<br>${boton}<br><em style="color:#888; font-size:11px;">Podés arrastrar el marcador para ajustarlo.</em></div>`, {
+    // que la ventanita no quede debajo de la barra de búsqueda
+    autoPanPaddingTopLeft: L.point(20, 90),
+  }).openPopup();
 
   if (zona) {
     mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu casa está dentro de la zona <strong>${zona}</strong>.<br>` + boton);
@@ -115,6 +145,15 @@ function marcarPunto(lat, lon) {
 }
 
 map.on('click', e => marcarPunto(e.latlng.lat, e.latlng.lng));
+
+// Buscador de dirección / ubicación actual (si la página lo tiene)
+iniciarBuscador((lat, lng) => {
+  // La casa queda un poco más abajo del centro, así la ventanita entra debajo de la barra de búsqueda
+  const zoom = 17;
+  const centro = map.unproject(map.project([lat, lng], zoom).subtract([0, 110]), zoom);
+  map.setView(centro, zoom);
+  marcarPunto(lat, lng);
+});
 
 // Ray casting: ¿el punto [lon,lat] está dentro del anillo?
 function puntoEnAnillo(punto, anillo) {

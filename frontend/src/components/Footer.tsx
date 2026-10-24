@@ -34,6 +34,24 @@ export default function Footer() {
           </a>
         </p>
 
+        <p className={styles.legal}>
+          <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Servicios-TIC.pdf" target="_blank" rel="noopener">
+            Reglamento de clientes
+          </a>
+          {' · '}
+          <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Anexo.pdf" target="_blank" rel="noopener">
+            Anexos
+          </a>
+          {' · '}
+          <a href="https://is.com.ar/wp-content/uploads/2026/09/Contrato-Prestacion_v3.pdf" target="_blank" rel="noopener">
+            Términos y Condiciones del Servicio de Telecomunicaciones
+          </a>
+          {' · '}
+          <a href="https://is.com.ar/wp-content/uploads/2026/04/ISCAM_Terminos-y-Condiciones.pdf" target="_blank" rel="noopener">
+            Términos y Condiciones del Servicio IS-CAM
+          </a>
+        </p>
+
         <p className={styles.copy}>
           © {new Date().getFullYear()} Internet Services · Agencia San José. Todos los derechos reservados.
         </p>

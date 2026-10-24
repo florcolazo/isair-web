@@ -82,6 +82,7 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      min-width: 0;   /* la fila de categorías scrollea en vez de ensanchar la columna */
     }
     
     .tv-image-container {
@@ -90,6 +91,282 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--line);
+    }
+
+    /* ---------- Beneficios app ISTV Move ---------- */
+    .istv-beneficios {
+      padding: 20px 0 30px;
+      background: var(--paper);
+      text-align: center;
+    }
+    .istv-beneficios .eyebrow { color: var(--blue); }
+    .istv-beneficios h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(24px, 3.4vw, 34px);
+      color: var(--ink);
+      margin: 8px 0 32px;
+    }
+    .beneficios-lista {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0;
+      list-style: none;
+    }
+    .beneficio {
+      padding: 28px 24px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      text-align: left;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .beneficio:hover { box-shadow: 0 12px 28px rgba(5,27,68,.08); transform: translateY(-2px); }
+    .beneficio-icono {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--ink) 0%, var(--blue) 100%);
+      color: #fff;
+    }
+    .beneficio-icono svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .beneficio h3 {
+      margin: 0 0 8px;
+      font-family: 'Sora', sans-serif;
+      font-size: 18px;
+      color: var(--ink);
+    }
+    .beneficio p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .deco {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 20px auto 0;
+      padding: 24px 28px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      text-align: left;
+    }
+    .deco-ilustracion { width: 180px; height: auto; display: block; }
+    .deco h3 { margin: 0 0 4px; font-family: 'Sora', sans-serif; font-size: 18px; color: var(--ink); }
+    .deco p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .deco p strong { color: var(--ink); }
+    .deco-precio {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      padding-left: 24px;
+      border-left: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .deco-precio span { font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+    .deco-precio strong { font-family: 'Sora', sans-serif; font-size: 30px; font-weight: 800; color: var(--ink); line-height: 1.2; }
+    .deco-precio small { font-size: 12px; color: var(--muted); }
+    .deco-valor { display: flex; align-items: baseline; gap: 6px; }
+    .deco-valor em { font-style: normal; font-size: 14px; font-weight: 600; color: var(--muted); }
+
+    @media (max-width: 800px) {
+      .deco { grid-template-columns: 1fr; padding: 20px; gap: 16px; }
+      .deco-ilustracion { width: 190px; margin: 0 auto; }
+      .deco-precio { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 14px 0 0; border-left: 0; border-top: 1px solid var(--line); }
+      .deco-precio small { flex-basis: 100%; }
+    }
+
+    @media (max-width: 800px) {
+      .beneficios-lista { grid-template-columns: 1fr; gap: 12px; }
+      .beneficio { display: grid; grid-template-columns: 52px 1fr; column-gap: 16px; padding: 20px; }
+      .beneficio-icono { grid-row: span 2; margin: 0; }
+    }
+
+    /* ---------- Grilla de canales ---------- */
+    .grilla-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .grilla-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 26px;
+      color: var(--ink);
+      margin: 0;
+    }
+    .grilla-count {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .grilla-buscar svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .grilla-tools { margin-bottom: 8px; }
+    .grilla-buscar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 46px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--muted);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .grilla-buscar:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,114,255,.12); }
+    .grilla-buscar input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      font: inherit;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .grilla-chips {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding-bottom: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .grilla-chips::-webkit-scrollbar { display: none; }
+    .grilla-chips-barra {
+      position: relative;
+      height: 4px;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: #e8ecf3;
+      cursor: pointer;
+      touch-action: none;
+    }
+    .grilla-chips-barra[hidden] { display: none; }
+    .grilla-chips-barra span {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--ink);
+      opacity: .55;
+      transition: opacity .15s;
+    }
+    .grilla-chips-barra:hover span,
+    .grilla-chips-barra.arrastrando span { opacity: .85; }
+    .grilla-chip {
+      flex-shrink: 0;
+      padding: 7px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .grilla-chip:hover { border-color: #c9d3e3; }
+    .grilla-chip[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+    .grilla { max-height: 720px; overflow-y: auto; margin: 0 -8px; padding: 0 8px; }
+    .grilla.cargada .tv-image-container { display: none; }
+    .grilla-seccion { padding-top: 22px; }
+    .grilla-seccion h3 {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 0 0 12px;
+      font-size: 12.5px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .grilla-seccion h3 span { color: var(--muted); font-weight: 600; letter-spacing: 0; }
+    .grilla-lista {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .canal {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      text-align: center;
+      transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+    .canal[hidden] { display: none; }
+    .canal:hover { border-color: #c9d3e3; box-shadow: 0 6px 16px rgba(5,27,68,.08); transform: translateY(-1px); }
+    .canal-logo {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 44px;
+    }
+    .canal-logo img { max-width: 86px; max-height: 44px; object-fit: contain; }
+    .canal-nombre {
+      font-size: 12.5px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--text);
+    }
+    .canal-numero {
+      position: absolute;
+      top: 6px;
+      right: 7px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .grilla-premium .canal { background: linear-gradient(180deg, #fff 0%, #f6f8fc 100%); }
+    .grilla-vacia { margin: 24px 0 8px; text-align: center; color: var(--muted); font-size: 14px; }
+
+    @media (max-width: 600px) {
+      .grilla-lista { grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 8px; }
+      .grilla { max-height: 640px; }
     }
 
     .tv-image {
@@ -180,6 +457,33 @@
       font-size: 14px;
       transition: all 0.3s;
     }
+
+    .form-group-label {
+      font-family: 'Sora', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .opciones { display: flex; gap: 8px; }
+    .form-group .opciones input { position: absolute; opacity: 0; pointer-events: none; }
+    .opciones label { flex: 1; }
+    .opciones span {
+      display: block;
+      padding: 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .opciones span:hover { border-color: #c9d3e3; }
+    .opciones input:checked + span { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .opciones input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .form-ayuda { color: var(--muted); font-size: 12.5px; }
 
     .form-group input:focus {
       outline: none;
@@ -402,10 +706,30 @@
       
       <!-- Detalle e Imagen del Pack -->
       <div class="tv-card">
-        <h2 style="font-family: 'Sora', sans-serif; font-size: 26px; color: var(--ink); margin-bottom: 20px; text-align: center;">GRILLA DE CANALES</h2>
-        <div class="tv-image-container">
-          <img src="canales.jpeg" alt="Grilla de Canales TV" class="tv-image">
+        <div class="grilla-head">
+          <div>
+            <h2 class="grilla-title">Grilla de canales</h2>
+            <p class="grilla-count" id="grillaCount">IS TV</p>
+          </div>
         </div>
+
+        <div class="grilla-tools">
+          <label class="grilla-buscar">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="grillaBuscar" placeholder="Buscá un canal o número" autocomplete="off" aria-label="Buscar canal">
+          </label>
+          <div class="grilla-chips" id="grillaChips" role="tablist" aria-label="Categorías"></div>
+          <!-- Barra que indica que las categorías siguen a la derecha (se puede arrastrar) -->
+          <div class="grilla-chips-barra" id="grillaChipsBarra" aria-hidden="true" hidden><span></span></div>
+        </div>
+
+        <!-- Se completa desde data/canales.json; si no carga, queda la imagen de siempre -->
+        <div class="grilla" id="grilla">
+          <div class="tv-image-container">
+            <img src="canales.jpeg" alt="Grilla de Canales TV" class="tv-image">
+          </div>
+        </div>
+        <p class="grilla-vacia" id="grillaVacia" hidden>No encontramos ese canal en la grilla.</p>
       </div>
 
       <!-- Opciones / Formulario de sumarse -->
@@ -432,6 +756,26 @@
             <label for="emailCliente">Correo Electrónico</label>
             <input type="email" id="emailCliente" required placeholder="Ej: juan.perez@email.com">
           </div>
+
+          <div class="form-group">
+            <span class="form-group-label" id="tvDispositivosLabel">¿Para cuántos dispositivos?</span>
+            <div class="opciones" role="radiogroup" aria-labelledby="tvDispositivosLabel">
+              <label><input type="radio" name="tvDispositivos" value="1" checked><span>1</span></label>
+              <label><input type="radio" name="tvDispositivos" value="2"><span>2</span></label>
+              <label><input type="radio" name="tvDispositivos" value="3"><span>3</span></label>
+              <label><input type="radio" name="tvDispositivos" value="4"><span>4</span></label>
+            </div>
+            <small class="form-ayuda">ISTV Move e ISTV Full funcionan en hasta 4 dispositivos al mismo tiempo: TV con Android, celulares, tablets y computadoras.</small>
+          </div>
+
+          <div class="form-group">
+            <span class="form-group-label" id="tvAndroidLabel">¿Tus televisores son Android TV?</span>
+            <div class="opciones" role="radiogroup" aria-labelledby="tvAndroidLabel">
+              <label><input type="radio" name="tvAndroid" value="Sí" required><span>Sí</span></label>
+              <label><input type="radio" name="tvAndroid" value="No"><span>No</span></label>
+              <label><input type="radio" name="tvAndroid" value="No sé"><span>No sé</span></label>
+            </div>
+          </div>
           
           <button type="submit" class="btn-submit-wa" style="margin-top: 12px;">
             <svg viewBox="0 0 24 24" style="fill: #fff; width: 20px; height: 20px; margin-right: 8px;">
@@ -449,6 +793,51 @@
         <a href="#tvPlansGrid" class="btn-secondary-link">Ver planes</a>
       </div>
 
+    </div>
+  </section>
+
+  <!-- BENEFICIOS APP IS TV -->
+  <section class="istv-beneficios">
+    <div class="wrap">
+      <p class="eyebrow">ISTV Move e ISTV Full</p>
+      <h2>Lo mejor de la TV, en todas tus pantallas</h2>
+      <ul class="beneficios-lista">
+        <li class="beneficio">
+          <span class="beneficio-icono">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="14" height="10" rx="1.5"/><path d="M6 18h6M9 14v4"/><rect x="16" y="9" width="6" height="11" rx="1.5"/><path d="M19 17h.01"/></svg>
+          </span>
+          <h3>Descargá la app IS TV</h3>
+          <p>Mirá en televisores con Android, celulares, tablets y computadoras.</p>
+        </li>
+        <li class="beneficio">
+          <span class="beneficio-icono">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M10 9v6M14 9v6"/></svg>
+          </span>
+          <h3>Mirá a tu ritmo</h3>
+          <p>Pausá, retrocedé o volvé a reproducir tus programas favoritos.</p>
+        </li>
+        <li class="beneficio">
+          <span class="beneficio-icono">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="9" height="7" rx="1.2"/><rect x="13" y="3" width="9" height="7" rx="1.2"/><rect x="2" y="14" width="9" height="7" rx="1.2"/><rect x="13" y="14" width="9" height="7" rx="1.2"/></svg>
+          </span>
+          <h3>4 dispositivos en simultáneo</h3>
+          <p>Tanto ISTV Move como ISTV Full te dejan usar tu cuenta en hasta 4 pantallas al mismo tiempo, para que cada uno mire lo suyo.</p>
+        </li>
+      </ul>
+
+      <!-- Convertidor adicional para teles sin Android (TV Full ya incluye uno) -->
+      <div class="deco">
+        <img class="deco-ilustracion" src="convertidor-bvs.png" alt="Convertidor Android BVS con su control remoto" width="391" height="263">
+        <div class="deco-texto">
+          <h3>Convertidor Android</h3>
+          <p>El servicio de <strong>TV Full</strong> incluye un convertidor Android. Si querés sumar otra tele que no tenga Android, agregá un convertidor adicional y convertila en Smart.</p>
+        </div>
+        <div class="deco-precio">
+          <span>Convertidor adicional</span>
+          <div class="deco-valor"><strong id="precioConvertidor">$9.300</strong><em>/ mes</em></div>
+          <small>Precio final con impuestos</small>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -500,6 +889,10 @@
             <a href="contacto.html">Contactanos</a>
             <a href="cobertura.html">Cobertura</a>
             <a href="internet.html">Planes</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Servicios-TIC.pdf" target="_blank" rel="noopener">Reglamento de clientes</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/Resolucion-733-2017-Reglamento-Clientes-Anexo.pdf" target="_blank" rel="noopener">Anexos</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/09/Contrato-Prestacion_v3.pdf" target="_blank" rel="noopener">Términos y Condiciones del Servicio de Telecomunicaciones</a>
+            <a href="https://is.com.ar/wp-content/uploads/2026/04/ISCAM_Terminos-y-Condiciones.pdf" target="_blank" rel="noopener">Términos y Condiciones del Servicio IS-CAM</a>
           </div>
           
           <div class="foot-social" style="margin-top: 24px;">
@@ -537,6 +930,9 @@
     fetch('data/planes.json?v=' + new Date().getTime())
       .then(res => res.json())
       .then(data => {
+        const precioConvertidor = document.getElementById('precioConvertidor');
+        if (precioConvertidor && data.sitio.precio_convertidor_adicional) precioConvertidor.textContent = '$' + data.sitio.precio_convertidor_adicional;
+
         // Rellenar marcas y contactos
         if (document.getElementById('brandName')) document.getElementById('brandName').textContent = data.sitio.nombre_marca;
         if (document.getElementById('brandSub')) document.getElementById('brandSub').textContent = "AGENCIA " + data.sitio.ciudad.toUpperCase();
@@ -609,7 +1005,7 @@
           let planNameHtml = '';
           if (plan.nombre.includes(' + ')) {
             const parts = plan.nombre.split(' + ');
-            planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts[1]}`;
+            planNameHtml = `<span style="font-size:22px; color:var(--blue); display:block; margin-bottom:4px;">${parts[0]}</span> + ${parts.slice(1).join(" + ")}`;
           } else {
             planNameHtml = plan.nombre;
           }
@@ -661,9 +1057,11 @@
         const nro = document.getElementById('nroCliente').value.trim();
         const nombre = document.getElementById('nombreCliente').value.trim();
         const email = document.getElementById('emailCliente').value.trim();
+        const dispositivos = tvForm.querySelector('input[name="tvDispositivos"]:checked').value;
+        const android = tvForm.querySelector('input[name="tvAndroid"]:checked').value;
         
         // Armar el mensaje de Whatsapp
-        const textMessage = `¡Hola! Soy cliente de Internet Services y quiero sumar el servicio de Televisión a mi plan actual.\n\nDatos de mi cuenta:\n- Número de Cliente: ${nro}\n- Nombre completo: ${nombre}\n- Correo electrónico: ${email}`;
+        const textMessage = `¡Hola! Soy cliente de Internet Services y quiero sumar el servicio de Televisión a mi plan actual.\n\nDatos de mi cuenta:\n- Número de Cliente: ${nro}\n- Nombre completo: ${nombre}\n- Correo electrónico: ${email}\n\nQuiero TV para ${dispositivos} ${dispositivos === '1' ? 'dispositivo' : 'dispositivos'}.\n¿Mis televisores son Android TV?: ${android}`;
         
         // Redirigir a WhatsApp
         let siteWaNumber = "5493442578899"; // Fallback por defecto si no cargó el JSON
@@ -704,15 +1102,145 @@
     const tvImage = document.querySelector('.tv-image');
     const lightbox = document.getElementById('tvLightbox');
     if (tvImage && lightbox) {
-      tvImage.addEventListener('click', function() {
+      const abrirLightbox = function() {
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
-      });
+      };
+      tvImage.addEventListener('click', abrirLightbox);
       lightbox.addEventListener('click', function() {
         lightbox.classList.remove('active');
         document.body.style.overflow = '';
       });
     }
+  </script>
+
+  <script>
+    /* ---------- Grilla de canales (data/canales.json) ---------- */
+    (function () {
+      const grilla = document.getElementById('grilla');
+      const chips = document.getElementById('grillaChips');
+      const buscar = document.getElementById('grillaBuscar');
+      const vacia = document.getElementById('grillaVacia');
+      let filtro = 'todos';
+
+      const sinAcentos = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+      function crearCanal(c) {
+        const li = document.createElement('li');
+        li.className = 'canal';
+        li.dataset.buscar = sinAcentos(c.nombre + ' ' + (c.numero || ''));
+        li.innerHTML = '<div class="canal-logo"><img loading="lazy" alt=""></div><span class="canal-nombre"></span>';
+        const img = li.querySelector('img');
+        img.src = c.logo;
+        img.alt = c.nombre;
+        li.querySelector('.canal-nombre').textContent = c.nombre;
+        if (c.numero) {
+          const n = document.createElement('span');
+          n.className = 'canal-numero';
+          n.textContent = c.numero;
+          li.appendChild(n);
+        }
+        return li;
+      }
+
+      function crearSeccion(id, titulo, canales, extraClase) {
+        const sec = document.createElement('section');
+        sec.className = 'grilla-seccion' + (extraClase ? ' ' + extraClase : '');
+        sec.dataset.id = id;
+        sec.innerHTML = '<h3></h3><ul class="grilla-lista"></ul>';
+        sec.querySelector('h3').append(titulo, ' ');
+        const cuenta = document.createElement('span');
+        cuenta.textContent = canales.length;
+        sec.querySelector('h3').appendChild(cuenta);
+        const ul = sec.querySelector('ul');
+        canales.forEach(c => ul.appendChild(crearCanal(c)));
+        return sec;
+      }
+
+      function crearChip(id, texto) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'grilla-chip';
+        b.role = 'tab';
+        b.dataset.id = id;
+        b.textContent = texto;
+        b.setAttribute('aria-selected', id === filtro);
+        b.addEventListener('click', () => { filtro = id; aplicar(); });
+        chips.appendChild(b);
+      }
+
+      // Muestra solo la categoría elegida y los canales que coinciden con la búsqueda
+      function aplicar() {
+        const q = sinAcentos(buscar.value.trim());
+        let visibles = 0;
+        chips.querySelectorAll('.grilla-chip').forEach(b => b.setAttribute('aria-selected', b.dataset.id === filtro));
+        grilla.querySelectorAll('.grilla-seccion').forEach(sec => {
+          let enSeccion = 0;
+          sec.querySelectorAll('.canal').forEach(li => {
+            const ok = !q || li.dataset.buscar.includes(q);
+            li.hidden = !ok;
+            if (ok) enSeccion++;
+          });
+          sec.querySelector('h3 span').textContent = enSeccion;
+          const mostrar = (filtro === 'todos' || filtro === sec.dataset.id) && enSeccion > 0;
+          sec.hidden = !mostrar;
+          if (mostrar) visibles += enSeccion;
+        });
+        vacia.hidden = visibles > 0;
+        grilla.scrollTop = 0;
+      }
+
+      // Barra bajo las categorías: refleja el scroll horizontal y permite arrastrarlo
+      function iniciarBarraChips() {
+        const barra = document.getElementById('grillaChipsBarra');
+        const pulgar = barra.querySelector('span');
+        const actualizar = () => {
+          const visible = chips.clientWidth / chips.scrollWidth;
+          barra.hidden = visible >= 0.99;
+          if (barra.hidden) return;
+          const ancho = barra.clientWidth * visible;
+          const avance = chips.scrollLeft / (chips.scrollWidth - chips.clientWidth);
+          pulgar.style.width = ancho + 'px';
+          pulgar.style.transform = 'translateX(' + (barra.clientWidth - ancho) * avance + 'px)';
+        };
+        const moverA = (clientX) => {
+          const r = barra.getBoundingClientRect();
+          const ancho = pulgar.offsetWidth;
+          const avance = Math.min(1, Math.max(0, (clientX - r.left - ancho / 2) / (r.width - ancho)));
+          chips.scrollLeft = avance * (chips.scrollWidth - chips.clientWidth);
+        };
+        barra.addEventListener('pointerdown', e => {
+          barra.setPointerCapture(e.pointerId);
+          barra.classList.add('arrastrando');
+          moverA(e.clientX);
+        });
+        barra.addEventListener('pointermove', e => { if (barra.hasPointerCapture(e.pointerId)) moverA(e.clientX); });
+        barra.addEventListener('pointerup', () => barra.classList.remove('arrastrando'));
+        chips.addEventListener('scroll', actualizar, { passive: true });
+        window.addEventListener('resize', actualizar);
+        actualizar();
+      }
+
+      fetch('data/canales.json?v=' + Date.now())
+        .then(r => r.json())
+        .then(data => {
+          const total = data.secciones.reduce((n, s) => n + s.canales.length, 0);
+          document.getElementById('grillaCount').textContent = total + ' canales en IS TV';
+          crearChip('todos', 'Todos');
+          data.secciones.forEach(s => {
+            crearChip(s.id, s.titulo);
+            grilla.appendChild(crearSeccion(s.id, s.titulo, s.canales));
+          });
+          if (data.premium && data.premium.length) {
+            crearChip('premium', 'Premium');
+            data.premium.forEach(p => grilla.appendChild(crearSeccion('premium', p.titulo, p.canales, 'grilla-premium')));
+          }
+          grilla.classList.add('cargada');
+          iniciarBarraChips();
+          buscar.addEventListener('input', aplicar);
+        })
+        .catch(err => console.error('No se pudo cargar la grilla de canales:', err));
+    })();
   </script>
 
   <!-- Lightbox -->
