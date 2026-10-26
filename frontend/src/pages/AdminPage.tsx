@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Turnstile, { type TurnstileHandle } from '../components/Turnstile';
 import type { Banner, Prices } from '../types';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
+  const captchaRef = useRef<TurnstileHandle>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('isair_admin_token'));
   const [agenciaId] = useState(import.meta.env.VITE_AGENCIA_ID || 'sanjose');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -16,13 +19,18 @@ export default function AdminPage() {
   // Handle Login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setErrorMsg('Completá la verificación de seguridad');
+      setStatus('error');
+      return;
+    }
     setStatus('loading');
     setErrorMsg('');
     try {
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ agencia_id: agenciaId, password })
+        body: JSON.stringify({ agencia_id: agenciaId, password, captcha_token: captchaToken })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al iniciar sesión');
@@ -33,6 +41,7 @@ export default function AdminPage() {
     } catch (err: any) {
       setErrorMsg(err.message);
       setStatus('error');
+      captchaRef.current?.reset();
     }
   };
 
@@ -157,6 +166,7 @@ export default function AdminPage() {
               required
             />
           </div>
+          <Turnstile ref={captchaRef} onToken={setCaptchaToken} />
           {status === 'error' && <div style={{ color: '#721c24', background: '#f8d7da', padding: '10px', borderRadius: '8px', textAlign: 'center', fontWeight: 600 }}>{errorMsg}</div>}
           <button type="submit" disabled={status === 'loading'} style={{ width: '100%', padding: '14px', background: '#0072ff', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}>
             {status === 'loading' ? 'Verificando...' : 'Entrar al panel'}

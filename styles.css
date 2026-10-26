@@ -1117,27 +1117,50 @@ footer {
   bottom: 22px;
   right: 22px;
   z-index: 60;
-  width: 58px;
-  height: 58px;
-  background: var(--whatsapp);
-  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 28px -6px rgba(37, 211, 102, .6);
-  transition: transform .18s ease;
+  gap: 12px;
+  padding: 10px 22px 10px 16px;
+  background: #149a46;  /* verde WhatsApp oscuro: el texto blanco se lee mejor */
+  color: #fff;
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 12px 28px -8px rgba(20, 154, 70, .65);
+  transition: transform .18s ease, background .18s ease;
 }
 
 .wa-float:hover {
-  transform: scale(1.08);
+  transform: translateY(-2px);
+  background: #11883d;
 }
 
 .wa-float svg {
-  width: 32px;
-  height: 32px;
+  flex-shrink: 0;
+  width: 30px !important;
+  height: 30px !important;
   fill: #fff;
-  margin-top: 2px;
-  margin-left: 1px;
+}
+
+.wa-float-texto {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.wa-float-texto small {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .wa-float { bottom: 16px; right: 16px; gap: 10px; padding: 8px 18px 8px 12px; }
+  .wa-float svg { width: 26px !important; height: 26px !important; }
+  .wa-float-texto { font-size: 13.5px; }
+  .wa-float-texto small { font-size: 12.5px; }
 }
 
 /* ---------- RESPONSIVE ---------- */

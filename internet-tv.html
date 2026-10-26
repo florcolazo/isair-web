@@ -12,18 +12,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.0.2">
+  <link rel="stylesheet" href="styles.css?v=1.0.6">
   
   <style>
     /* Estilos específicos de la página de planes de Internet + TV */
+    /* Carrusel de planes: los planes corren de costado con flechas */
+    .carousel-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     .plans-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 340px));
-      gap: 30px;
-      justify-content: center;
-      max-width: 1200px;
-      margin: 40px auto 0 auto;
-      padding: 24px 20px 0 20px; /* Fix for badge cutoff */
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 8px 24px;  /* lugar para la insignia y la sombra */
+      scroll-padding: 0 8px;
+      scroll-behavior: smooth;
+    }
+    /* Si entran todos, quedan centrados */
+    .plans-grid > :first-child { margin-left: auto; }
+    .plans-grid > :last-child { margin-right: auto; }
+    .plans-grid .plan-card { scroll-snap-align: start; }
+    @media (max-width: 600px) {
+      .carousel-container { padding: 0; margin: 0 -24px; }  /* el carrusel ocupa todo el ancho del celular */
+      .plans-grid { padding: 40px 16px 24px; scroll-padding: 0 16px; gap: 14px; }
+      .plans-grid .plan-card { flex: 0 0 calc(100% - 44px); }  /* asoma el siguiente plan */
+      .carousel-arrow { top: 210px; }
+      .carousel-arrow.left { left: 4px; }
+      .carousel-arrow.right { right: 4px; }
     }
     
     .page-hero {
@@ -200,12 +212,118 @@
     }
 
     /* ---------- Grilla de canales ---------- */
-    .grilla-head {
+    /* Vista previa en la tarjeta: logos destacados + botón */
+    .tv-card:has(.guia) { align-self: start; }
+    .guia { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .guia-sub { margin: 8px 0 0; color: var(--muted); font-size: 15px; }
+    .guia-logos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      width: 100%;
+      margin: 30px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .guia-logos li {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      height: 84px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      opacity: 0;
+      transform: translateY(6px);
+      animation: guiaAparece .4s ease forwards;
+    }
+    .guia-logos img { max-width: min(100%, 110px); max-height: 100%; object-fit: contain; }
+    @keyframes guiaAparece { to { opacity: 1; transform: none; } }
+    .guia-mas { margin: 18px 0 0; color: var(--muted); font-size: 14px; font-weight: 600; }
+    .guia-mas strong { color: var(--ink); }
+
+    .btn-grilla {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 420px;
+      margin-top: 26px;
+      padding: 16px 26px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--ink-2) 100%);
+      color: #fff;
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .01em;
+      cursor: pointer;
+      box-shadow: 0 12px 26px -10px rgba(0,114,255,.65);
+      transition: transform .2s, box-shadow .2s, filter .2s;
+    }
+    .btn-grilla:hover { transform: translateY(-2px); box-shadow: 0 16px 32px -10px rgba(0,114,255,.75); filter: brightness(1.08); }
+    .btn-grilla:active { transform: translateY(0); }
+    .btn-grilla:focus-visible { outline: 3px solid rgba(0,114,255,.35); outline-offset: 3px; }
+    .btn-grilla svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .btn-grilla-flecha { transition: transform .2s; }
+    .btn-grilla:hover .btn-grilla-flecha { transform: translateX(4px); }
+
+    @media (max-width: 600px) {
+      .guia-logos { grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
+      .guia-logos li { height: 72px; padding: 10px; }
+      .guia-logos li:nth-child(n+7) { display: none; }
+    }
+
+    /* Grilla completa en ventana (pantalla completa en celular) */
+    .grilla-modal {
+      width: min(980px, calc(100% - 40px));
+      max-width: none;
+      height: min(860px, calc(100vh - 60px));
+      max-height: none;
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius);
+      background: var(--paper-2);
+      box-shadow: 0 30px 80px rgba(5,27,68,.35);
+      overflow: hidden;
+    }
+    .grilla-modal[open] { display: flex; flex-direction: column; animation: modalEntra .25s ease; }
+    .grilla-modal::backdrop { background: rgba(5,27,68,.6); backdrop-filter: blur(3px); }
+    @keyframes modalEntra { from { opacity: 0; transform: translateY(16px); } }
+    .grilla-modal-head {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 18px;
+      padding: 24px 28px 16px;
+    }
+    .grilla-modal .grilla-tools { padding: 0 28px; }
+    .grilla-modal .grilla { flex: 1; min-height: 0; margin: 0; padding: 0 28px 28px; }
+    .grilla-cerrar {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .grilla-cerrar:hover { background: var(--paper); }
+    .grilla-cerrar svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+    @media (max-width: 600px) {
+      .grilla-modal { width: 100%; height: 100%; height: 100dvh; border-radius: 0; }
+      .grilla-modal-head { padding: 18px 16px 12px; }
+      .grilla-modal .grilla-tools { padding: 0 16px; }
+      .grilla-modal .grilla { padding: 0 16px 24px; }
+      .grilla-modal .grilla-title { font-size: 22px; }
     }
     .grilla-title {
       font-family: 'Sora', sans-serif;
@@ -301,7 +419,7 @@
     .grilla-chip:hover { border-color: #c9d3e3; }
     .grilla-chip[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
 
-    .grilla { max-height: 720px; overflow-y: auto; margin: 0 -8px; padding: 0 8px; }
+    .grilla { overflow-y: auto; overscroll-behavior: contain; }
     .grilla.cargada .tv-image-container { display: none; }
     .grilla-seccion { padding-top: 22px; }
     .grilla-seccion h3 {
@@ -366,52 +484,9 @@
 
     @media (max-width: 600px) {
       .grilla-lista { grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 8px; }
-      .grilla { max-height: 640px; }
     }
 
-    .tv-image {
-      width: 100%;
-      height: auto;
-      display: block;
-      cursor: zoom-in;
-      transition: transform 0.3s ease;
-    }
-    
-    .tv-image:hover {
-      transform: scale(1.02);
-    }
-
-    .lightbox {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      align-items: center;
-      justify-content: flex-start; /* flex-start permite scroll sin cortar contenido */
-      cursor: zoom-out;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      overflow: auto;
-      padding: 20px;
-    }
-    .lightbox.active {
-      display: flex;
-      opacity: 1;
-    }
-    .lightbox img {
-      width: 100%;
-      min-width: 800px;
-      max-width: 1400px;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      margin: auto;
-      background: #fff;
-    }
+    .tv-image { width: 100%; height: auto; display: block; }
 
     /* Estilos del Formulario */
     .form-title {
@@ -700,36 +775,43 @@
     </div>
   </section>
 
+  <!-- GRILA DE PLANES -->
+  <section style="padding: 0 0 50px 0; background: var(--paper);">
+    <div class="wrap">
+      <div class="carousel-container">
+        <button id="tvScrollLeft" class="carousel-arrow left" aria-label="Ver planes anteriores">
+          <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
+        </button>
+        <button id="tvScrollRight" class="carousel-arrow right" aria-label="Ver más planes">
+          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+        </button>
+        <div class="plans-grid" id="tvPlansGrid">
+          <!-- Render dinámico desde JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- SECCIÓN CENTRAL DE INFORMACIÓN Y FORMULARIO -->
-  <section style="padding: 0 0 40px 0; background: var(--paper); margin-top: -40px;">
+  <section style="padding: 0 0 40px 0; background: var(--paper);">
     <div class="tv-container">
       
       <!-- Detalle e Imagen del Pack -->
       <div class="tv-card">
-        <div class="grilla-head">
-          <div>
-            <h2 class="grilla-title">Grilla de canales</h2>
-            <p class="grilla-count" id="grillaCount">IS TV</p>
-          </div>
-        </div>
+        <div class="guia">
+          <h2 class="grilla-title">Guía de canales</h2>
+          <p class="guia-sub" id="grillaCount">Conocé todos los canales que incluye IS TV</p>
 
-        <div class="grilla-tools">
-          <label class="grilla-buscar">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="search" id="grillaBuscar" placeholder="Buscá un canal o número" autocomplete="off" aria-label="Buscar canal">
-          </label>
-          <div class="grilla-chips" id="grillaChips" role="tablist" aria-label="Categorías"></div>
-          <!-- Barra que indica que las categorías siguen a la derecha (se puede arrastrar) -->
-          <div class="grilla-chips-barra" id="grillaChipsBarra" aria-hidden="true" hidden><span></span></div>
-        </div>
+          <!-- Logos destacados: se completan desde data/canales.json -->
+          <ul class="guia-logos" id="guiaLogos"></ul>
+          <p class="guia-mas" id="guiaMas" hidden></p>
 
-        <!-- Se completa desde data/canales.json; si no carga, queda la imagen de siempre -->
-        <div class="grilla" id="grilla">
-          <div class="tv-image-container">
-            <img src="canales.jpeg" alt="Grilla de Canales TV" class="tv-image">
-          </div>
+          <button type="button" class="btn-grilla" id="abrirGrilla">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            Ver grilla
+            <svg class="btn-grilla-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
         </div>
-        <p class="grilla-vacia" id="grillaVacia" hidden>No encontramos ese canal en la grilla.</p>
       </div>
 
       <!-- Opciones / Formulario de sumarse -->
@@ -741,7 +823,7 @@
         </h3>
         <p class="form-subtitle">Si ya sos cliente de nuestro servicio de Internet, completá tus datos para solicitar la activación del servicio de TV vía WhatsApp.</p>
         
-        <form id="tvForm">
+        <form id="tvForm" data-captcha>
           <div class="form-group">
             <label for="nroCliente">Número de Cliente</label>
             <input type="text" id="nroCliente" required placeholder="Ej: 1489">
@@ -841,15 +923,6 @@
     </div>
   </section>
 
-  <!-- GRILA DE PLANES -->
-  <section style="padding: 40px 0 100px 0; background: var(--paper);">
-    <div class="wrap">
-      <div class="plans-grid" id="tvPlansGrid">
-        <!-- Render dinámico desde JS -->
-      </div>
-    </div>
-  </section>
-
   <!-- FOOTER -->
         <footer>
     <div class="wrap">
@@ -920,6 +993,7 @@
     <svg viewBox="0 0 24 24" style="fill: #fff; width: 30px; height: 30px;">
       <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z" />
     </svg>
+    <span class="wa-float-texto">Sumate a Internet Services<small>¡Es rápido y fácil!</small></span>
   </a>
 
   <!-- Scripts -->
@@ -964,6 +1038,9 @@
           return (nameLower.includes('tv') || nameLower.includes('television') || nameLower.includes('move')) && !nameLower.includes('cam') && !nameLower.includes('mesh');
         });
 
+        // Primero los planes de fibra óptica (sort estable: respeta el orden del JSON dentro de cada tipo)
+        tvPlanes.sort((a, b) => (b.tipo === 'fibra') - (a.tipo === 'fibra'));
+
         const grid = document.getElementById('tvPlansGrid');
         grid.innerHTML = '';
 
@@ -994,12 +1071,10 @@
 
           let htmlContent = '';
 
-          // Botón insignia de fútbol
-          if (plan.pack_futbol) {
-            htmlContent += `
-              <div class="badge" style="top: -16px; left: 28px;">⚽ Quiero fútbol</div>
-            `;
-          }
+          // Insignia de fútbol: todos los planes con TV pueden sumar el pack
+          htmlContent += `
+            <div class="badge" style="top: -16px; left: 28px;">⚽ Quiero fútbol</div>
+          `;
 
           // Nombre y precio formateado con combo split si tiene +
           let planNameHtml = '';
@@ -1045,8 +1120,25 @@
           card.innerHTML = htmlContent;
           grid.appendChild(card);
         });
+        actualizarFlechasPlanes();
       })
       .catch(err => console.error('Error al cargar configuración y planes:', err));
+
+    // Flechas del carrusel de planes: se muestran solo si hay más planes para ese lado
+    const planesGrid = document.getElementById('tvPlansGrid');
+    const flechaIzq = document.getElementById('tvScrollLeft');
+    const flechaDer = document.getElementById('tvScrollRight');
+    function actualizarFlechasPlanes() {
+      const max = planesGrid.scrollWidth - planesGrid.clientWidth;
+      flechaIzq.style.display = (max > 4 && planesGrid.scrollLeft > 4) ? 'flex' : 'none';
+      flechaDer.style.display = (max > 4 && planesGrid.scrollLeft < max - 4) ? 'flex' : 'none';
+    }
+    const pasoPlanes = () => (planesGrid.querySelector('.plan-card')?.offsetWidth || 320) + 24;
+    flechaIzq.addEventListener('click', () => planesGrid.scrollBy({ left: -pasoPlanes() }));
+    flechaDer.addEventListener('click', () => planesGrid.scrollBy({ left: pasoPlanes() }));
+    planesGrid.addEventListener('scroll', actualizarFlechasPlanes, { passive: true });
+    window.addEventListener('resize', actualizarFlechasPlanes);
+    actualizarFlechasPlanes();
 
     // Formulario de Activación de TV
     const tvForm = document.getElementById('tvForm');
@@ -1098,21 +1190,38 @@
       }
     });
 
-    // Funcionalidad Lightbox para la grilla
-    const tvImage = document.querySelector('.tv-image');
-    const lightbox = document.getElementById('tvLightbox');
-    if (tvImage && lightbox) {
-      const abrirLightbox = function() {
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      };
-      tvImage.addEventListener('click', abrirLightbox);
-      lightbox.addEventListener('click', function() {
-        lightbox.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    }
   </script>
+
+  <!-- Grilla completa en ventana -->
+  <dialog class="grilla-modal" id="grillaModal" aria-labelledby="grillaModalTitulo">
+    <div class="grilla-modal-head">
+      <div>
+        <h2 class="grilla-title" id="grillaModalTitulo">Grilla de canales</h2>
+        <p class="grilla-count" id="grillaModalCount">IS TV</p>
+      </div>
+      <button type="button" class="grilla-cerrar" id="cerrarGrilla" aria-label="Cerrar grilla">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="grilla-tools">
+      <label class="grilla-buscar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="grillaBuscar" placeholder="Buscá un canal o número" autocomplete="off" aria-label="Buscar canal">
+      </label>
+      <div class="grilla-chips" id="grillaChips" role="tablist" aria-label="Categorías"></div>
+      <!-- Barra que indica que las categorías siguen a la derecha (se puede arrastrar) -->
+      <div class="grilla-chips-barra" id="grillaChipsBarra" aria-hidden="true" hidden><span></span></div>
+    </div>
+
+    <!-- Se completa desde data/canales.json; si no carga, queda la imagen de siempre -->
+    <div class="grilla" id="grilla">
+      <div class="tv-image-container">
+        <img src="canales.jpeg" alt="Grilla de Canales TV" class="tv-image">
+      </div>
+      <p class="grilla-vacia" id="grillaVacia" hidden>No encontramos ese canal en la grilla.</p>
+    </div>
+  </dialog>
 
   <script>
     /* ---------- Grilla de canales (data/canales.json) ---------- */
@@ -1121,7 +1230,39 @@
       const chips = document.getElementById('grillaChips');
       const buscar = document.getElementById('grillaBuscar');
       const vacia = document.getElementById('grillaVacia');
+      const modal = document.getElementById('grillaModal');
       let filtro = 'todos';
+      let actualizarBarra = () => {};
+
+      // Ventana con la grilla completa
+      document.getElementById('abrirGrilla').addEventListener('click', () => {
+        modal.showModal();
+        document.documentElement.style.overflow = 'hidden';
+        actualizarBarra();
+      });
+      document.getElementById('cerrarGrilla').addEventListener('click', () => modal.close());
+      modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });  // clic en el fondo
+      modal.addEventListener('close', () => { document.documentElement.style.overflow = ''; });
+
+      // Logos destacados de la tarjeta (si alguno no está, se completa con los primeros)
+      const DESTACADOS = ['Telefe', 'TyC Sports', 'ESPN', 'HBO', 'Discovery Channel', 'Disney Channel', 'TNT', 'National Geographic'];
+      function mostrarDestacados(todos, total) {
+        const elegidos = DESTACADOS.map(n => todos.find(c => c.nombre === n)).filter(Boolean);
+        todos.forEach(c => { if (elegidos.length < DESTACADOS.length && !elegidos.includes(c)) elegidos.push(c); });
+        const ul = document.getElementById('guiaLogos');
+        elegidos.forEach((c, i) => {
+          const li = document.createElement('li');
+          li.style.animationDelay = (i * 50) + 'ms';
+          const img = document.createElement('img');
+          img.src = c.logo;
+          img.alt = c.nombre;
+          li.appendChild(img);
+          ul.appendChild(li);
+        });
+        const mas = document.getElementById('guiaMas');
+        mas.innerHTML = 'y <strong>' + (total - elegidos.length) + ' canales más</strong> en la grilla';
+        mas.hidden = false;
+      }
 
       const sinAcentos = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
@@ -1218,6 +1359,7 @@
         barra.addEventListener('pointerup', () => barra.classList.remove('arrastrando'));
         chips.addEventListener('scroll', actualizar, { passive: true });
         window.addEventListener('resize', actualizar);
+        actualizarBarra = actualizar;
         actualizar();
       }
 
@@ -1225,7 +1367,10 @@
         .then(r => r.json())
         .then(data => {
           const total = data.secciones.reduce((n, s) => n + s.canales.length, 0);
-          document.getElementById('grillaCount').textContent = total + ' canales en IS TV';
+          document.getElementById('grillaCount').textContent = 'Conocé los ' + total + ' canales que incluye IS TV';
+          document.getElementById('grillaModalCount').textContent = total + ' canales en IS TV';
+          const todos = data.secciones.flatMap(s => s.canales).concat((data.premium || []).flatMap(p => p.canales));
+          mostrarDestacados(todos, total);
           crearChip('todos', 'Todos');
           data.secciones.forEach(s => {
             crearChip(s.id, s.titulo);
@@ -1243,9 +1388,6 @@
     })();
   </script>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="tvLightbox">
-    <img src="canales.jpeg" alt="Grilla de Canales Ampliada">
-  </div>
+  <script src="captcha.js?v=3"></script>
 </body>
 </html>

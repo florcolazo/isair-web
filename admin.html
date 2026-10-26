@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="captcha.js?v=3"></script>
   <style>
     :root { --blue: #0072ff; --red: #e62a22; --paper: #f4f6fa; --text: #1a1a2e; }
     body { font-family: 'Inter', sans-serif; background: var(--paper); color: var(--text); margin: 0; padding: 20px; }
@@ -69,6 +70,8 @@
         <label>Contraseña</label>
         <input type="password" v-model="password" @keyup.enter="login" placeholder="Contraseña">
       </div>
+      <!-- Verificación de seguridad (captcha.js) -->
+      <div ref="captchaBox" style="min-height: 65px;"></div>
       <button class="btn btn-secondary" style="width: 100%; margin-top: 10px;" @click="login" :disabled="isLoading">
         {{ isLoading ? 'Iniciando...' : 'Iniciar sesión' }}
       </button>
@@ -183,11 +186,25 @@
   </div>
 
   <script>
-    const { createApp, ref, reactive } = Vue;
+    const { createApp, ref, reactive, onMounted } = Vue;
 
     createApp({
       setup() {
         const isAuthenticated = ref(false);
+        const captchaBox = ref(null);
+        let captcha = null;
+        onMounted(() => { captcha = window.crearCaptcha(captchaBox.value); });
+
+        // Después de 5 intentos fallidos se bloquea el ingreso 15 minutos en este navegador
+        const MAX_INTENTOS = 5;
+        const BLOQUEO_MS = 15 * 60 * 1000;
+        function leerIntentos() {
+          try { return JSON.parse(localStorage.getItem('isair_admin_intentos')) || { n: 0, hasta: 0 }; }
+          catch { return { n: 0, hasta: 0 }; }
+        }
+        function guardarIntentos(v) {
+          try { localStorage.setItem('isair_admin_intentos', JSON.stringify(v)); } catch {}
+        }
         const username = ref('');
         const password = ref('');
         const isLoading = ref(false);
@@ -224,12 +241,25 @@
         }
 
         async function login() {
+          const intentos = leerIntentos();
+          if (intentos.hasta > Date.now()) {
+            const min = Math.ceil((intentos.hasta - Date.now()) / 60000);
+            authError.value = `Demasiados intentos fallidos. Probá de nuevo en ${min} min.`;
+            return;
+          }
+
           if (!username.value || !password.value) {
             authError.value = 'Ingresá tu usuario y contraseña';
             return;
           }
+
+          if (!captcha || !captcha.token()) {
+            authError.value = 'Completá la verificación de seguridad';
+            return;
+          }
           
           if (username.value.trim().toLowerCase() !== 'admin') {
+             registrarFallo();
              authError.value = 'Usuario o contraseña incorrecta';
              return;
           }
@@ -242,8 +272,10 @@
             const originalText = bytes.toString(CryptoJS.enc.Utf8).trim();
 
             if (!originalText || (!originalText.startsWith('ghp_') && !originalText.startsWith('github_pat_'))) {
+              registrarFallo();
               throw new Error('Contraseña incorrecta');
             }
+            guardarIntentos({ n: 0, hasta: 0 });
 
             decryptedToken = originalText;
             const response = await fetch(API_URL, {
@@ -264,9 +296,18 @@
             isAuthenticated.value = true;
           } catch (err) {
             authError.value = err.message;
+            captcha.reiniciar();
           } finally {
             isLoading.value = false;
           }
+        }
+
+        function registrarFallo() {
+          const intentos = leerIntentos();
+          intentos.n += 1;
+          if (intentos.n >= MAX_INTENTOS) intentos.hasta = Date.now() + BLOQUEO_MS, intentos.n = 0;
+          guardarIntentos(intentos);
+          if (captcha) captcha.reiniciar();
         }
 
         async function saveData() {
@@ -349,7 +390,7 @@
         }
 
         return {
-          isAuthenticated, username, password, isLoading, authError, login,
+          isAuthenticated, username, password, isLoading, authError, login, captchaBox,
           data, activeTab, expandedPlan, togglePlan,
           addPlan, removePlan, addBenefit, removeBenefit,
           saveData, isSaving, saveMessage, saveStatus

@@ -9,6 +9,9 @@ const adminRoutes    = require('./routes/admin');
 const app  = express();
 const PORT = process.env.PORT || 3001;
 
+// Detrás de un proxy, req.ip debe ser la IP del visitante (límite de intentos del login)
+if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
+
 // ── CORS: permitir GitHub Pages y localhost ───────────────────
 const ALLOWED_ORIGINS = [
   'https://issanjose.com.ar',

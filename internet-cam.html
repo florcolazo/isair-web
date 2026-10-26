@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.0.2">
+  <link rel="stylesheet" href="styles.css?v=1.0.6">
   
   <style>
     /* Estilos específicos de la página de planes de Internet + IS CAM */
@@ -92,7 +92,7 @@
       grid-template-columns: 1.2fr 1fr;
       gap: 40px;
       max-width: 1100px;
-      margin: -40px auto 100px auto;
+      margin: 0 auto 100px auto;
       padding: 0 20px;
       position: relative;
       z-index: 10;
@@ -255,7 +255,7 @@
 
     /* ---------- Costos IS CAM ---------- */
     .cam-costos { padding: 30px 0 40px; background: var(--paper); text-align: center; }
-    .cam-combos { padding: 40px 0 100px; background: var(--paper); text-align: center; }
+    .cam-combos { padding: 40px 0 50px; background: var(--paper); text-align: center; }
     .cam-combos .eyebrow { color: var(--blue); }
     .cam-combos h2 {
       font-family: 'Sora', sans-serif;
@@ -490,6 +490,19 @@
     </div>
   </section>
 
+
+  <!-- COMBOS CON IS CAM (clientes nuevos) -->
+  <section class="cam-combos">
+    <div class="wrap">
+      <p class="eyebrow">¿Todavía no sos cliente?</p>
+      <h2>Combos con Internet + IS CAM</h2>
+      <p class="cam-combos-sub">Todos los combos incluyen <strong>1 cámara</strong>. La instalación de la cámara (interna o externa) <strong>no está incluida</strong> en el precio y se abona aparte.</p>
+      <div class="plans-grid" id="camPlansGrid">
+        <!-- Render dinámico desde JS -->
+      </div>
+    </div>
+  </section>
+
   
   <!-- SECCIÓN CENTRAL DE INFORMACIÓN Y FORMULARIO -->
   <section style="padding: 0 0 40px 0; background: var(--paper); position: relative; z-index: 5;">
@@ -567,7 +580,7 @@
       </div>
 
       <!-- Pedido por WhatsApp: tipo de instalación y cantidad de cámaras -->
-      <form class="cam-pedido" id="camPedido">
+      <form class="cam-pedido" id="camPedido" data-captcha>
         <div class="cam-pedido-campo">
           <span class="cam-pedido-label">Instalación</span>
           <div class="cam-segmento" role="radiogroup" aria-label="Tipo de instalación">
@@ -591,18 +604,6 @@
       </form>
 
       <p class="cam-nota">* Según las condiciones del servicio. Para contratar IS CAM necesitás tener Internet de Internet Services.</p>
-    </div>
-  </section>
-
-  <!-- COMBOS CON IS CAM (clientes nuevos) -->
-  <section class="cam-combos">
-    <div class="wrap">
-      <p class="eyebrow">¿Todavía no sos cliente?</p>
-      <h2>Combos con Internet + IS CAM</h2>
-      <p class="cam-combos-sub">Todos los combos incluyen <strong>1 cámara</strong>. La instalación de la cámara (interna o externa) <strong>no está incluida</strong> en el precio y se abona aparte.</p>
-      <div class="plans-grid" id="camPlansGrid">
-        <!-- Render dinámico desde JS -->
-      </div>
     </div>
   </section>
 
@@ -676,6 +677,7 @@
     <svg viewBox="0 0 24 24" style="fill: #fff; width: 30px; height: 30px;">
       <path d="M12.031 0C5.385 0 .015 5.37.015 12.016c0 2.122.554 4.195 1.603 6.012L.03 24l6.115-1.603a11.96 11.96 0 0 0 5.886 1.542h.005c6.645 0 12.013-5.37 12.013-12.015C24.049 5.37 18.675 0 12.031 0zm0 19.954h-.004a9.92 9.92 0 0 1-5.06-1.374l-.362-.215-3.766.988.995-3.673-.236-.375a9.927 9.927 0 0 1-1.517-5.334c0-5.485 4.464-9.948 9.95-9.948 5.487 0 9.95 4.463 9.95 9.948 0 5.485-4.463 9.949-9.95 9.949zm5.457-7.447c-.299-.15-1.77-.874-2.045-.974-.275-.1-.475-.15-.675.15-.2.3-.775.975-.95 1.175-.175.2-.35.225-.65.075-.3-.15-1.263-.466-2.404-1.488-.887-.795-1.486-1.777-1.661-2.077-.175-.3-.018-.462.132-.612.134-.134.3-.3.45-.45.15-.15.2-.262.3-.437.1-.175.05-.325-.025-.475-.075-.15-.675-1.625-.925-2.225-.241-.581-.487-.502-.675-.512-.175-.008-.375-.008-.575-.008-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.113 3.225 5.125 4.525.716.31 1.274.494 1.708.633.722.228 1.38.196 1.902.118.583-.087 1.77-.723 2.02-1.423.25-.7.25-1.3.175-1.423-.075-.123-.275-.198-.575-.348z" />
     </svg>
+    <span class="wa-float-texto">Sumate a Internet Services<small>¡Es rápido y fácil!</small></span>
   </a>
 
   <!-- Scripts -->
@@ -862,5 +864,6 @@
       }
     });
   </script>
+  <script src="captcha.js?v=3"></script>
 </body>
 </html>
