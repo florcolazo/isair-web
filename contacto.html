@@ -4,9 +4,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Internet Services · Agencia San José</title>
-  <meta name="description"
-    content="Internet de Fibra Óptica e Inalámbrica en San José, Entre Ríos. Encontrá tu plan ideal.">
+  <title>Contacto · Internet Services San José y Colón</title>
+  <!-- SEO -->
+  <meta name="description" content="Contactá a Internet Services: oficina en San Martín 1278, San José (Entre Ríos). Atención virtual de lunes a viernes de 8 a 18 hs por WhatsApp.">
+  <link rel="canonical" href="https://issanjose.com.ar/contacto.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Internet Services San José">
+  <meta property="og:title" content="Contacto · Internet Services San José y Colón">
+  <meta property="og:description" content="Contactá a Internet Services: oficina en San Martín 1278, San José (Entre Ríos). Atención virtual de lunes a viernes de 8 a 18 hs por WhatsApp.">
+  <meta property="og:url" content="https://issanjose.com.ar/contacto.html">
+  <meta property="og:image" content="https://issanjose.com.ar/banner-promo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /SEO -->
+  <!-- Datos del negocio para Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": "https://issanjose.com.ar/#negocio",
+    "name": "Internet Services San José",
+    "description": "Proveedor de internet por fibra óptica e inalámbrico, TV, cámaras de seguridad y WiFi Mesh en San José, Colón y alrededores.",
+    "url": "https://issanjose.com.ar/",
+    "logo": "https://issanjose.com.ar/logo.png",
+    "image": "https://issanjose.com.ar/banner-promo.png",
+    "telephone": "+54 9 3447 524550",
+    "email": "isaircolon@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "San Martín 1278",
+      "addressLocality": "San José",
+      "addressRegion": "Entre Ríos",
+      "addressCountry": "AR"
+    },
+    "areaServed": [
+      { "@type": "City", "name": "San José, Entre Ríos" },
+      { "@type": "City", "name": "Colón, Entre Ríos" }
+    ],
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "15:00"
+    }],
+    "sameAs": ["https://www.instagram.com/issanjose"]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -901,6 +944,7 @@
       padding: 44px;
     }
 
+    .form-card h1,
     .form-card h2 {
       font-size: 26px;
       font-weight: 800;
@@ -1466,7 +1510,7 @@
   <section class="form-section" id="formulario" style="background: var(--paper-2); padding-top: 60px;">
     <div class="wrap">
       <div class="form-card">
-        <h2>Dejanos tu mensaje</h2>
+        <h1>Dejanos tu mensaje</h1>
         <p>Completá los datos y un asesor se comunicará con vos a la brevedad.</p>
 
         <form id="contactForm" data-captcha>
@@ -1586,21 +1630,29 @@
       .then(data => {
         globalSiteConfig = data.sitio;
         
+        // Algunos elementos no están en esta página: se completan solo los que existen
+        const poner = (id, prop, valor) => {
+          const el = document.getElementById(id);
+          if (el) el[prop] = valor;
+        };
+
         // Update Brand logo/texts
-        document.getElementById('brandName').textContent = data.sitio.nombre_marca;
-        document.getElementById('brandSub').textContent = "AGENCIA " + data.sitio.ciudad.toUpperCase();
-        document.getElementById('ctaPhone').textContent = data.sitio.whatsapp_formato;
-        document.getElementById('ctaWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
+        poner('brandName', 'textContent', data.sitio.nombre_marca);
+        poner('brandSub', 'textContent', "AGENCIA " + data.sitio.ciudad.toUpperCase());
+        poner('ctaPhone', 'textContent', data.sitio.whatsapp_formato);
+        poner('ctaWaLink', 'href', "https://wa.me/" + data.sitio.whatsapp);
         
-        document.getElementById('footerBrand').textContent = data.sitio.nombre_marca;
-        document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
-        document.getElementById('footerPhone').textContent = "+54 9 " + data.sitio.whatsapp_formato;
-        document.getElementById('footerEmail').textContent = data.sitio.email;
+        poner('footerBrand', 'textContent', data.sitio.nombre_marca);
+        poner('footerAddress', 'textContent', "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.");
+        poner('footerPhone', 'textContent', "+54 9 " + data.sitio.whatsapp_formato);
+        poner('footerHorarioOficina', 'textContent', data.sitio.horario_oficina || "Lunes a Viernes de 8 a 15 hs");
+        poner('footerHorarioDigital', 'textContent', data.sitio.horario_atencion_digital || "Atención virtual: Lunes a Viernes de 8 a 18 hs");
+        poner('footerEmail', 'textContent', data.sitio.email);
         
-        document.getElementById('instagramLink').href = "https://www.instagram.com/" + data.sitio.instagram;
-        document.getElementById('instagramUser').textContent = data.sitio.instagram;
-        document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
-        document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
+        poner('instagramLink', 'href', "https://www.instagram.com/" + data.sitio.instagram);
+        poner('instagramUser', 'textContent', data.sitio.instagram);
+        poner('footerCopyBrand', 'textContent', data.sitio.nombre_marca);
+        poner('floatWaLink', 'href', "https://wa.me/" + data.sitio.whatsapp);
 
         // Update Page Info
         if (document.getElementById('pageInfoWa')) {

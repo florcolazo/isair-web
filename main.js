@@ -29,7 +29,7 @@ fetch('data/planes.json?v=' + new Date().getTime())
       if (data.sitio.horario_atencion_digital === "") {
         hd.style.display = 'none';
       } else {
-        hd.textContent = data.sitio.horario_atencion_digital || "Lunes a Viernes de 08:30 a 19:00 hs y Sábados de 08:00 a 12:00 hs.";
+        hd.textContent = data.sitio.horario_atencion_digital || "Atención virtual: Lunes a Viernes de 8 a 18 hs";
         hd.style.display = 'block';
       }
     }
@@ -41,7 +41,7 @@ fetch('data/planes.json?v=' + new Date().getTime())
       if (data.sitio.horario_oficina === "") {
         ho.style.display = 'none';
       } else {
-        ho.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
+        ho.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 8 a 15 hs";
         ho.style.display = 'block';
       }
     }

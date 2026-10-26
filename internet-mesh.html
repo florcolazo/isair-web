@@ -3,8 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planes de Internet + IS Mesh · Internet Services</title>
-  <meta name="description" content="Planes de Internet + WiFi Mesh en San José. Ampliá la cobertura de internet en tu hogar con señal inteligente y estable.">
+  <title>Internet + WiFi Mesh en San José y Colón | Internet Services</title>
+  <!-- SEO -->
+  <meta name="description" content="Internet + WiFi Mesh en San José, Colón y alrededores. Señal estable en todos los ambientes de tu casa.">
+  <link rel="canonical" href="https://issanjose.com.ar/internet-mesh.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Internet Services San José">
+  <meta property="og:title" content="Internet + WiFi Mesh en San José y Colón | Internet Services">
+  <meta property="og:description" content="Internet + WiFi Mesh en San José, Colón y alrededores. Señal estable en todos los ambientes de tu casa.">
+  <meta property="og:url" content="https://issanjose.com.ar/internet-mesh.html">
+  <meta property="og:image" content="https://issanjose.com.ar/banner-promo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /SEO -->
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -554,10 +565,10 @@
         if (document.getElementById('footerAddress')) document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
 
         const footerHorarioOficina = document.getElementById('footerHorarioOficina');
-        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
+        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 8 a 15 hs";
 
         const footerHorarioDigital = document.getElementById('footerHorarioDigital');
-        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_digital || "Lunes a Viernes de 08:00 a 20:00 hs. Sábados de 08:00 a 13:00 hs.";
+        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_atencion_digital || "Atención virtual: Lunes a Viernes de 8 a 18 hs";
 
         const footerTelefonos = document.getElementById('footerTelefonos');
         if (footerTelefonos) footerTelefonos.textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";

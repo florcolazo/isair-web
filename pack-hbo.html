@@ -3,8 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Paquete HBO Premium · Internet Services</title>
-  <meta name="description" content="Contratá el Paquete HBO Premium y disfrutá de los mejores estrenos y series exclusivas en calidad Full HD.">
+  <title>Paquete HBO Premium en San José y Colón | Internet Services</title>
+  <!-- SEO -->
+  <meta name="description" content="Sumá el Paquete HBO Premium a tu plan de Internet + TV en San José, Colón y alrededores: estrenos y series exclusivas en Full HD.">
+  <link rel="canonical" href="https://issanjose.com.ar/pack-hbo.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Internet Services San José">
+  <meta property="og:title" content="Paquete HBO Premium en San José y Colón | Internet Services">
+  <meta property="og:description" content="Sumá el Paquete HBO Premium a tu plan de Internet + TV en San José, Colón y alrededores: estrenos y series exclusivas en Full HD.">
+  <meta property="og:url" content="https://issanjose.com.ar/pack-hbo.html">
+  <meta property="og:image" content="https://issanjose.com.ar/banner-promo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /SEO -->
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -587,13 +598,13 @@
         if (footerAddress) footerAddress.textContent = data.sitio.direccion_oficina || "Churruarin 2207. Paraná, Entre Ríos, Argentina.";
 
         const footerHorarioOficina = document.getElementById('footerHorarioOficina');
-        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
+        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 8 a 15 hs";
 
         const footerPhone = document.getElementById('footerPhone');
         if (footerPhone) footerPhone.textContent = data.sitio.horario_atencion_digital ? 'Vía WhatsApp' : "0810-444-0414";
 
         const footerHorarioDigital = document.getElementById('footerHorarioDigital');
-        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_atencion_digital || "Lunes a Viernes de 08:30 a 19:00 hs y Sábados de 08:00 a 12:00 hs.";
+        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_atencion_digital || "Atención virtual: Lunes a Viernes de 8 a 18 hs";
 
         const footerTelefonos = document.getElementById('footerTelefonos');
         if (footerTelefonos) footerTelefonos.textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";

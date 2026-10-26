@@ -4,9 +4,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Internet Services · Agencia San José</title>
-  <meta name="description"
-    content="Internet de Fibra Óptica e Inalámbrica en San José, Entre Ríos. Encontrá tu plan ideal.">
+  <title>Preguntas Frecuentes · Internet Services San José y Colón</title>
+  <!-- SEO -->
+  <meta name="description" content="Respuestas sobre instalación, planes, pagos, TV y soporte de Internet Services en San José, Colón y alrededores.">
+  <link rel="canonical" href="https://issanjose.com.ar/preguntas-frecuentes.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Internet Services San José">
+  <meta property="og:title" content="Preguntas Frecuentes · Internet Services San José y Colón">
+  <meta property="og:description" content="Respuestas sobre instalación, planes, pagos, TV y soporte de Internet Services en San José, Colón y alrededores.">
+  <meta property="og:url" content="https://issanjose.com.ar/preguntas-frecuentes.html">
+  <meta property="og:image" content="https://issanjose.com.ar/banner-promo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /SEO -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -1638,31 +1648,37 @@
       .then(data => {
         globalSiteConfig = data.sitio;
         
+        // Algunos elementos no están en esta página: se completan solo los que existen
+        const poner = (id, prop, valor) => {
+          const el = document.getElementById(id);
+          if (el) el[prop] = valor;
+        };
+
         // Update Brand logo/texts
-        document.getElementById('brandName').textContent = data.sitio.nombre_marca;
-        document.getElementById('brandSub').textContent = "AGENCIA " + data.sitio.ciudad.toUpperCase();
-        document.getElementById('ctaPhone').textContent = data.sitio.whatsapp_formato;
-        document.getElementById('ctaWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
+        poner('brandName', 'textContent', data.sitio.nombre_marca);
+        poner('brandSub', 'textContent', "AGENCIA " + data.sitio.ciudad.toUpperCase());
+        poner('ctaPhone', 'textContent', data.sitio.whatsapp_formato);
+        poner('ctaWaLink', 'href', "https://wa.me/" + data.sitio.whatsapp);
         
-        document.getElementById('footerBrand').textContent = data.sitio.nombre_marca;
-        document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
+        poner('footerBrand', 'textContent', data.sitio.nombre_marca);
+        poner('footerAddress', 'textContent', "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.");
 
         const footerHorarioOficina = document.getElementById('footerHorarioOficina');
-        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
+        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 8 a 15 hs";
 
         const footerHorarioDigital = document.getElementById('footerHorarioDigital');
-        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_digital || "Lunes a Viernes de 08:00 a 20:00 hs. Sábados de 08:00 a 13:00 hs.";
+        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_atencion_digital || "Atención virtual: Lunes a Viernes de 8 a 18 hs";
 
         const footerTelefonos = document.getElementById('footerTelefonos');
         if (footerTelefonos) footerTelefonos.textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";
 
-        document.getElementById('footerPhone').textContent = "+54 9 " + data.sitio.whatsapp_formato;
-        document.getElementById('footerEmail').textContent = data.sitio.email;
+        poner('footerPhone', 'textContent', "+54 9 " + data.sitio.whatsapp_formato);
+        poner('footerEmail', 'textContent', data.sitio.email);
         
-        document.getElementById('instagramLink').href = "https://www.instagram.com/" + data.sitio.instagram;
-        document.getElementById('instagramUser').textContent = data.sitio.instagram;
-        document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
-        document.getElementById('floatWaLink').href = "https://wa.me/" + data.sitio.whatsapp;
+        poner('instagramLink', 'href', "https://www.instagram.com/" + data.sitio.instagram);
+        poner('instagramUser', 'textContent', data.sitio.instagram);
+        poner('footerCopyBrand', 'textContent', data.sitio.nombre_marca);
+        poner('floatWaLink', 'href', "https://wa.me/" + data.sitio.whatsapp);
 
         // Since this page does not have plan cards directly, we don't render plans.
       })

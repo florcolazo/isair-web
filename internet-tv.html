@@ -3,8 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Planes de Internet + TV · Internet Services</title>
-  <meta name="description" content="Planes de Internet + TV Digital en San José. Disfrutá del mejor entretenimiento en tus dispositivos.">
+  <title>Internet + TV en San José y Colón | Internet Services</title>
+  <!-- SEO -->
+  <meta name="description" content="Planes de Internet + TV en San José, Colón y alrededores: más de 120 canales, app ISTV para ver en hasta 4 dispositivos y Pack Fútbol opcional.">
+  <link rel="canonical" href="https://issanjose.com.ar/internet-tv.html">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Internet Services San José">
+  <meta property="og:title" content="Internet + TV en San José y Colón | Internet Services">
+  <meta property="og:description" content="Planes de Internet + TV en San José, Colón y alrededores: más de 120 canales, app ISTV para ver en hasta 4 dispositivos y Pack Fútbol opcional.">
+  <meta property="og:url" content="https://issanjose.com.ar/internet-tv.html">
+  <meta property="og:image" content="https://issanjose.com.ar/banner-promo.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /SEO -->
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +40,43 @@
     .plans-grid > :first-child { margin-left: auto; }
     .plans-grid > :last-child { margin-right: auto; }
     .plans-grid .plan-card { scroll-snap-align: start; }
+
+    /* Opción Pack Fútbol en cada plan */
+    .badge-futbol { cursor: pointer; }
+    .con-futbol .badge-futbol { animation: none; background: #149a46; box-shadow: 0 4px 10px rgba(20,154,70,.4); }
+    .con-futbol .badge-futbol::after { content: ' ✓'; }
+    .sumar-futbol {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1.5px dashed #c9d3e3;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      user-select: none;
+      transition: border-color .15s, background .15s;
+    }
+    .sumar-futbol:hover { border-color: var(--red); }
+    .sumar-futbol em { font-style: normal; font-weight: 700; color: var(--red); }
+    .sumar-futbol input { position: absolute; opacity: 0; pointer-events: none; }
+    .sumar-futbol-check {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      border: 2px solid #c9d3e3;
+      border-radius: 6px;
+      background: #fff;
+      transition: background .15s, border-color .15s;
+    }
+    .sumar-futbol input:checked + .sumar-futbol-check { background: #149a46; border-color: #149a46; }
+    .sumar-futbol input:checked + .sumar-futbol-check::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 800; }
+    .sumar-futbol:has(input:checked) { border-style: solid; border-color: #149a46; background: #eefaf2; }
+    .sumar-futbol input:focus-visible + .sumar-futbol-check { outline: 3px solid rgba(0,114,255,.35); outline-offset: 2px; }
     @media (max-width: 600px) {
       .carousel-container { padding: 0; margin: 0 -24px; }  /* el carrusel ocupa todo el ancho del celular */
       .plans-grid { padding: 40px 16px 24px; scroll-padding: 0 16px; gap: 14px; }
@@ -1014,10 +1062,10 @@
         if (document.getElementById('footerAddress')) document.getElementById('footerAddress').textContent = "Internet de Fibra Óptica e Inalámbrica en " + data.sitio.ciudad + " y alrededores.";
 
         const footerHorarioOficina = document.getElementById('footerHorarioOficina');
-        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 08:30 a 17:00 hs.";
+        if (footerHorarioOficina) footerHorarioOficina.textContent = data.sitio.horario_oficina || "Lunes a Viernes de 8 a 15 hs";
 
         const footerHorarioDigital = document.getElementById('footerHorarioDigital');
-        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_digital || "Lunes a Viernes de 08:00 a 20:00 hs. Sábados de 08:00 a 13:00 hs.";
+        if (footerHorarioDigital) footerHorarioDigital.textContent = data.sitio.horario_atencion_digital || "Atención virtual: Lunes a Viernes de 8 a 18 hs";
 
         const footerTelefonos = document.getElementById('footerTelefonos');
         if (footerTelefonos) footerTelefonos.textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";
@@ -1054,7 +1102,7 @@
           return;
         }
 
-        tvPlanes.forEach(plan => {
+        tvPlanes.forEach((plan, i) => {
           // Crear contenedor de tarjeta
           const card = document.createElement('div');
           
@@ -1071,9 +1119,10 @@
 
           let htmlContent = '';
 
-          // Insignia de fútbol: todos los planes con TV pueden sumar el pack
+          // Insignia de fútbol: marca la misma opción que está arriba del botón
+          const idFutbol = 'futbol-plan-' + i;
           htmlContent += `
-            <div class="badge" style="top: -16px; left: 28px;">⚽ Quiero fútbol</div>
+            <label class="badge badge-futbol" for="${idFutbol}" style="top: -16px; left: 28px;">⚽ Quiero fútbol</label>
           `;
 
           // Nombre y precio formateado con combo split si tiene +
@@ -1108,16 +1157,33 @@
             </div>
           `;
 
-          // Nota legal y botón de contratación
+          // Nota legal, opción Pack Fútbol y botón de contratación
+          const precioFutbol = data.sitio.precio_pack_futbol ? ` <em>+$${data.sitio.precio_pack_futbol}/mes</em>` : '';
           htmlContent += `
             <p class="plan-note">${plan.nota}</p>
-            <a href="https://wa.me/${data.sitio.whatsapp}?text=Hola!%20Me%20interesa%20contratar%20el%20plan%20${encodeURIComponent(plan.nombre)}%20(${planCategoryText})" 
-               class="btn ${btnClass}" target="_blank" rel="noopener">
+            <label class="sumar-futbol">
+              <input type="checkbox" id="${idFutbol}">
+              <span class="sumar-futbol-check" aria-hidden="true"></span>
+              <span>⚽ Sumar Pack Fútbol${precioFutbol}</span>
+            </label>
+            <a class="btn ${btnClass}" target="_blank" rel="noopener">
                ${btnText}
             </a>
           `;
 
           card.innerHTML = htmlContent;
+
+          // El mensaje de WhatsApp incluye el Pack Fútbol si está marcado
+          const futbol = card.querySelector('#' + idFutbol);
+          const boton = card.querySelector('a.btn');
+          const armarLink = () => {
+            let texto = `Hola! Me interesa contratar el plan ${plan.nombre} (${planCategoryText})`;
+            if (futbol.checked) texto += ' + Pack Fútbol ⚽';
+            boton.href = 'https://wa.me/' + data.sitio.whatsapp + '?text=' + encodeURIComponent(texto);
+            card.classList.toggle('con-futbol', futbol.checked);
+          };
+          futbol.addEventListener('change', armarLink);
+          armarLink();
           grid.appendChild(card);
         });
         actualizarFlechasPlanes();
