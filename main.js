@@ -34,7 +34,7 @@ fetch('data/planes.json?v=' + new Date().getTime())
       }
     }
     
-    if (document.getElementById('footerAddress')) document.getElementById('footerAddress').textContent = data.sitio.direccion_oficina || "Churruarin 2207. Paraná, Entre Ríos, Argentina.";
+    if (document.getElementById('footerAddress')) document.getElementById('footerAddress').textContent = data.sitio.direccion_oficina || "San Martín 1278, San José, Entre Ríos";
     
     const ho = document.getElementById('footerHorarioOficina');
     if (ho) {
@@ -46,14 +46,13 @@ fetch('data/planes.json?v=' + new Date().getTime())
       }
     }
     
-    if (document.getElementById('footerTelefonos')) document.getElementById('footerTelefonos').textContent = data.sitio.telefonos_contacto || "0810-444-0414 / 0343 4140080";
+    if (document.getElementById('footerTelefonos')) document.getElementById('footerTelefonos').textContent = data.sitio.telefonos_contacto || "0800 888 4772";
     
     // Redes Sociales en Footer
     if (document.getElementById('socialWa')) document.getElementById('socialWa').href = "https://wa.me/" + (data.sitio.whatsapp || "");
     if (document.getElementById('socialIg')) document.getElementById('socialIg').href = "https://www.instagram.com/" + (data.sitio.instagram || "");
     
     if (document.getElementById('footerCopyBrand')) document.getElementById('footerCopyBrand').textContent = data.sitio.nombre_marca;
-    if (document.getElementById('floatWaLink')) document.getElementById('floatWaLink').href = "https://wa.me/" + (data.sitio.whatsapp || "");
 
     // Precios de Packs Premium
     const precioFutbol = document.getElementById('precioPackFutbol');

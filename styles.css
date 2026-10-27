@@ -1111,58 +1111,6 @@ footer {
   width: 100%;
 }
 
-/* ---------- BOTÓN FLOTANTE WHATSAPP ---------- */
-.wa-float {
-  position: fixed;
-  bottom: 22px;
-  right: 22px;
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 22px 10px 16px;
-  background: #149a46;  /* verde WhatsApp oscuro: el texto blanco se lee mejor */
-  color: #fff;
-  border-radius: 999px;
-  text-decoration: none;
-  box-shadow: 0 12px 28px -8px rgba(20, 154, 70, .65);
-  transition: transform .18s ease, background .18s ease;
-}
-
-.wa-float:hover {
-  transform: translateY(-2px);
-  background: #11883d;
-}
-
-.wa-float svg {
-  flex-shrink: 0;
-  width: 30px !important;
-  height: 30px !important;
-  fill: #fff;
-}
-
-.wa-float-texto {
-  display: flex;
-  flex-direction: column;
-  font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.25;
-  white-space: nowrap;
-}
-
-.wa-float-texto small {
-  font-size: 14px;
-  font-weight: 400;
-}
-
-@media (max-width: 600px) {
-  .wa-float { bottom: 16px; right: 16px; gap: 10px; padding: 8px 18px 8px 12px; }
-  .wa-float svg { width: 26px !important; height: 26px !important; }
-  .wa-float-texto { font-size: 13.5px; }
-  .wa-float-texto small { font-size: 12.5px; }
-}
-
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 768px) {
   .plan-card {

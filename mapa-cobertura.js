@@ -140,7 +140,7 @@ function marcarPunto(lat, lon) {
   if (zona) {
     mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu casa está dentro de la zona <strong>${zona}</strong>.<br>` + boton);
   } else {
-    mostrarResultado(false, 'Consultar por opciones disponibles', 'No confirmamos fibra en esta ubicación, pero el servicio inalámbrico cubre toda el área.<br>' + boton);
+    mostrarResultado(false, 'Consultar por opciones disponibles', 'No confirmamos fibra en esta ubicación, pero el servicio inalámbrico llega a todo el Departamento Colón.<br>' + boton);
   }
 }
 
