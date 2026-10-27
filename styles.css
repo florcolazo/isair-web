@@ -1388,3 +1388,21 @@ footer {
     text-underline-offset: 2px;
   }
 }
+
+/* Link "Ver grilla de canales" en las tarjetas con TV (planes.js) */
+.plan-ver-grilla {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s;
+}
+.plan-ver-grilla:hover { background: #dce8ff; }
+.plan-ver-grilla svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; }

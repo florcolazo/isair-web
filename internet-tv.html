@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.0.8">
+  <link rel="stylesheet" href="styles.css?v=1.0.9">
   
   <style>
     /* Estilos específicos de la página de planes de Internet + TV */
@@ -1308,7 +1308,17 @@
       });
       document.getElementById('cerrarGrilla').addEventListener('click', () => modal.close());
       modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });  // clic en el fondo
-      modal.addEventListener('close', () => { document.documentElement.style.overflow = ''; });
+      modal.addEventListener('close', () => {
+        document.documentElement.style.overflow = '';
+        if (location.hash === '#grilla') history.replaceState(null, '', location.pathname + location.search);
+      });
+
+      // internet-tv.html#grilla (link "Ver grilla de canales" de las tarjetas de planes) abre la grilla
+      const abrirSiPide = () => {
+        if (location.hash === '#grilla' && !modal.open) document.getElementById('abrirGrilla').click();
+      };
+      window.addEventListener('hashchange', abrirSiPide);
+      abrirSiPide();
 
       // Logos destacados de la tarjeta (si alguno no está, se completa con los primeros)
       const DESTACADOS = ['Telefe', 'TyC Sports', 'ESPN', 'HBO', 'Discovery Channel', 'Disney Channel', 'TNT', 'National Geographic'];
@@ -1455,6 +1465,6 @@
   </script>
 
   <script src="captcha.js?v=3"></script>
-  <script src="planes.js?v=1"></script>
+  <script src="planes.js?v=2"></script>
 </body>
 </html>
