@@ -43,8 +43,8 @@ collections:
               - { label: "Dirección de Oficina Comercial", name: "direccion_oficina", widget: "string", required: false, default: "Churruarin 2207. Paraná, Entre Ríos, Argentina." }
               - { label: "Horario de Oficina Comercial", name: "horario_oficina", widget: "string", required: false, default: "Lunes a Viernes de 08:30 a 17:00 hs." }
               - { label: "Teléfonos de Contacto (ej: 0810-444-0414 / 0343 4140080)", name: "telefonos_contacto", widget: "string", required: false, default: "0810-444-0414 / 0343 4140080" }
-              - { label: "Precio Mensual Pack Fútbol", name: "precio_pack_futbol", widget: "string", required: false, default: "23.350" }
-              - { label: "Precio Mensual Paquete HBO", name: "precio_pack_hbo", widget: "string", required: false, default: "18.500" }
+              - { label: "Precio Mensual Pack Fútbol", name: "precio_pack_futbol", widget: "string", required: false, default: "27.660" }
+              - { label: "Precio Mensual Paquete HBO", name: "precio_pack_hbo", widget: "string", required: false, default: "13.690" }
           - label: "Planes de Conexión"
             label_singular: "Plan"
             name: "planes"

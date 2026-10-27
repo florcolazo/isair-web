@@ -56,10 +56,10 @@ fetch('data/planes.json?v=' + new Date().getTime())
 
     // Precios de Packs Premium
     const precioFutbol = document.getElementById('precioPackFutbol');
-    if (precioFutbol) precioFutbol.textContent = "$" + (data.sitio.precio_pack_futbol || "23.350");
+    if (precioFutbol) precioFutbol.textContent = "$" + (data.sitio.precio_pack_futbol || "27.660");
 
     const precioHbo = document.getElementById('precioPackHbo');
-    if (precioHbo) precioHbo.textContent = "$" + (data.sitio.precio_pack_hbo || "18.500");
+    if (precioHbo) precioHbo.textContent = "$" + (data.sitio.precio_pack_hbo || "13.690");
 
     // 1.2. Actualizar banner promocional dinámicamente
     const bannerBtn = document.getElementById('promoBannerBtn');
