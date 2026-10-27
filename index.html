@@ -58,8 +58,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css?v=1.0.6">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css?v=1.0.8">
   <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
@@ -93,18 +92,35 @@
       margin: 0 auto;
       line-height: 1.6;
     }
-    .home-map-wrap {
-      max-width: 1100px;
+    /* Buscador de cobertura sin mapa */
+    .home-search {
+      max-width: 560px;
       margin: 26px auto 0;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
       text-align: left;
     }
-    #map { width: 100%; height: 480px; z-index: 1; }
-    @media (max-width: 600px) {
-      #map { height: 400px; }
+    .home-search .map-search {
+      position: relative;
+      top: auto;
+      left: auto;
+      width: 100%;
+      z-index: 2;
     }
+    .coverage-result { display: none; margin-top: 14px; }
+    .coverage-result.visible { display: block; }
+    .result-card {
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text);
+      box-shadow: 0 12px 30px rgba(0,0,0,.18);
+    }
+    .result-card.tiene    { background: linear-gradient(135deg, #d4edda, #f0fff4); border: 1.5px solid #28a745; }
+    .result-card.no-tiene { background: linear-gradient(135deg, #fff3d6, #fffaf0); border: 1.5px solid #e0a100; }
+    .result-icon { font-size: 26px; flex-shrink: 0; }
+    .result-card h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; margin: 0 0 4px; }
+    .result-card p { margin: 0; font-size: 13.5px; color: #444; line-height: 1.5; }
   </style>
 </head>
 
@@ -258,9 +274,10 @@
     <section class="coverage-check-hero">
       <p class="eyebrow">📍 Cobertura</p>
       <h2>¿Tenemos Fibra Óptica en tu calle?</h2>
-      <p class="sub">Escribí tu dirección, usá tu ubicación o tocá tu casa en el mapa para saber si tenés fibra. El servicio inalámbrico llega a toda el área de San José.</p>
+      <p class="sub">Escribí tu dirección o usá tu ubicación para saber si tenés fibra. El servicio inalámbrico llega a toda el área de San José.</p>
 
-      <div class="home-map-wrap map-shell">
+      <!-- Por ahora sin mapa: solo el buscador (mapa-cobertura.js funciona sin #map) -->
+      <div class="home-search" data-planes-fibra="#fibra">
         <div class="map-search" role="search">
           <div class="map-search-bar">
             <svg class="map-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -277,7 +294,15 @@
           <ul id="mapSearchList" class="map-search-list" role="listbox" hidden></ul>
           <p id="mapSearchMsg" class="map-search-msg" role="status" hidden></p>
         </div>
-        <div id="map" data-planes-fibra="#fibra"></div>
+        <div class="coverage-result" id="coverageResult" aria-live="polite">
+          <div class="result-card" id="resultCard">
+            <div class="result-icon" id="resultIcon">✅</div>
+            <div>
+              <h3 id="resultTitle">¡Tenemos cobertura!</h3>
+              <p id="resultText">Tu zona cuenta con servicio disponible.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -503,11 +528,10 @@
   <script src="main.js?v=1.0.5"></script>
 
   <!-- Mapa de cobertura (Firebase + Leaflet) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.16.0/dist/Leaflet.GoogleMutant.js"></script>
-  <script type="module" src="mapa-cobertura.js?v=1.0.9"></script>
+  <script type="module" src="mapa-cobertura.js?v=1.1.0"></script>
 
   <script src="captcha.js?v=3"></script>
+  <script src="planes.js?v=1"></script>
 </body>
 
 </html>

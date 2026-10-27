@@ -1193,7 +1193,7 @@ footer {
 
 /* ---------- Buscador de dirección del mapa de cobertura ---------- */
 /* Barra flotante sobre el mapa, estilo apps de mapas */
-.map-shell { position: relative; }
+.map-shell { position: relative; isolation: isolate; }   /* el z-index del buscador queda dentro del mapa, debajo del menú */
 .map-search {
   position: absolute;
   top: 16px;
@@ -1349,4 +1349,42 @@ footer {
   .map-locate { width: 44px; padding: 0; }
   /* el selector de vistas baja para no quedar tapado por la barra */
   .map-shell .leaflet-top.leaflet-right { top: 64px; }
+}
+
+/* ---------- Tarjetas de planes compactas en el celular ----------
+   Para que cada tarjeta entre entera en la pantalla. La letra chica de la promo
+   queda en 2 líneas con "Ver condiciones" (planes.js) */
+.plan-note-toggle { display: none; }
+
+@media (max-width: 600px) {
+  .plan-card { padding: 24px 20px 20px; gap: 12px; }
+  .plan-name { font-size: 17px; }
+  .plan-price .amount { font-size: 32px; }
+  .plan-features { gap: 6px; }
+  .plan-features li { font-size: 13.5px; gap: 8px; line-height: 1.35; }
+  .plan-meta { padding: 9px 0; }
+  .plan-meta strong { font-size: 13.5px; }
+
+  .plan-note:not(.abierta) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  .plan-note-toggle {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: -8px;
+    padding: 2px 0;
+    background: none;
+    border: 0;
+    color: var(--blue);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }

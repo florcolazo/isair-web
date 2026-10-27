@@ -2,9 +2,11 @@
    INTERNET SERVICES · Agencia San José
    mapa-cobertura.js — Mapa de cobertura (inicio y cobertura.html)
 
-   Necesita Leaflet cargado antes y un <div id="map">.
+   Con un <div id="map"> (y Leaflet cargado antes) muestra el mapa.
+   Sin #map funciona solo con el buscador: revisa la cobertura de la
+   dirección y la muestra en la tarjeta #coverageResult.
    Si la página tiene el buscador (#mapSearch), lo conecta.
-   Atributo opcional en #map:
+   Atributo opcional en #map o en otro elemento:
      data-planes-fibra  → link del botón cuando hay fibra (default "index.html#fibra")
    Si la página tiene la tarjeta #coverageResult, también se actualiza.
    ============================================================ */
@@ -31,53 +33,59 @@ const SAN_JOSE_ZOOM   = 13;
 const LAT_LIMITE_SAN_JOSE = -32.38;
 
 const mapEl = document.getElementById('map');
-const LINK_PLANES_FIBRA = mapEl.dataset.planesFibra || 'index.html#fibra';
+const LINK_PLANES_FIBRA = document.querySelector('[data-planes-fibra]')?.dataset.planesFibra || 'index.html#fibra';
 
-// ── Inicializar mapa ─────────────────────────────────
-const map = L.map(mapEl, {
+// ── Inicializar mapa (si la página lo tiene) ─────────
+const map = mapEl ? L.map(mapEl, {
   center: SAN_JOSE_CENTER,
   zoom: SAN_JOSE_ZOOM,
   zoomControl: false,
-});
-// Arriba a la izquierda va el buscador: el zoom pasa abajo a la derecha
-L.control.zoom({ position: 'bottomright' }).addTo(map);
+}) : null;
+if (map) iniciarMapa();
 
-// Mapa base: Google (Mapa / Satélite), igual que las direcciones del buscador.
-// Mientras carga, o si Google falla, quedan las vistas de OpenStreetMap / Esri.
-let quitarVistasOsm = agregarVistas(map, 'calles', { collapsed: true });
+function iniciarMapa() {
+  // Arriba a la izquierda va el buscador: el zoom pasa abajo a la derecha
+  L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-cargarGoogle()
-  .then(() => {
-    if (!L.gridLayer.googleMutant) return;   // no cargó el plugin: queda OpenStreetMap
-    const mapa     = L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 20 });
-    const satelite = L.gridLayer.googleMutant({ type: 'hybrid', maxZoom: 20 });
-    quitarVistasOsm();
-    mapa.addTo(map);
-    const control = L.control.layers({ '🗺️ Mapa': mapa, '🛰️ Satélite': satelite }, null, {
-      collapsed: true,
-      position: 'topright',
-    }).addTo(map);
+  // Mapa base: Google (Mapa / Satélite), igual que las direcciones del buscador.
+  // Mientras carga, o si Google falla, quedan las vistas de OpenStreetMap / Esri.
+  let quitarVistasOsm = agregarVistas(map, 'calles', { collapsed: true });
 
-    siGoogleFalla(() => {
-      map.removeLayer(mapa);
-      map.removeLayer(satelite);
-      control.remove();
-      quitarVistasOsm = agregarVistas(map, 'calles', { collapsed: true });
-    });
-  })
-  .catch(err => console.warn('Mapa de Google no disponible, se usa OpenStreetMap:', err));
+  cargarGoogle()
+    .then(() => {
+      if (!L.gridLayer.googleMutant) return;   // no cargó el plugin: queda OpenStreetMap
+      const mapa     = L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 20 });
+      const satelite = L.gridLayer.googleMutant({ type: 'hybrid', maxZoom: 20 });
+      quitarVistasOsm();
+      mapa.addTo(map);
+      const control = L.control.layers({ '🗺️ Mapa': mapa, '🛰️ Satélite': satelite }, null, {
+        collapsed: true,
+        position: 'topright',
+      }).addTo(map);
+
+      siGoogleFalla(() => {
+        map.removeLayer(mapa);
+        map.removeLayer(satelite);
+        control.remove();
+        quitarVistasOsm = agregarVistas(map, 'calles', { collapsed: true });
+      });
+    })
+    .catch(err => console.warn('Mapa de Google no disponible, se usa OpenStreetMap:', err));
+
+  map.on('click', e => marcarPunto(e.latlng.lat, e.latlng.lng));
+}
 
 // Marcador de la casa
 let casaMarker = null;
-// Capas de zonas: no se agregan al mapa (solo el mapa limpio),
+// Zonas: no se dibujan (solo el mapa limpio),
 // se usan para saber si la casa marcada tiene fibra
-let zonasLayers = [];
+let zonas = [];   // [{ tipo, nombre, geometrias }]
 
 // ── Cargar zonas desde Firebase ──────────────────────
 const db = getFirestore(initializeApp(firebaseConfig));
 
 onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
-  zonasLayers = [];
+  zonas = [];
 
   snapshot.forEach((doc) => {
     const zona = doc.data();
@@ -92,15 +100,23 @@ onSnapshot(collection(db, 'zonas_cobertura'), (snapshot) => {
     const lat = primerPuntoLat(geojson.geometry || geojson);
     if (lat !== null && lat < LAT_LIMITE_SAN_JOSE) return;
 
-    const layer = L.geoJSON(geojson);
-    layer.tipoZona   = zona.tipo;
-    layer.nombreZona = zona.nombre || 'Fibra Óptica';
-
-    zonasLayers.push(layer);
+    zonas.push({
+      tipo: zona.tipo,
+      nombre: zona.nombre || 'Fibra Óptica',
+      geometrias: geometriasDe(geojson),
+    });
   });
 }, (error) => {
   console.warn("Firestore snapshot error:", error);
 });
+
+// Geometrías de un GeoJSON (FeatureCollection, Feature o geometría suelta)
+function geometriasDe(gj) {
+  if (!gj) return [];
+  if (gj.type === 'FeatureCollection') return (gj.features || []).flatMap(geometriasDe);
+  if (gj.type === 'Feature') return gj.geometry ? [gj.geometry] : [];
+  return [gj];
+}
 
 function primerPuntoLat(geometry) {
   let c = geometry?.coordinates;
@@ -114,6 +130,21 @@ function primerPuntoLat(geometry) {
 const ESTILO_BTN = 'display:inline-block; margin-top:8px; padding: 6px 14px; font-size: 12px; color:#fff;';
 
 function marcarPunto(lat, lon) {
+  const zona = zonaFibraEn(lat, lon);
+  const boton = zona
+    ? `<a href="${LINK_PLANES_FIBRA}" class="btn btn-red" style="${ESTILO_BTN}">Ver planes de Fibra</a>`
+    : `<a href="contacto.html" class="btn btn-red" style="${ESTILO_BTN}">Consultar</a>`;
+
+  if (map) marcarEnMapa(lat, lon, zona, boton);
+
+  if (zona) {
+    mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu casa está dentro de la zona <strong>${zona}</strong>.<br>` + boton);
+  } else {
+    mostrarResultado(false, 'Consultar por opciones disponibles', 'No confirmamos fibra en esta ubicación, pero el servicio inalámbrico cubre toda el área.<br>' + boton);
+  }
+}
+
+function marcarEnMapa(lat, lon, zona, boton) {
   if (!casaMarker) {
     casaMarker = L.marker([lat, lon], { draggable: true }).addTo(map);
     casaMarker.on('dragend', () => {
@@ -124,10 +155,6 @@ function marcarPunto(lat, lon) {
     casaMarker.setLatLng([lat, lon]);
   }
 
-  const zona = zonaFibraEn(lat, lon);
-  const boton = zona
-    ? `<a href="${LINK_PLANES_FIBRA}" class="btn btn-red" style="${ESTILO_BTN}">Ver planes de Fibra</a>`
-    : `<a href="contacto.html" class="btn btn-red" style="${ESTILO_BTN}">Consultar</a>`;
   const resumen = zona
     ? `✅ <strong>¡Tenés Fibra Óptica!</strong><br>Zona: ${zona}`
     : '📶 Fibra no confirmada acá.<br>Tenés servicio <strong>inalámbrico</strong>.';
@@ -136,18 +163,11 @@ function marcarPunto(lat, lon) {
     // que la ventanita no quede debajo de la barra de búsqueda
     autoPanPaddingTopLeft: L.point(20, 90),
   }).openPopup();
-
-  if (zona) {
-    mostrarResultado(true, '¡Tenemos cobertura en tu zona!', `Tu casa está dentro de la zona <strong>${zona}</strong>.<br>` + boton);
-  } else {
-    mostrarResultado(false, 'Consultar por opciones disponibles', 'No confirmamos fibra en esta ubicación, pero el servicio inalámbrico cubre toda el área.<br>' + boton);
-  }
 }
-
-map.on('click', e => marcarPunto(e.latlng.lat, e.latlng.lng));
 
 // Buscador de dirección / ubicación actual (si la página lo tiene)
 iniciarBuscador((lat, lng) => {
+  if (!map) return marcarPunto(lat, lng);
   // La casa queda un poco más abajo del centro, así la ventanita entra debajo de la barra de búsqueda
   const zoom = 17;
   const centro = map.unproject(map.project([lat, lng], zoom).subtract([0, 110]), zoom);
@@ -180,15 +200,14 @@ function puntoEnPoligono(punto, coordsPoligono) {
 // Nombre de la zona de fibra que contiene el punto, o null
 function zonaFibraEn(lat, lon) {
   const punto = [lon, lat];
-  for (const layer of zonasLayers) {
-    if (layer.tipoZona !== 'fibra') continue;
-    const dentro = layer.toGeoJSON().features.some(({ geometry: g }) => {
-      if (!g) return false;
+  for (const zona of zonas) {
+    if (zona.tipo !== 'fibra') continue;
+    const dentro = zona.geometrias.some(g => {
       if (g.type === 'Polygon') return puntoEnPoligono(punto, g.coordinates);
       if (g.type === 'MultiPolygon') return g.coordinates.some(p => puntoEnPoligono(punto, p));
       return false;
     });
-    if (dentro) return layer.nombreZona;
+    if (dentro) return zona.nombre;
   }
   return null;
 }
@@ -198,7 +217,7 @@ function mostrarResultado(tiene, titulo, texto) {
   const result = document.getElementById('coverageResult');
   if (!result) return;
 
-  document.getElementById('resultIcon').textContent  = tiene ? '✅' : '❌';
+  document.getElementById('resultIcon').textContent  = tiene ? '✅' : '📶';
   document.getElementById('resultTitle').textContent = titulo;
   document.getElementById('resultText').innerHTML    = texto;
   document.getElementById('resultCard').className    = 'result-card ' + (tiene ? 'tiene' : 'no-tiene');
