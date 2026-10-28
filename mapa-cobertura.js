@@ -14,7 +14,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { agregarVistas } from "./vistas-mapa.js?v=1.0.2";
-import { iniciarBuscador, cargarGoogle, siGoogleFalla } from "./buscador-direccion.js?v=1.0.4";
+import { iniciarBuscador, cargarGoogle, siGoogleFalla } from "./buscador-direccion.js?v=1.0.5";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGHZLbAnFb4SpX9XqSEmIyLN0B7703U4A",

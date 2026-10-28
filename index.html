@@ -63,6 +63,7 @@
 
   <!-- Estilos -->
   <link rel="stylesheet" href="styles.css?v=1.1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- Netlify Identity Widget -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
@@ -109,6 +110,19 @@
       left: auto;
       width: 100%;
       z-index: 2;
+    }
+    /* Mapa de Google debajo del buscador: muestra la casa y se puede ajustar el pin */
+    .home-map {
+      width: 100%;
+      height: 380px;
+      margin-top: 14px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+      z-index: 1;
+    }
+    @media (max-width: 600px) {
+      .home-map { height: 320px; }
     }
     .coverage-result { display: none; margin-top: 14px; }
     .coverage-result.visible { display: block; }
@@ -279,9 +293,8 @@
     <section class="coverage-check-hero" id="verificar">
       <p class="eyebrow">📍 Cobertura</p>
       <h2>¿Tenemos Fibra Óptica en tu calle?</h2>
-      <p class="sub">Escribí tu dirección o usá tu ubicación para saber si tenés fibra. El servicio inalámbrico llega a todo el Departamento Colón.</p>
+      <p class="sub">Escribí tu dirección, usá tu ubicación o tocá tu casa en el mapa para saber si tenés fibra. El servicio inalámbrico llega a todo el Departamento Colón.</p>
 
-      <!-- Por ahora sin mapa: solo el buscador (mapa-cobertura.js funciona sin #map) -->
       <div class="home-search" data-planes-fibra="#fibra">
         <div class="map-search" role="search">
           <div class="map-search-bar">
@@ -308,6 +321,7 @@
             </div>
           </div>
         </div>
+        <div id="map" class="home-map"></div>
       </div>
     </section>
 
@@ -524,7 +538,9 @@
   <script src="main.js?v=1.0.7"></script>
 
   <!-- Mapa de cobertura (Firebase + Leaflet) -->
-  <script type="module" src="mapa-cobertura.js?v=1.1.1"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.16.0/dist/Leaflet.GoogleMutant.js"></script>
+  <script type="module" src="mapa-cobertura.js?v=1.1.2"></script>
 
   <script src="captcha.js?v=3"></script>
   <script src="planes.js?v=2"></script>
