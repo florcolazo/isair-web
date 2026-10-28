@@ -159,20 +159,59 @@ export function iniciarBuscador(onUbicacion) {
     cerrar();
     mostrarMsg('');
 
-    navigator.geolocation.getCurrentPosition(async ({ coords }) => {
+    // La primera lectura suele ser por WiFi/IP (imprecisa): se escucha unos segundos
+    // y se queda la más precisa, cortando antes si ya llegó una buena (GPS)
+    let mejor = null;
+    let terminado = false;
+    const terminar = () => {
+      if (terminado) return;
+      terminado = true;
+      navigator.geolocation.clearWatch(vigilancia);
+      clearTimeout(limite);
       esperando(false);
-      const { latitude: lat, longitude: lng } = coords;
-      onUbicacion(lat, lng);
-      input.value = await direccionDe(lat, lng) || 'Mi ubicación';
-      actualizarBorrar();
+      if (mejor) usarUbicacion(mejor);
+    };
+    const vigilancia = navigator.geolocation.watchPosition(({ coords }) => {
+      if (!mejor || coords.accuracy < mejor.accuracy) mejor = coords;
+      if (coords.accuracy <= PRECISION_BUENA) terminar();
     }, (err) => {
+      if (mejor) return terminar();
+      terminado = true;
+      navigator.geolocation.clearWatch(vigilancia);
+      clearTimeout(limite);
       esperando(false);
       mostrarMsg(err.code === err.PERMISSION_DENIED
         ? 'No diste permiso para usar tu ubicación. Podés escribir tu dirección.'
         : 'No pudimos obtener tu ubicación. Escribí tu dirección o tocá el mapa.');
-    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    const limite = setTimeout(() => {
+      if (mejor) return terminar();
+      // sin ninguna lectura todavía: se espera al timeout de watchPosition
+    }, 10000);
   });
+
+  const usarUbicacion = async ({ latitude: lat, longitude: lng, accuracy }) => {
+    const enZona = lat <= ZONA.north && lat >= ZONA.south && lng <= ZONA.east && lng >= ZONA.west;
+    if (!enZona) {
+      // Pasa mucho en la compu: el navegador ubica por la IP del proveedor, que puede estar en otra ciudad
+      mostrarMsg('Tu dispositivo nos da una ubicación fuera de San José (suele pasar en la compu). Escribí tu dirección o tocá tu casa en el mapa.');
+      return;
+    }
+    onUbicacion(lat, lng);
+    if (accuracy > PRECISION_ACEPTABLE) {
+      input.value = '';
+      actualizarBorrar();
+      mostrarMsg(`Tu ubicación es aproximada (±${Math.round(accuracy)} m). Arrastrá el pin hasta tu casa o escribí tu dirección.`);
+      return;
+    }
+    input.value = await direccionDe(lat, lng) || 'Mi ubicación';
+    actualizarBorrar();
+  };
 }
+
+// Precisión (en metros) de la ubicación del dispositivo
+const PRECISION_BUENA = 25;        // con esto ya se deja de esperar (GPS)
+const PRECISION_ACEPTABLE = 80;    // más que esto: se marca pero se avisa que es aproximada
 
 // ── Google ─────────────────────────────────────────────
 let googlePromesa = null;
