@@ -15,7 +15,7 @@
 // Key de Google Maps: vive en config-google.js (ver config-google.example.js).
 // Si no está, se usan GeoRef y OpenStreetMap.
 let GOOGLE_MAPS_KEY = '';
-const keyCargada = import('./config-google.js')
+const keyCargada = import('./config-google.js?v=2')
   .then(m => { GOOGLE_MAPS_KEY = m.GOOGLE_MAPS_KEY || ''; })
   .catch(() => {});
 
