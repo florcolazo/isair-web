@@ -286,12 +286,14 @@
   <!-- Leaflet + Draw -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+  <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.16.0/dist/Leaflet.GoogleMutant.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot }
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { agregarVistas } from "../vistas-mapa.js?v=1.0.2";
+    import { cargarGoogle, siGoogleFalla } from "../buscador-direccion.js?v=1.0.6";
 
     // ══════════════════════════════════════════════════════
     // ⚙️  PEGÁ ACÁ TU CONFIGURACIÓN DE FIREBASE
@@ -320,7 +322,30 @@
 
     // ── Mapa ─────────────────────────────────────────────
     const map = L.map('map').setView([-32.2074, -58.2045], 14);
-    agregarVistas(map, 'sateliteCalles');
+    // Mapa base: Google (Satélite con calles / Mapa), igual que el sitio.
+    // Mientras carga, o si Google falla, quedan las vistas de OpenStreetMap / Esri.
+    let quitarVistasOsm = agregarVistas(map, 'sateliteCalles');
+
+    cargarGoogle()
+      .then(() => {
+        if (!L.gridLayer.googleMutant) return;   // no cargó el plugin: queda OpenStreetMap / Esri
+        const satelite = L.gridLayer.googleMutant({ type: 'hybrid', maxZoom: 21 });
+        const mapa     = L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 21 });
+        quitarVistasOsm();
+        satelite.addTo(map);
+        const control = L.control.layers({ '🛰️ Satélite con calles': satelite, '🗺️ Mapa': mapa }, null, {
+          collapsed: window.innerWidth < 600,
+          position: 'topright',
+        }).addTo(map);
+
+        siGoogleFalla(() => {
+          map.removeLayer(satelite);
+          map.removeLayer(mapa);
+          control.remove();
+          quitarVistasOsm = agregarVistas(map, 'sateliteCalles');
+        });
+      })
+      .catch(err => console.warn('Mapa de Google no disponible, se usa OpenStreetMap / Esri:', err));
 
     const drawnItems = new L.FeatureGroup().addTo(map);
     const drawControl = new L.Control.Draw({
