@@ -59,13 +59,11 @@
   <!-- Fuentes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css?v=1.1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Netlify Identity Widget -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <link rel="stylesheet" href="styles.css?v=1.1.1">
 
   <style>
     /* Título principal de la portada (va sobre fondo claro) */
@@ -120,7 +118,30 @@
       overflow: hidden;
       box-shadow: 0 12px 30px rgba(0,0,0,.25);
       z-index: 1;
+      position: relative;
     }
+    /* Reemplaza al mapa hasta que se carga (mapa-diferido.js) */
+    .map-facade {
+      position: absolute;
+      inset: 0;
+      z-index: 1000;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 0;
+      cursor: pointer;
+      color: #051b44;
+      font: 600 15px 'Inter', sans-serif;
+      background-color: #e4ecf4;
+      background-image:
+        linear-gradient(rgba(255,255,255,.9) 3px, transparent 3px),
+        linear-gradient(90deg, rgba(255,255,255,.9) 3px, transparent 3px);
+      background-size: 64px 64px;
+    }
+    .map-facade svg { width: 34px; height: 34px; color: #e62a22; }
     @media (max-width: 600px) {
       .home-map { height: 320px; }
     }
@@ -153,7 +174,7 @@
 
       <!-- Marca -->
       <a href="index.html" class="brand">
-        <img src="logo.png" alt="Internet Services" class="brand-logo">
+        <img src="logo.png" alt="Internet Services" class="brand-logo" width="129" height="75">
         <div class="brand-text">
           <strong id="brandName">INTERNET SERVICES</strong>
           <span id="brandSub">AGENCIA SAN JOSE</span>
@@ -165,7 +186,7 @@
       <nav class="nav-links" style="align-items: center;">
         <!-- Planes -->
         <div class="nav-item dropdown">
-          <a href="javascript:void(0)" class="dropdown-trigger">Planes <span class="arrow">▼</span></a>
+          <button type="button" class="dropdown-trigger">Planes <span class="arrow">▼</span></button>
           <div class="dropdown-menu">
             <a href="internet.html">Internet</a>
             <a href="internet-tv.html">Internet + TV</a>
@@ -178,7 +199,7 @@
 
         <!-- Contenidos -->
         <div class="nav-item dropdown">
-          <a href="javascript:void(0)" class="dropdown-trigger">Contenidos <span class="arrow">▼</span></a>
+          <button type="button" class="dropdown-trigger">Contenidos <span class="arrow">▼</span></button>
           <div class="dropdown-menu">
             <a href="pack-futbol.html">Pack Fútbol</a>
             <a href="pack-hbo.html">Paquete HBO</a>
@@ -188,7 +209,7 @@
 
         <!-- Soporte -->
         <div class="nav-item dropdown">
-          <a href="javascript:void(0)" class="dropdown-trigger">Soporte <span class="arrow">▼</span></a>
+          <button type="button" class="dropdown-trigger">Soporte <span class="arrow">▼</span></button>
           <div class="dropdown-menu">
             <a href="preguntas-frecuentes.html">Preguntas Frecuentes</a>
             <a href="contacto.html">Contactanos</a>
@@ -207,7 +228,7 @@
       <div class="nav-actions" style="display:flex; align-items:center; gap:16px;">
 
         <!-- Acceso ISTV -->
-        <a href="https://tv.is.com.ar/login" target="_blank" rel="noopener" class="btn-login-top">
+        <a href="https://tv.is.com.ar/login" target="_blank" rel="noopener" class="btn-login-top" aria-label="Acceso ISTV">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
             <polyline points="17 2 12 7 7 2"></polyline>
@@ -216,7 +237,7 @@
         </a>
 
         <!-- Acceso Clientes -->
-        <a href="https://clientes.is.com.ar/#/login" target="_blank" rel="noopener" class="btn-login-top white">
+        <a href="https://clientes.is.com.ar/#/login" target="_blank" rel="noopener" class="btn-login-top white" aria-label="Acceso Clientes">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
@@ -286,7 +307,8 @@
 
     <!-- Banner promocional -->
     <a href="contacto.html" id="promoBannerBtn" style="display:block; width:100%; max-width:1580px; margin: 0 auto; text-decoration:none;">
-      <img src="banner-promo.png" id="promoBannerImg" alt="Promoción Fútbol" style="width:100%; max-height:700px; object-fit:cover; display:block;">
+      <!-- Póster del video del banner (un cuadro de video-banner.mp4): si cambia el video, hay que regenerarlo -->
+      <img src="video-banner-poster.webp" srcset="video-banner-poster-640.webp 640w, video-banner-poster.webp 1280w" sizes="(max-width: 1580px) 100vw, 1580px" width="1280" height="720" id="promoBannerImg" alt="Promoción Fútbol" fetchpriority="high" style="width:100%; height:auto; display:block;">
     </a>
 
     <!-- Verificador de cobertura -->
@@ -299,7 +321,7 @@
         <div class="map-search" role="search">
           <div class="map-search-bar">
             <svg class="map-search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input id="mapSearch" type="search" placeholder="Buscá tu dirección" autocomplete="off" enterkeyhint="search" aria-label="Buscar dirección" aria-autocomplete="list" aria-controls="mapSearchList" aria-expanded="false">
+            <input id="mapSearch" type="search" placeholder="Buscá tu dirección" autocomplete="off" enterkeyhint="search" aria-label="Buscar dirección" aria-autocomplete="list" role="combobox" aria-controls="mapSearchList" aria-expanded="false">
             <button id="mapSearchClear" type="button" class="map-search-clear" aria-label="Borrar búsqueda" hidden>
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
             </button>
@@ -321,7 +343,12 @@
             </div>
           </div>
         </div>
-        <div id="map" class="home-map"></div>
+        <div id="map" class="home-map">
+          <button type="button" class="map-facade" id="mapFacade">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.500a2.500 2.500 0 0 1 0 5z"/></svg>
+            <span>Tocá para ver el mapa</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -341,7 +368,7 @@
           </svg>
         </div>
         <div class="inner">
-          <h3>Tecnología Fibra Óptica</h3>
+          <h2>Tecnología Fibra Óptica</h2>
           <span class="btn btn-red">Ver planes</span>
         </div>
       </a>
@@ -349,7 +376,7 @@
       <a href="#inalambrica" class="tech-card inal">
         <div class="wifi-rings" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="inner">
-          <h3>Tecnología Inalámbrica</h3>
+          <h2>Tecnología Inalámbrica</h2>
           <span class="btn btn-blue">Ver planes</span>
         </div>
       </a>
@@ -474,7 +501,7 @@
         <!-- Col 1: Logo y Copyright -->
         <div class="foot-col">
           <div class="foot-logo">
-            <img src="logo.png" alt="Internet Services" id="footerLogo">
+            <img src="logo.png" alt="Internet Services" id="footerLogo" width="129" height="75" loading="lazy">
           </div>
           <p class="brand-text-foot">
             <strong id="footerBrand">INTERNET SERVICES</strong>
@@ -535,14 +562,12 @@
 
 
   <!-- Scripts -->
-  <script src="main.js?v=1.0.7"></script>
+  <script src="main.js?v=1.0.8"></script>
 
-  <!-- Mapa de cobertura (Firebase + Leaflet) -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.16.0/dist/Leaflet.GoogleMutant.js"></script>
-  <script type="module" src="mapa-cobertura.js?v=1.1.4"></script>
+  <!-- Mapa de cobertura: se carga con la primera interacción -->
+  <script src="mapa-diferido.js?v=1" defer></script>
 
-  <script src="captcha.js?v=3"></script>
+  <script src="captcha.js?v=4"></script>
   <script src="planes.js?v=2"></script>
   <script src="chatbot.js?v=6" defer></script>
 </body>

@@ -221,6 +221,12 @@ header {
   opacity: 1 !important;
 }
 
+button.dropdown-trigger {
+  background: none;
+  border: 0;
+  font-family: inherit;
+}
+
 .dropdown-trigger:hover {
   background-color: rgba(255, 255, 255, 0.1);
   opacity: 1 !important;
@@ -529,6 +535,7 @@ header {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
+.tech-card h2,
 .tech-card h3 {
   color: #fff;
   font-size: 18px;
@@ -548,7 +555,7 @@ header {
 
 .fibra {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)),
-    url('fibra-bg.jpg') center/cover;
+    url('fibra-bg.webp') center/cover;
 }
 
 .inal {

@@ -63,22 +63,35 @@ fetch('data/planes.json?v=' + new Date().getTime())
 
     // 1.2. Actualizar banner promocional dinámicamente
     const bannerBtn = document.getElementById('promoBannerBtn');
-    let bannerImg = document.getElementById('promoBannerImg');
+    const bannerImg = document.getElementById('promoBannerImg');
     if (bannerBtn && bannerImg) {
       if (data.sitio.banner_mostrar !== false && data.sitio.banner_imagen) {
         bannerBtn.style.display = "block";
-        // Si el banner es un video (.mp4/.webm), reemplazar la imagen por un <video>
+        // Si el banner es un video (.mp4/.webm), reemplazar la imagen por un <video>.
+        // Pesa mucho: entra cuando ya cargó la página y no si el celular pide ahorrar datos
         if (/\.(mp4|webm)(\?|$)/i.test(data.sitio.banner_imagen)) {
-          const video = document.createElement('video');
-          video.id = 'promoBannerImg';
-          video.src = data.sitio.banner_imagen;
-          video.autoplay = video.muted = video.loop = video.playsInline = true;
-          video.style.cssText = bannerImg.style.cssText;
-          video.style.maxHeight = 'none'; // mostrar el video entero, sin recortar el texto
-          video.setAttribute('aria-label', data.sitio.banner_alt || "Promoción");
-          bannerImg.replaceWith(video);
-          bannerImg = video;
+          const ponerVideo = () => {
+            const video = document.createElement('video');
+            video.id = 'promoBannerImg';
+            video.width = bannerImg.width;
+            video.height = bannerImg.height;
+            video.poster = bannerImg.currentSrc;
+            video.src = data.sitio.banner_imagen;
+            video.autoplay = video.muted = video.loop = video.playsInline = true;
+            video.style.cssText = bannerImg.style.cssText;
+            video.style.maxHeight = 'none'; // mostrar el video entero, sin recortar el texto
+            video.setAttribute('aria-label', data.sitio.banner_alt || "Promoción");
+            bannerImg.replaceWith(video);
+          };
+          bannerImg.alt = data.sitio.banner_alt || "Promoción";
+          if (!navigator.connection?.saveData) despuesDeCargar(ponerVideo);
         } else {
+          // El póster del HTML es del video: una imagen del admin va sin srcset y con su propia medida
+          if (bannerImg.srcset) {
+            ['srcset', 'sizes', 'width', 'height'].forEach(attr => bannerImg.removeAttribute(attr));
+            bannerImg.style.maxHeight = '700px';
+            bannerImg.style.objectFit = 'cover';
+          }
           bannerImg.src = data.sitio.banner_imagen;
           bannerImg.alt = data.sitio.banner_alt || "Promoción";
         }
@@ -92,6 +105,12 @@ fetch('data/planes.json?v=' + new Date().getTime())
     renderPlanes(data.planes);
   })
   .catch(err => console.error('Error al cargar configuración y planes:', err));
+
+function despuesDeCargar(fn) {
+  const enReposo = () => (window.requestIdleCallback || setTimeout)(fn);
+  if (document.readyState === 'complete') enReposo();
+  else window.addEventListener('load', enReposo, { once: true });
+}
 
 /* ---------- FUNCIÓN PARA RENDERIZAR TARJETAS ---------- */
 function renderPlanes(planes) {

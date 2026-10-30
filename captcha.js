@@ -29,19 +29,27 @@ window.TURNSTILE_SITEKEY = window.TURNSTILE_SITEKEY ||
     listo = true;
     pendientes.splice(0).forEach(fn => fn());
   };
-  const script = document.createElement('script');
-  script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileListo';
-  script.async = true;
-  script.defer = true;
-  document.head.appendChild(script);
+  // Turnstile pesa casi 1 MB: se pide una sola vez, recién cuando hace falta
+  let pedido = false;
+  function cargarTurnstile() {
+    if (pedido) return;
+    pedido = true;
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileListo';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  }
 
   function cuandoEsteListo(fn) {
     if (listo) fn(); else pendientes.push(fn);
   }
 
   // Dibuja el captcha en `contenedor`; devuelve funciones para leer el token y reiniciarlo
-  window.crearCaptcha = function (contenedor, alResolver) {
+  // Con `diferido` no carga Turnstile: queda a cargo de quien lo llama
+  window.crearCaptcha = function (contenedor, alResolver, diferido) {
     let id = null;
+    if (!diferido) cargarTurnstile();
     cuandoEsteListo(() => {
       id = turnstile.render(contenedor, {
         sitekey: window.TURNSTILE_SITEKEY,
@@ -72,7 +80,16 @@ window.TURNSTILE_SITEKEY = window.TURNSTILE_SITEKEY ||
       form.append(caja, error);
     }
 
-    const captcha = window.crearCaptcha(caja, () => { error.hidden = true; });
+    const captcha = window.crearCaptcha(caja, () => { error.hidden = true; }, true);
+
+    // Se carga cuando el formulario está por verse en pantalla o se empieza a completar
+    const observador = new IntersectionObserver(entradas => {
+      if (!entradas.some(e => e.isIntersecting)) return;
+      observador.disconnect();
+      cargarTurnstile();
+    }, { rootMargin: '200px' });
+    observador.observe(form);
+    form.addEventListener('focusin', cargarTurnstile);
 
     // Fase de captura: corre antes que el envío propio de cada página
     form.addEventListener('submit', e => {
