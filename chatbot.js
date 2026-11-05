@@ -236,7 +236,7 @@
       html: `<p>📡 <strong>Internet Inalámbrico:</strong> llega a ${ZONA_INALAMBRICO}. 🙌</p>` +
         `<p>⚡ <strong>Fibra Óptica:</strong> en ${ZONA_FIBRA}.</p>` +
         '<p>Para confirmar si tenés fibra en tu casa, buscá tu dirección:</p>' +
-        '<p><a href="index.html#verificar">📍 Verificar mi dirección</a></p>' +
+        '<p><a href="cobertura.html">📍 Verificar mi dirección</a></p>' +
         linkWa('Hola! Quiero saber si tienen cobertura en mi dirección: ', 'Consultar mi dirección'),
       opciones: [['planes', '📶 Ver planes'], ...VOLVER],
     }),
