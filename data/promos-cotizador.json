@@ -1,10 +1,10 @@
 {
-  "actualizado": "2026-10-20T00:00:00.000Z",
+  "actualizado": "2026-11-01T00:00:00.000Z",
   "items": [
     {
       "id": "f300",
       "nombre": "Fibra óptica 300 MB",
-      "precio": 69408.45,
+      "precio": 70796.59,
       "tipo": "desc"
     },
     {
@@ -22,82 +22,87 @@
     {
       "id": "onu",
       "nombre": "Mantenimiento y soporte ONU WiFi",
-      "precio": 5312.2,
+      "precio": 5418.46,
       "tipo": "desc"
     },
     {
       "id": "ba30",
       "nombre": "Internet banda ancha 30 MB Plus",
-      "precio": 52713.02,
+      "precio": 53766.94,
       "tipo": "desc"
     },
     {
       "id": "rout",
       "nombre": "Mantenimiento y soporte / Router WiFi",
-      "precio": 4205.49,
+      "precio": 4289.6,
       "tipo": "desc"
     },
     {
       "id": "istv",
       "nombre": "Servicio ISTV Move",
-      "precio": 28039.99,
+      "precio": 28600.78,
       "tipo": "desc"
     },
     {
       "id": "tv",
       "nombre": "Servicio de TV Full",
-      "precio": 41288,
+      "precio": 42113.77,
       "tipo": "desc",
       "detalle": "Incluye convertidor Android"
     },
     {
       "id": "stb",
       "nombre": "1 STB adicional",
-      "precio": 9300,
+      "precio": 9675.89,
       "tipo": "desc"
     },
     {
       "id": "fut",
       "nombre": "Fútbol Premium",
-      "precio": 27260,
-      "tipo": "bonif",
-      "gratis": 4
+      "precio": 28300.0,
+      "tipo": "desc"
+    },
+    {
+      "id": "hbo",
+      "nombre": "Señales Premium HBO + HBO Max",
+      "precio": 13689.98,
+      "tipo": "desc"
     },
     {
       "id": "mx2",
       "nombre": "WiFi Mesh Premium x2",
-      "precio": 12103.21,
+      "precio": 6911.36,
       "tipo": "desc"
     },
     {
       "id": "mx3",
       "nombre": "WiFi Mesh Premium x3",
-      "precio": 18132.09,
+      "precio": 13076.28,
       "tipo": "desc"
     },
     {
       "id": "mx4",
       "nombre": "WiFi Mesh Premium x4",
-      "precio": 24176.15,
+      "precio": 19241.22,
       "tipo": "desc"
     },
     {
       "id": "cam",
       "nombre": "IS Cam (abono por cámara)",
-      "precio": 9752.32,
+      "precio": 9945.9,
       "tipo": "fijo"
     },
     {
       "id": "insti",
       "nombre": "Instalación cámara IS x1 (interna)",
-      "precio": 55719.19,
+      "precio": 56833.59,
       "tipo": "inst",
       "cuotas": 6
     },
     {
       "id": "inste",
       "nombre": "Instalación cámara IS x1 (externa)",
-      "precio": 111438.37,
+      "precio": 113667.14,
       "tipo": "inst",
       "cuotas": 6
     }

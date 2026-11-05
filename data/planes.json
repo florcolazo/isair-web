@@ -16,13 +16,13 @@
     "ciudad": "San José",
     "direccion_oficina": "San Martín 1278, San José",
     "email": "isaircolon@gmail.com",
-    "precio_convertidor_adicional": "9.300"
+    "precio_convertidor_adicional": "9.486"
   },
   "planes": [
     {
       "id": "nuevo_plan_90",
       "nombre": "Internet Inalámbrico 30MB + ISTV Full (1 convertidor)",
-      "precio": 39283,
+      "precio": 40069,
       "tipo": "inalambrica",
       "instalacion": "Sin costo",
       "promo_duracion": "4 meses",
@@ -39,7 +39,7 @@
     {
       "id": "nuevo_plan_668",
       "nombre": "Internet Inalámbrico 30MB + ISTV Move",
-      "precio": 33983,
+      "precio": 34663,
       "tipo": "inalambrica",
       "instalacion": "Sin costo",
       "promo_duracion": "4 meses",
@@ -55,7 +55,7 @@
     {
       "id": "FIBRA + MESH +CAM",
       "nombre": "Internet Fibra Óptica 300MB + IS Mesh + IS CAM",
-      "precio": 41237,
+      "precio": 42062,
       "tipo": "fibra",
       "instalacion": "Con costo",
       "promo_duracion": "4 meses",
@@ -71,7 +71,7 @@
     {
       "id": "MESH+CAM+ISTV",
       "nombre": "Internet Fibra Óptica 300MB + IS Mesh + IS CAM + ISTV",
-      "precio": 60425,
+      "precio": 61634,
       "tipo": "fibra",
       "instalacion": "Con costo",
       "promo_duracion": "4 meses ",
@@ -87,7 +87,7 @@
     },
     {
       "pack_futbol": false,
-      "precio": 29888,
+      "precio": 30486,
       "beneficios": [
         "Fibra Óptica Directa al Hogar FTTH",
         "Incluye modem WiFi de doble banda bonificado"
@@ -102,7 +102,7 @@
     },
     {
       "pack_futbol": false,
-      "precio": 45507,
+      "precio": 46417,
       "beneficios": [
         "Internet de Alta Velocidad por Fibra Óptica",
         "ISTV Move: la app para ver en hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
@@ -119,7 +119,7 @@
     },
     {
       "pack_futbol": true,
-      "precio": 50144,
+      "precio": 51147,
       "beneficios": [
         "Máxima velocidad de conexión y estabilidad",
         "ISTV Full: hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
@@ -136,7 +136,7 @@
     },
     {
       "pack_futbol": false,
-      "precio": 39640,
+      "precio": 40433,
       "beneficios": [
         "Internet Fibra Óptica Directa",
         "Monitoreo con cámaras de seguridad integradas",
@@ -153,7 +153,7 @@
     },
     {
       "pack_futbol": false,
-      "precio": 22321,
+      "precio": 22767,
       "beneficios": [
         "Conexión Inalámbrica de alta fidelidad",
         "Cobertura en zonas rurales y de difícil acceso",
@@ -169,12 +169,12 @@
     }
   ],
   "camaras": {
-    "abono_mensual": 9752.32,
-    "instalacion_interna": 55719.19,
+    "abono_mensual": 9945.9,
+    "instalacion_interna": 56833.59,
     "instalacion_interna_cuotas": 6,
-    "instalacion_interna_valor_cuota": 9286.53,
-    "instalacion_externa": 111438.37,
+    "instalacion_interna_valor_cuota": 9472.27,
+    "instalacion_externa": 113667.14,
     "instalacion_externa_cuotas": 6,
-    "instalacion_externa_valor_cuota": 18573.06
+    "instalacion_externa_valor_cuota": 18944.52
   }
 }
