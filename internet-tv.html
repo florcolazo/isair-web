@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.1.0">
+  <link rel="stylesheet" href="styles.css?v=1.1.3">
   
   <style>
     /* Estilos específicos de la página de planes de Internet + TV */
@@ -1134,8 +1134,8 @@
             <p class="plan-name" style="${!plan.nombre.includes(' + ') ? 'font-size:24px; color:var(--blue);' : ''}">${planNameHtml}</p>
             <div class="plan-price">
               <span class="amount">${priceFormatted}</span>
-              <span class="per">/ mes</span>
             </div>
+            <p class="precio-aclaracion">Precio promocional de los primeros ${String(plan.promo_duracion).trim()}. La primera factura incluye el proporcional y los precios se actualizan mensualmente.</p>
           `;
 
           // Características / Beneficios
@@ -1154,9 +1154,13 @@
           `;
 
           // Nota legal, opciones Pack Fútbol / Pack HBO y botón de contratación
-          const precioFutbol = data.sitio.precio_pack_futbol ? ` <em>+$${data.sitio.precio_pack_futbol}/mes</em>` : '';
+          // Si el combo tiene precio con fútbol (Fútbol Premium con descuento), se muestra la diferencia
+          const extraFutbol = plan.precio_futbol ? plan.precio_futbol - plan.precio : 0;
+          const numPack = t => Number(String(t || '').replace(/\D/g, '')) || 0; // "13.690" → 13690
+          const precioFutbol = extraFutbol ? ` <em>+$${extraFutbol.toLocaleString('es-AR')}</em>`
+            : data.sitio.precio_pack_futbol ? ` <em>+$${data.sitio.precio_pack_futbol}</em>` : '';
           const idHbo = 'hbo-plan-' + i;
-          const precioHbo = data.sitio.precio_pack_hbo ? ` <em>+$${data.sitio.precio_pack_hbo}/mes</em>` : '';
+          const precioHbo = data.sitio.precio_pack_hbo ? ` <em>+$${data.sitio.precio_pack_hbo}</em>` : '';
           htmlContent += `
             <p class="plan-note">${plan.nota}</p>
             <div class="sumar-packs">
@@ -1188,6 +1192,11 @@
             if (hbo.checked) texto += ' + Pack HBO 🎬';
             boton.href = 'https://wa.me/' + data.sitio.whatsapp + '?text=' + encodeURIComponent(texto);
             card.classList.toggle('con-futbol', futbol.checked);
+            // El precio de la tarjeta suma los packs marcados
+            const sumaFutbol = futbol.checked ? (extraFutbol || numPack(data.sitio.precio_pack_futbol)) : 0;
+            const sumaHbo = hbo.checked ? numPack(data.sitio.precio_pack_hbo) : 0;
+            card.querySelector('.plan-price .amount').textContent =
+              '$' + (plan.precio + sumaFutbol + sumaHbo).toLocaleString('es-AR');
           };
           futbol.addEventListener('change', armarLink);
           hbo.addEventListener('change', armarLink);

@@ -20,72 +20,6 @@
   },
   "planes": [
     {
-      "id": "nuevo_plan_90",
-      "nombre": "Internet Inalámbrico 30MB + ISTV Full (1 convertidor)",
-      "precio": 40069,
-      "tipo": "inalambrica",
-      "instalacion": "Sin costo",
-      "promo_duracion": "4 meses",
-      "destacado": false,
-      "pack_futbol": false,
-      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Internet Banda Ancha 30 Plus, TV y soporte router Wifi), aplicado al precio de lista vigente, que baja cada 4 meses: 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 29, precio completo. Instalación sin cargo. Precios sujetos a actualización.",
-      "beneficios": [
-        "Instalación sin cargo.",
-        "Soporte y mantenimiento del router Wifi incluidos.",
-        "ISTV Full: hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
-        "Incluye un convertidor android (para tv sin android incluido)"
-      ]
-    },
-    {
-      "id": "nuevo_plan_668",
-      "nombre": "Internet Inalámbrico 30MB + ISTV Move",
-      "precio": 34663,
-      "tipo": "inalambrica",
-      "instalacion": "Sin costo",
-      "promo_duracion": "4 meses",
-      "destacado": false,
-      "pack_futbol": false,
-      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Internet Banda Ancha 15 Plus, ISTV Move y soporte router Wifi), aplicado al precio de lista vigente, que baja cada 4 meses: 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 29, precio completo. Instalación sin cargo. Precios sujetos a actualización.",
-      "beneficios": [
-        "Instalación sin cargo.",
-        "Soporte y mantenimiento del router Wifi incluidos.",
-        "ISTV Move: la app para ver en hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)"
-      ]
-    },
-    {
-      "id": "FIBRA + MESH +CAM",
-      "nombre": "Internet Fibra Óptica 300MB + IS Mesh + IS CAM",
-      "precio": 42062,
-      "tipo": "fibra",
-      "instalacion": "Con costo",
-      "promo_duracion": "4 meses",
-      "destacado": false,
-      "pack_futbol": false,
-      "nota": "Promoción para nuevas contrataciones en San José. Descuento solo sobre el abono de Fibra 300 MB, aplicado al precio de lista vigente y reducido cada 4 meses: 75%, 70%, 65%, 60%, 55% y 50%. Desde el mes 25, precio de lista completo. Wifi Mesh, cámara e instalación (6 cuotas) sin descuento. Precios sujetos a actualización. Promoción sujeta a discontinuación sin afectar contrataciones vigentes.",
-      "beneficios": [
-        "Internet Fibra Óptica 300 MB — mayor velocidad y estabilidad.",
-        "WiFi Mesh Premium  — mejor cobertura WiFi en tu hogar.",
-        "1 IS Cam  — opción de monitoreo para mayor tranquillidad"
-      ]
-    },
-    {
-      "id": "MESH+CAM+ISTV",
-      "nombre": "Internet Fibra Óptica 300MB + IS Mesh + IS CAM + ISTV",
-      "precio": 61634,
-      "tipo": "fibra",
-      "instalacion": "Con costo",
-      "promo_duracion": "4 meses ",
-      "destacado": true,
-      "pack_futbol": false,
-      "nota": "Promo para nuevas altas en San José. Descuento solo en Fibra 300 MB e ISTV Move, sobre precio de lista vigente, que baja cada 4 meses: 75%, 70%, 65%, 60%, 55% y 50%. Desde el mes 25, precio completo. Wifi, cámara e instalación (6 cuotas) sin descuento. Precios sujetos a actualización.",
-      "beneficios": [
-        "Internet Fibra Óptica 300 MB — mayor velocidad y estabilidad.",
-        "WiFi Mesh Premium x2 — mejor cobertura WiFi en tu hogar.",
-        "Servicio de cámara IS — opción de monitoreo para mayor tranquilida",
-        "ISTV Move: la app para ver en hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)"
-      ]
-    },
-    {
       "pack_futbol": false,
       "precio": 30486,
       "beneficios": [
@@ -94,15 +28,15 @@
       ],
       "destacado": false,
       "nombre": "Internet Fibra Óptica 300MB",
-      "nota": "Promoción válida para nuevas contrataciones de Internet Fibra Optica 300 MB en San José. Descuentos de 60%, 55%, 50%, 45%, 40% y 35%, aplicados cada 4 meses sobre el precio de lista vigente de cada mes. A partir del mes 25 se abona el precio de lista completo. El precio de lista puede actualizarse durante la promoción. ",
+      "nota": "Promo para nuevas altas en San José. Descuento sobre Fibra 300 MB y soporte ONU WiFi, aplicado al precio de lista vigente, que baja cada 4 meses: 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 29, precio de lista completo. Precios sujetos a actualización.",
       "tipo": "fibra",
-      "promo_duracion": "4 meses ",
+      "promo_duracion": "4 meses",
       "instalacion": "Sin costo",
       "id": "fibra_300"
     },
     {
       "pack_futbol": false,
-      "precio": 46417,
+      "precio": 36686,
       "beneficios": [
         "Internet de Alta Velocidad por Fibra Óptica",
         "ISTV Move: la app para ver en hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
@@ -111,15 +45,16 @@
       ],
       "destacado": false,
       "nombre": "Internet Fibra Óptica 300MB + ISTV Move",
-      "nota": "Promoción válida para nuevas contrataciones de Internet + ISTV Move en San José. Descuentos de 65%, 60%, 55%, 50%, 45% y 40%, aplicados cada 4 meses sobre el precio de lista vigente de cada mes. A partir del mes 25 se abona el precio de lista completo. El precio de lista puede actualizarse durante la promoción. ",
+      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Fibra 300 MB, ISTV Move y soporte ONU WiFi), aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Opción con Fútbol Premium: +$9.905 (65% de descuento sobre $28.300). Precios sujetos a actualización.",
       "tipo": "fibra",
       "promo_duracion": "4 meses",
       "instalacion": "Sin costo",
-      "id": "fibra_istv_move"
+      "id": "fibra_istv_move",
+      "precio_futbol": 46591
     },
     {
-      "pack_futbol": true,
-      "precio": 51147,
+      "pack_futbol": false,
+      "precio": 41415,
       "beneficios": [
         "Máxima velocidad de conexión y estabilidad",
         "ISTV Full: hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
@@ -128,15 +63,51 @@
       ],
       "destacado": true,
       "nombre": "Internet Fibra Óptica 300MB + ISTV Full (1 convertidor)",
-      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Fibra 300 MB, TV, Fútbol Premium y soporte ONU Wifi), aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio completo. Instalación sin cargo. Precios sujetos a actualización.",
+      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Fibra 300 MB, TV Full y soporte ONU WiFi), aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Opción con Fútbol Premium: +$9.905 (65% de descuento sobre $28.300). Precios sujetos a actualización. Instalación sin cargo.",
       "tipo": "fibra",
       "promo_duracion": "4 meses",
       "instalacion": "Sin costo",
-      "id": "fibra_istv_full"
+      "id": "fibra_istv_full",
+      "precio_futbol": 51320
+    },
+    {
+      "id": "fibra_istv_move_cam",
+      "nombre": "Internet Fibra Óptica 300MB + ISTV Move + IS CAM",
+      "precio": 46423,
+      "precio_futbol": 56328,
+      "tipo": "fibra",
+      "instalacion": "Cámara en 6 cuotas",
+      "promo_duracion": "4 meses",
+      "destacado": false,
+      "pack_futbol": false,
+      "nota": "Promo para nuevas altas en San José. Descuento sobre Fibra 300 MB, ISTV Move y soporte ONU WiFi, aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Cámara ($9.946) e instalación de cámara (interna $56.834 en 6 cuotas de $9.472) sin descuento. Opción con Fútbol Premium: +$9.905 (65% de descuento sobre $28.300). Precios sujetos a actualización.",
+      "beneficios": [
+        "Internet Fibra Óptica 300 MB",
+        "ISTV Move: la app para ver en hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
+        "1 IS CAM: monitoreo en tiempo real desde tu celular"
+      ]
+    },
+    {
+      "id": "fibra_istv_full_cam",
+      "nombre": "Internet Fibra Óptica 300MB + ISTV Full (1 convertidor) + IS CAM",
+      "precio": 51361,
+      "precio_futbol": 61266,
+      "tipo": "fibra",
+      "instalacion": "Cámara en 6 cuotas",
+      "promo_duracion": "4 meses",
+      "destacado": false,
+      "pack_futbol": false,
+      "nota": "Promo para nuevas altas en San José. Descuento sobre Fibra 300 MB, TV Full y soporte ONU WiFi, aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Cámara ($9.946) e instalación de cámara (interna $56.834 en 6 cuotas de $9.472) sin descuento. Opción con Fútbol Premium: +$9.905 (65% de descuento sobre $28.300). Precios sujetos a actualización.",
+      "beneficios": [
+        "Internet Fibra Óptica 300 MB",
+        "ISTV Full: hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
+        "Incluye un convertidor android",
+        "1 IS CAM: monitoreo en tiempo real desde tu celular"
+      ]
     },
     {
       "pack_futbol": false,
-      "precio": 40433,
+      "precio": 36621,
       "beneficios": [
         "Internet Fibra Óptica Directa",
         "Monitoreo con cámaras de seguridad integradas",
@@ -145,15 +116,15 @@
       ],
       "destacado": false,
       "nombre": "Internet Fibra Óptica 300MB + IS CAM",
-      "nota": "Promo para nuevas altas en San José. Descuento sobre Fibra 300 MB y soporte ONU Wifi, aplicado al precio de lista vigente, que baja cada 4 meses: 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 29, precio completo. Cámara e instalación de cámara sin descuento. Precios sujetos a actualización.",
+      "nota": "Promo para nuevas altas en San José. Descuento sobre Fibra 300 MB y soporte ONU WiFi, aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Cámara ($9.946) e instalación de cámara (interna $56.834 en 6 cuotas de $9.472) sin descuento. Precios sujetos a actualización.",
       "tipo": "fibra",
       "promo_duracion": "4 meses",
-      "instalacion": "Con costo — Consultar",
+      "instalacion": "Cámara en 6 cuotas",
       "id": "fibra_iscam"
     },
     {
       "pack_futbol": false,
-      "precio": 22767,
+      "precio": 23223,
       "beneficios": [
         "Conexión Inalámbrica de alta fidelidad",
         "Cobertura en zonas rurales y de difícil acceso",
@@ -161,11 +132,46 @@
       ],
       "destacado": false,
       "nombre": "Internet Inalámbrico 30MB",
-      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Internet Banda Ancha 30 Plus y soporte router Wifi), aplicado al precio de lista vigente, que baja cada 4 meses: 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 29, precio completo. Instalación sin cargo. Precios sujetos a actualización.",
+      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Internet Banda Ancha 30 Plus y soporte router WiFi), aplicado al precio de lista vigente, que baja cada 4 meses: 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 29, precio de lista completo. Precios sujetos a actualización. Instalación sin cargo.",
       "tipo": "inalambrica",
       "promo_duracion": "4 meses",
-      "instalacion": "Con costo — Consultar",
+      "instalacion": "Sin costo",
       "id": "inalambrica_15"
+    },
+    {
+      "id": "nuevo_plan_668",
+      "nombre": "Internet Inalámbrico 30MB + ISTV Move",
+      "precio": 30330,
+      "tipo": "inalambrica",
+      "instalacion": "Sin costo",
+      "promo_duracion": "4 meses",
+      "destacado": false,
+      "pack_futbol": false,
+      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Internet Banda Ancha 30 Plus, ISTV Move y soporte router WiFi), aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Opción con Fútbol Premium: +$9.905 (65% de descuento sobre $28.300). Precios sujetos a actualización. Instalación sin cargo.",
+      "beneficios": [
+        "Instalación sin cargo.",
+        "Soporte y mantenimiento del router Wifi incluidos.",
+        "ISTV Move: la app para ver en hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)"
+      ],
+      "precio_futbol": 40235
+    },
+    {
+      "id": "nuevo_plan_90",
+      "nombre": "Internet Inalámbrico 30MB + ISTV Full (1 convertidor)",
+      "precio": 35060,
+      "tipo": "inalambrica",
+      "instalacion": "Sin costo",
+      "promo_duracion": "4 meses",
+      "destacado": false,
+      "pack_futbol": false,
+      "nota": "Promo para nuevas altas en San José. Descuento sobre el total del paquete (Internet Banda Ancha 30 Plus, TV Full y soporte router WiFi), aplicado al precio de lista vigente, que baja cada 4 meses: 65%, 60%, 55%, 50%, 45%, 40%, 35% y 30%. Desde el mes 33, precio de lista completo. Opción con Fútbol Premium: +$9.905 (65% de descuento sobre $28.300). Precios sujetos a actualización. Instalación sin cargo.",
+      "beneficios": [
+        "Instalación sin cargo.",
+        "Soporte y mantenimiento del router Wifi incluidos.",
+        "ISTV Full: hasta 4 dispositivos en simultáneo (TV con Android, celulares, tablets y computadoras)",
+        "Incluye un convertidor android (para tv sin android incluido)"
+      ],
+      "precio_futbol": 44965
     }
   ],
   "camaras": {

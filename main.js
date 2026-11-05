@@ -102,7 +102,7 @@ fetch('data/planes.json?v=' + new Date().getTime())
     }
 
     // 2. Renderizar planes en pantalla
-    renderPlanes(data.planes);
+    renderPlanes(data.planes, data.sitio);
   })
   .catch(err => console.error('Error al cargar configuración y planes:', err));
 
@@ -113,7 +113,9 @@ function despuesDeCargar(fn) {
 }
 
 /* ---------- FUNCIÓN PARA RENDERIZAR TARJETAS ---------- */
-function renderPlanes(planes) {
+function renderPlanes(planes, sitio = {}) {
+  // "13.690" → 13690
+  const precioHbo = Number(String(sitio.precio_pack_hbo || '').replace(/\D/g, '')) || 0;
   const fibraGrid = document.getElementById('plansGrid');
   const inalGrid = document.getElementById('inalGrid');
 
@@ -164,9 +166,28 @@ function renderPlanes(planes) {
       <p class="plan-name" style="${!plan.nombre.includes(' + ') ? 'font-size:24px; color:var(--blue);' : ''}">${planNameHtml}</p>
       <div class="plan-price">
         <span class="amount">${priceFormatted}</span>
-        <span class="per">/ mes</span>
       </div>
+            <p class="precio-aclaracion">Precio promocional de los primeros ${String(plan.promo_duracion).trim()}. La primera factura incluye el proporcional y los precios se actualizan mensualmente.</p>
     `;
+
+    // Combos con TV: casillas de Fútbol Premium y Pack HBO que suman al precio de la tarjeta
+    if (plan.precio_futbol) {
+      const extra = plan.precio_futbol - plan.precio;
+      htmlContent += `
+        <label class="opcion-futbol">
+          <input type="checkbox" class="opcion-futbol-chk">
+          <span class="opcion-futbol-box" aria-hidden="true"></span>
+          <span>⚽ Con Fútbol Premium <em>+$${extra.toLocaleString('es-AR')}</em></span>
+        </label>
+      `;
+      if (precioHbo) htmlContent += `
+        <label class="opcion-futbol">
+          <input type="checkbox" class="opcion-hbo-chk">
+          <span class="opcion-futbol-box" aria-hidden="true"></span>
+          <span>🎬 Con Pack HBO <em>+$${precioHbo.toLocaleString('es-AR')}</em></span>
+        </label>
+      `;
+    }
 
     // Características / Beneficios
     htmlContent += `
@@ -190,6 +211,26 @@ function renderPlanes(planes) {
     `;
 
     card.innerHTML = htmlContent;
+
+    const chkFutbol = card.querySelector('.opcion-futbol-chk');
+    const chkHbo = card.querySelector('.opcion-hbo-chk');
+    if (chkFutbol) {
+      const amount = card.querySelector('.plan-price .amount');
+      const selectBtn = card.querySelector('.select-plan');
+      const baseName = `${plan.nombre} (${planCategoryText})`;
+      const actualizar = () => {
+        const fut = chkFutbol.checked, hbo = !!(chkHbo && chkHbo.checked);
+        const total = (fut ? plan.precio_futbol : plan.precio) + (hbo ? precioHbo : 0);
+        const precio = '$' + total.toLocaleString('es-AR');
+        amount.textContent = precio;
+        selectBtn.setAttribute('data-price', precio);
+        selectBtn.setAttribute('data-name', baseName + (fut ? ' + Fútbol Premium' : '') + (hbo ? ' + Pack HBO' : ''));
+        selectBtn.setAttribute('data-futbol', fut ? '1' : '');
+        card.classList.toggle('con-futbol', fut);
+      };
+      chkFutbol.addEventListener('change', actualizar);
+      if (chkHbo) chkHbo.addEventListener('change', actualizar);
+    }
 
     // Inyectar en la sección adecuada
     if (plan.tipo === 'fibra') {
@@ -219,7 +260,7 @@ function bindEvents() {
       document.getElementById('planInput').value = name + ' - ' + price;
 
       const fCheckbox = document.getElementById('futbol');
-      if (fCheckbox) fCheckbox.checked = false;
+      if (fCheckbox) fCheckbox.checked = btn.getAttribute('data-futbol') === '1';
 
       document.getElementById('formulario').scrollIntoView({ behavior: 'smooth' });
     });

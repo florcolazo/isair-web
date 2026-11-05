@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.1.0">
+  <link rel="stylesheet" href="styles.css?v=1.1.3">
   
   <style>
     /* Estilos específicos de la página de planes de Internet + IS CAM */
@@ -806,13 +806,32 @@
             <p class="plan-name" style="${!plan.nombre.includes(' + ') ? 'font-size:24px; color:var(--blue);' : ''}">${planNameHtml}</p>
             <div class="plan-price">
               <span class="amount">${priceFormatted}</span>
-              <span class="per">/ mes</span>
             </div>
+            <p class="precio-aclaracion">Precio promocional de los primeros ${String(plan.promo_duracion).trim()}. La primera factura incluye el proporcional y los precios se actualizan mensualmente.</p>
             <div class="cam-incluida">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12l3 3v7H3z"/><path d="M18 11l3-2v8l-3-2"/><circle cx="9" cy="12" r="2.5"/></svg>
               <span><strong>1 cámara incluida</strong> · instalación aparte</span>
             </div>
           `;
+
+          // Combos con TV: casillas de Fútbol Premium y Pack HBO que suman al precio
+          const precioHbo = Number(String(data.sitio.precio_pack_hbo || '').replace(/\D/g, '')) || 0;
+          if (plan.precio_futbol) {
+            htmlContent += `
+              <label class="opcion-futbol">
+                <input type="checkbox" class="opcion-futbol-chk">
+                <span class="opcion-futbol-box" aria-hidden="true"></span>
+                <span>⚽ Con Fútbol Premium <em>+$${(plan.precio_futbol - plan.precio).toLocaleString('es-AR')}</em></span>
+              </label>
+            `;
+            if (precioHbo) htmlContent += `
+              <label class="opcion-futbol">
+                <input type="checkbox" class="opcion-hbo-chk">
+                <span class="opcion-futbol-box" aria-hidden="true"></span>
+                <span>🎬 Con Pack HBO <em>+$${precioHbo.toLocaleString('es-AR')}</em></span>
+              </label>
+            `;
+          }
 
           // Características / Beneficios
           htmlContent += `
@@ -839,6 +858,24 @@
           `;
 
           card.innerHTML = htmlContent;
+
+          const chkFutbol = card.querySelector('.opcion-futbol-chk');
+          const chkHbo = card.querySelector('.opcion-hbo-chk');
+          if (chkFutbol) {
+            const amount = card.querySelector('.plan-price .amount');
+            const boton = card.querySelector('a.btn');
+            const actualizar = () => {
+              const fut = chkFutbol.checked, hbo = !!(chkHbo && chkHbo.checked);
+              amount.textContent = '$' + ((fut ? plan.precio_futbol : plan.precio) + (hbo ? precioHbo : 0)).toLocaleString('es-AR');
+              let texto = `Hola! Me interesa contratar el plan ${plan.nombre} (${planCategoryText})`;
+              if (fut) texto += ' + Fútbol Premium ⚽';
+              if (hbo) texto += ' + Pack HBO 🎬';
+              boton.href = 'https://wa.me/' + data.sitio.whatsapp + '?text=' + encodeURIComponent(texto);
+            };
+            chkFutbol.addEventListener('change', actualizar);
+            if (chkHbo) chkHbo.addEventListener('change', actualizar);
+          }
+
           grid.appendChild(card);
         });
       })

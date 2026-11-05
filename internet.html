@@ -23,7 +23,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Estilos del sitio -->
-  <link rel="stylesheet" href="styles.css?v=1.1.0">
+  <link rel="stylesheet" href="styles.css?v=1.1.3">
   
   <style>
     /* Estilos específicos de la página de planes de Internet */
@@ -369,8 +369,8 @@
             <p class="plan-name" style="${!plan.nombre.includes(' + ') ? 'font-size:24px; color:var(--blue);' : ''}">${plan.nombre}</p>
             <div class="plan-price">
               <span class="amount">${priceFormatted}</span>
-              <span class="per">/ mes</span>
             </div>
+            <p class="precio-aclaracion">Precio promocional de los primeros ${String(plan.promo_duracion).trim()}. La primera factura incluye el proporcional y los precios se actualizan mensualmente.</p>
           `;
 
           // Características / Beneficios
