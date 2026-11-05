@@ -221,6 +221,10 @@
       <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500">
         <input type="checkbox" id="showKpis"> Incluir total, promedio y ahorro (PDF)
       </label>
+      <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:500" title="Estimación: sube el abono cada mes desde el mes 2. No aplica a cuotas de instalación, plan de pago, Fútbol Premium ni HBO.">
+        <input type="checkbox" id="aumMensual"> Proyectar aumento mensual de
+        <input type="number" id="aumPct" class="pct" min="0" step="0.1" style="width:64px">%
+      </label>
     </div>
   </div>
 
@@ -240,24 +244,25 @@
 
   const TV_DETALLE = 'Incluye convertidor Android';
 
-  // Precios de octubre (septiembre × 1,02; Fútbol Premium sin aumento).
+  // Precios de noviembre (octubre × 1,02; Fútbol Premium y HBO sin aumento).
   const DEFAULT_ITEMS = [
-    { id: 'f300',  nombre: 'Fibra óptica 300 MB',                       precio: 69408.45,  tipo: 'desc' },
+    { id: 'f300',  nombre: 'Fibra óptica 300 MB',                       precio: 70796.59,  tipo: 'desc' },
     { id: 'f800',  nombre: 'Fibra óptica 800 MB',                       precio: 175062.71, tipo: 'desc' },
     { id: 'instnet', nombre: 'Instalación servicio de internet',        precio: 0,         tipo: 'free' },
-    { id: 'onu',   nombre: 'Mantenimiento y soporte ONU WiFi',          precio: 5312.20,   tipo: 'desc' },
-    { id: 'ba30',  nombre: 'Internet banda ancha 30 MB Plus',           precio: 52713.02,  tipo: 'desc' },
-    { id: 'rout',  nombre: 'Mantenimiento y soporte / Router WiFi',     precio: 4205.49,   tipo: 'desc' },
-    { id: 'istv',  nombre: 'Servicio ISTV Move',                        precio: 28039.99,  tipo: 'desc' },
-    { id: 'tv',    nombre: 'Servicio de TV Full',                       precio: 41288.00,  tipo: 'desc', detalle: TV_DETALLE },
-    { id: 'stb',   nombre: '1 STB adicional',                           precio: 9300.00,   tipo: 'desc' },
-    { id: 'fut',   nombre: 'Fútbol Premium',                            precio: 27260.00,  tipo: 'bonif', gratis: 4 },
-    { id: 'mx2',   nombre: 'WiFi Mesh Premium x2',                      precio: 12103.21,  tipo: 'desc' },
-    { id: 'mx3',   nombre: 'WiFi Mesh Premium x3',                      precio: 18132.09,  tipo: 'desc' },
-    { id: 'mx4',   nombre: 'WiFi Mesh Premium x4',                      precio: 24176.15,  tipo: 'desc' },
-    { id: 'cam',   nombre: 'IS Cam (abono por cámara)',                 precio: 9752.32,   tipo: 'fijo' },
-    { id: 'insti', nombre: 'Instalación cámara IS x1 (interna)',        precio: 55719.19,  tipo: 'inst', cuotas: 6 },
-    { id: 'inste', nombre: 'Instalación cámara IS x1 (externa)',        precio: 111438.37, tipo: 'inst', cuotas: 6 },
+    { id: 'onu',   nombre: 'Mantenimiento y soporte ONU WiFi',          precio: 5418.46,   tipo: 'desc' },
+    { id: 'ba30',  nombre: 'Internet banda ancha 30 MB Plus',           precio: 53766.94,  tipo: 'desc' },
+    { id: 'rout',  nombre: 'Mantenimiento y soporte / Router WiFi',     precio: 4289.60,   tipo: 'desc' },
+    { id: 'istv',  nombre: 'Servicio ISTV Move',                        precio: 28600.78,  tipo: 'desc' },
+    { id: 'tv',    nombre: 'Servicio de TV Full',                       precio: 42113.77,  tipo: 'desc', detalle: TV_DETALLE },
+    { id: 'stb',   nombre: '1 STB adicional',                           precio: 9675.89,   tipo: 'desc' },
+    { id: 'fut',   nombre: 'Fútbol Premium',                            precio: 28300.00,  tipo: 'desc' },
+    { id: 'hbo',   nombre: 'Señales Premium HBO + HBO Max',             precio: 13689.98,  tipo: 'desc' },
+    { id: 'mx2',   nombre: 'WiFi Mesh Premium x2',                      precio: 6911.36,  tipo: 'desc' },
+    { id: 'mx3',   nombre: 'WiFi Mesh Premium x3',                      precio: 13076.28,  tipo: 'desc' },
+    { id: 'mx4',   nombre: 'WiFi Mesh Premium x4',                      precio: 19241.22,  tipo: 'desc' },
+    { id: 'cam',   nombre: 'IS Cam (abono por cámara)',                 precio: 9945.90,   tipo: 'fijo' },
+    { id: 'insti', nombre: 'Instalación cámara IS x1 (interna)',        precio: 56833.59,  tipo: 'inst', cuotas: 6 },
+    { id: 'inste', nombre: 'Instalación cámara IS x1 (externa)',        precio: 113667.14, tipo: 'inst', cuotas: 6 },
   ];
 
   // Cada promo arranca con `inicio`% y baja 5% cada 4 meses, durante `duracion` meses.
@@ -305,15 +310,20 @@
         }
         // Lo que estaba solo en este navegador queda pendiente de guardar en el sitio.
         if ((s.v || 0) < 6) s.cfgDirty = true;
+        if ((s.v || 0) < 7) {
+          // Fútbol Premium pasó a tener el descuento de la promo (antes: sin cargo 4 meses).
+          const fut = s.items.find(it => it.id === 'fut');
+          if (fut && fut.tipo === 'bonif') { fut.tipo = 'desc'; delete fut.gratis; }
+        }
         s.promos = promosDe(s);
         fixItems(s.items);
-        return { ...defaults(s.promos), ...s, v: 6 };
+        return { ...defaults(s.promos), ...s, v: 7 };
       }
     } catch (e) { /* sin almacenamiento: usar valores por defecto */ }
     return { ...defaults(), items: clone(DEFAULT_ITEMS), promos: clone(DEFAULT_PROMOS) };
   }
   function defaults() {
-    return { v: 6, tipoCliente: 'nuevo', mesActual: 1, mesAdd: 1, qty: {}, qtyAdd: {}, deuda: 0, deudaCuotas: 6, cfgDirty: false };
+    return { v: 7, tipoCliente: 'nuevo', mesActual: 1, mesAdd: 1, qty: {}, qtyAdd: {}, modo: {}, deuda: 0, deudaCuotas: 6, cfgDirty: false, aumMensual: false, aumPct: 2 };
   }
   // Pasa de la lista de promos guardada antes a las dos promos del presupuesto.
   function promosDe(s) {
@@ -337,6 +347,8 @@
   }
   // Un cambio de precios: se guarda en el navegador y ya no se pisa con los precios del sitio.
   function cfgChanged() { state.cfgDirty = true; save(); }
+  // El tipo elegido en "Servicios" vale solo para este presupuesto (ej. Fútbol con descuento o 4 meses sin cargo).
+  const conModo = it => ({ ...it, ...(state.modo || {})[it.id] });
 
   const num = (v, d) => v === '' || v == null || !Number.isFinite(Number(v)) ? d : Number(v);
   // Convierte promos viejas (tramos cargados a mano) al formato automático.
@@ -382,11 +394,22 @@
     return { monto, cuotas, cuota: round2(monto / cuotas) };
   }
 
+  // Fútbol Premium y HBO normalmente no aumentan.
+  const SIN_AUMENTO = new Set(['fut', 'hbo']);
+  const aumento = () => state.aumMensual ? Math.max(0, Number(state.aumPct) || 0) : 0;
+  const pctTxt = n => String(round2(n)).replace('.', ',');
+  // Dentro de un tramo con aumento mensual, el importe va del primer al último mes.
+  const rangoVal = (a, b) => a === b ? a : `${a}<div class="sub">a ${b}</div>`;
+
+  // Primera factura: días desde la instalación + el mes en curso por adelantado.
+  const NOTA_PRIMERA = 'La primera factura suele venir un poco más alta, porque incluye los días desde la instalación y además el mes en curso por adelantado: la facturación es adelantada y se emite los primeros días de cada mes.';
+  const hayAlta = (r, ex) => r.lines.length > 0 && (!ex || r.groups.some(g => g.key === 'add' && g.lines.length));
+
   // ---------- Cálculo ----------
   // Cada grupo de servicios tiene su promo y el mes de la promo en que arranca.
   // Nuevo: un solo grupo desde el mes 1. Existente: lo que ya tiene (desde su mes actual) + lo que agrega.
   function compute() {
-    const mkLines = q => state.items.map(it => ({ ...it, qty: Number(q[it.id]) || 0 })).filter(it => it.qty > 0);
+    const mkLines = q => state.items.map(it => ({ ...conModo(it), qty: Number(q[it.id]) || 0 })).filter(it => it.qty > 0);
     const groups = [{ key: 'base', p: promo(), start: existente() ? Math.max(1, Number(state.mesActual) || 1) : 1, lines: mkLines(state.qty) }];
     if (existente()) groups.push({ key: 'add', p: promoAdd(), start: promoAdd() ? Math.max(1, Number(state.mesAdd) || 1) : 1, lines: mkLines(state.qtyAdd) });
 
@@ -408,21 +431,32 @@
     const deuda = deudaPlan();
     if (deuda) totalMonths = Math.max(totalMonths, deuda.cuotas);
 
+    // Aumento mensual proyectado (opcional): el mes m se multiplica por (1 + %)^(m-1).
+    const aum = aumento();
+    const factorMes = m => aum ? Math.pow(1 + aum / 100, m - 1) : 1;
+    const precioMes = (l, k) => SIN_AUMENTO.has(l.id) ? l.precio : round2(l.precio * k);
+    const calcGroup = (g, m, k) => {
+      const pm = g.start + m - 1; // mes de la promo de este grupo
+      const desc = pm <= g.discountAt.length ? g.discountAt[pm - 1] : 0;
+      const x = { pm, desc, servicios: 0, fijo: 0, inst: 0, bonif: 0, lista: 0 };
+      g.lines.forEach(l => {
+        const pr = precioMes(l, k);
+        if (l.tipo === 'desc') { x.servicios += round2(pr * (1 - desc / 100)) * l.qty; x.lista += pr * l.qty; }
+        else if (l.tipo === 'fijo') { x.fijo += pr * l.qty; }
+        else if (l.tipo === 'inst') { const c = Number(l.cuotas) || 1; if (pm <= c) x.inst += round2(l.precio / c) * l.qty; }
+        else if (l.tipo === 'bonif') { x.lista += pr * l.qty; if (pm > gratisDe(l)) x.bonif += pr * l.qty; }
+      });
+      x.total = x.servicios + x.fijo + x.inst + x.bonif;
+      return x;
+    };
+
     const months = [];
     for (let m = 1; m <= totalMonths; m++) {
-      const row = { m, servicios: 0, fijo: 0, inst: 0, bonif: 0, lista: 0, total: 0, g: {} };
+      const row = { m, servicios: 0, fijo: 0, inst: 0, bonif: 0, lista: 0, total: 0, g: {}, g0: {} };
       groups.forEach(g => {
-        const pm = g.start + m - 1; // mes de la promo de este grupo
-        const desc = pm <= g.discountAt.length ? g.discountAt[pm - 1] : 0;
-        const x = { pm, desc, servicios: 0, fijo: 0, inst: 0, bonif: 0, lista: 0 };
-        g.lines.forEach(l => {
-          if (l.tipo === 'desc') { x.servicios += round2(l.precio * (1 - desc / 100)) * l.qty; x.lista += l.precio * l.qty; }
-          else if (l.tipo === 'fijo') { x.fijo += l.precio * l.qty; }
-          else if (l.tipo === 'inst') { const c = Number(l.cuotas) || 1; if (pm <= c) x.inst += round2(l.precio / c) * l.qty; }
-          else if (l.tipo === 'bonif') { x.lista += l.precio * l.qty; if (pm > gratisDe(l)) x.bonif += l.precio * l.qty; }
-        });
-        x.total = x.servicios + x.fijo + x.inst + x.bonif;
+        const x = calcGroup(g, m, factorMes(m));
         row.g[g.key] = x;
+        row.g0[g.key] = aum ? calcGroup(g, m, 1) : x; // sin aumento: para armar los tramos
         ['servicios', 'fijo', 'inst', 'bonif', 'lista', 'total'].forEach(k => { row[k] += x[k]; });
       });
       row.deuda = deuda && m <= deuda.cuotas ? deuda.cuota : 0;
@@ -430,8 +464,9 @@
       months.push(row);
     }
 
-    // Agrupar meses consecutivos con los mismos importes en tramos.
-    const sig = x => groups.map(g => `${g.hasDesc ? x.g[g.key].desc : '-'}|${x.g[g.key].total.toFixed(2)}`).join('/') + `/${x.deuda.toFixed(2)}`;
+    // Agrupar meses consecutivos con los mismos importes en tramos (sin contar el aumento mensual).
+    const sig = x => groups.map(g => `${g.hasDesc ? x.g0[g.key].desc : '-'}|${x.g0[g.key].total.toFixed(2)}`).join('/') + `/${x.deuda.toFixed(2)}`;
+    months.forEach(x => { x.sig = sig(x); });
     const bands = [];
     months.forEach(x => {
       const last = bands[bands.length - 1];
@@ -440,11 +475,12 @@
     });
 
     const lines = groups.flatMap(g => g.lines);
-    const after = lines.reduce((a, l) => a + (l.tipo === 'inst' || l.tipo === 'free' ? 0 : l.precio * l.qty), 0);
+    const kAfter = factorMes(totalMonths + 1);
+    const after = lines.reduce((a, l) => a + (l.tipo === 'inst' || l.tipo === 'free' ? 0 : precioMes(l, kAfter) * l.qty), 0);
     const totalPeriodo = months.reduce((a, x) => a + x.total, 0);
     const totalLista = months.reduce((a, x) => a + x.lista + x.fijo + x.inst + x.deuda, 0);
 
-    return { groups, lines, deuda, months, bands, after, totalMonths, totalPeriodo, ahorro: totalLista - totalPeriodo };
+    return { groups, lines, deuda, months, bands, after, totalMonths, totalPeriodo, ahorro: totalLista - totalPeriodo, aum };
   }
 
   // ---------- Render: formulario ----------
@@ -452,13 +488,13 @@
     const ex = existente();
     document.getElementById('qtyHead').textContent = ex ? 'Ya tiene' : 'Cantidad';
     const input = (q, key, id) => `<input type="number" class="qty" min="0" step="1" data-qty="${id}" data-g="${key}" value="${Number(q[id]) || 0}">`;
-    document.getElementById('qtyBody').innerHTML = state.items.map((it, i) => `
+    document.getElementById('qtyBody').innerHTML = state.items.map(conModo).map(it => `
       <tr class="${(Number(state.qty[it.id]) || 0) + (ex ? Number(state.qtyAdd[it.id]) || 0 : 0) > 0 ? 'selected' : ''}">
         <td>${esc(it.nombre)}${it.detalle ? `<div class="hint" style="margin:2px 0 0">${esc(it.detalle)}</div>` : ''}</td>
-        <td style="white-space:nowrap"><select data-item="${i}" data-f="tipo" style="width:auto">
+        <td style="white-space:nowrap"><select data-modo="${it.id}" data-f="tipo" style="width:auto">
           ${Object.entries(TIPOS).map(([k, v]) => `<option value="${k}" ${it.tipo === k ? 'selected' : ''}>${v}</option>`).join('')}
-        </select>${it.tipo === 'inst' ? ` <input type="number" class="months" min="1" step="1" data-item="${i}" data-f="cuotas" value="${Number(it.cuotas) || 6}" title="Cuotas"> cuotas`
-          : it.tipo === 'bonif' ? ` <input type="number" class="months" min="0" step="1" data-item="${i}" data-f="gratis" value="${gratisDe(it)}" title="Meses sin cargo"> meses` : ''}</td>
+        </select>${it.tipo === 'inst' ? ` <input type="number" class="months" min="1" step="1" data-modo="${it.id}" data-f="cuotas" value="${Number(it.cuotas) || 6}" title="Cuotas"> cuotas`
+          : it.tipo === 'bonif' ? ` <input type="number" class="months" min="0" step="1" data-modo="${it.id}" data-f="gratis" value="${gratisDe(it)}" title="Meses sin cargo"> meses` : ''}</td>
         <td class="num">${it.tipo === 'free' && !it.precio ? '—' : fmt(it.precio)}</td>
         <td class="num">${input(state.qty, 'base', it.id)}</td>
         <td class="num only-existente">${input(state.qtyAdd, 'add', it.id)}</td>
@@ -623,14 +659,14 @@
         <tbody>${r.bands.map(b => `
           <tr>
             ${mesesCell(b.from, b.to, b, b.toRow)}
-            ${cols.map(c => `<td class="num ${c[2] || ''}">${c[1](b)}</td>`).join('')}
-            <td class="num total">${fmt(b.total)}</td>
+            ${cols.map(c => `<td class="num ${c[2] || ''}">${rangoVal(c[1](b), c[1](b.toRow))}</td>`).join('')}
+            <td class="num total">${rangoVal(fmt(b.total), fmt(b.toRow.total))}</td>
             <td class="no-print"><div class="bar"><span style="width:${(b.total / maxTotal * 100).toFixed(1)}%"></span></div></td>
           </tr>`).join('')}
         </tbody>
       </table>
       ${!r.lines.length ? '' : `<div class="after">${ex ? `En el mes <b>${r.totalMonths + 1}</b> desde la próxima factura` : `Desde el mes <b>${r.totalMonths + 1}</b>`},
-        finalizada la promoción, el abono pasa a precio de lista: <b>${fmt(r.after)}</b> por mes (a valores de hoy).</div>`}
+        finalizada la promoción, el abono pasa a precio de lista: <b>${fmt(r.after)}</b> por mes (${r.aum ? `estimado con ${pctTxt(r.aum)}% de aumento mensual` : 'a valores de hoy'}).</div>`}
       ${!showKpis ? '' : `<div class="kpis">
         <div class="kpi"><div class="l">Total a pagar en ${ex ? 'los próximos ' : ''}${r.totalMonths} meses</div><div class="v">${fmt(r.totalPeriodo)}</div></div>
         <div class="kpi"><div class="l">Promedio mensual</div><div class="v">${fmt(r.totalPeriodo / r.totalMonths)}</div></div>
@@ -643,7 +679,8 @@
       : (n === 1 ? 'El primer mes vas a pagar' : `Los primeros ${n} meses vas a pagar`);
     const hero = `
       <div class="hero">
-        <div><div class="l">${heroLabel}</div><div class="v">${fmt(first.total)} <small>por mes</small></div></div>
+        <div><div class="l">${heroLabel}</div><div class="v">${fmt(first.total)} <small>por mes</small></div>
+          ${Math.abs(first.toRow.total - first.total) >= 0.005 ? `<div class="l">con el aumento mensual, hasta ${fmt(first.toRow.total)} en el mes ${first.to}</div>` : ''}</div>
         ${next ? `<div class="next">${ex ? 'Después, desde la factura' : 'Después, desde el mes'} ${next.from}:<br><b>${fmt(next.total)}</b> por mes<br>(ver detalle abajo)</div>` : ''}
       </div>`;
 
@@ -661,13 +698,15 @@
 
     const notas = [
       ex ? 'Los meses se cuentan desde la próxima factura. Tus servicios actuales siguen en el tramo de la promoción en el que están.' : '',
+      hayAlta(r, ex) ? NOTA_PRIMERA : '',
       'La promoción es escalonada: el descuento se aplica sobre el precio de lista de los servicios y va disminuyendo según los tramos indicados.',
       byGroup ? '"Lo que ya tenés" y "Lo que agregás" incluyen servicios, cámaras, cuotas de instalación y adicionales de cada parte.' : '',
       hasFijo ? 'El abono de las cámaras es un precio fijo mensual y no tiene descuento.' : '',
       ...bonifLines.map(l => `${l.nombre}: sin cargo los primeros ${gratisDe(l)} meses desde que se contrata; después se cobra su precio completo.`),
       r.deuda ? `La deuda de ${fmt(r.deuda.monto)} se abona en ${r.deuda.cuotas} cuotas que se suman al abono a partir de la próxima factura.` : '',
       hasInst ? 'El cargo de instalación de cámaras se abona en cuotas que se suman al abono de los primeros meses.' : '',
-      'Los importes están expresados a valores vigentes a la fecha y pueden variar si se actualizan las tarifas.',
+      r.aum ? `Los importes incluyen un aumento estimado de ${pctTxt(r.aum)}% por mes a partir del mes 2 (no aplica a cuotas de instalación, plan de pago, Fútbol Premium ni HBO). Es una estimación: los aumentos reales pueden ser distintos.`
+        : 'Los importes están expresados a valores vigentes a la fecha y pueden variar si se actualizan las tarifas.',
     ].filter(Boolean);
 
     document.getElementById('sheet').innerHTML = head + hero + servicios + bands + monthly +
@@ -685,8 +724,8 @@
     const bands = [];
     r.months.forEach(x => {
       const last = bands[bands.length - 1], desc = descOf(x);
-      if (last && Math.abs(last.total - x.total) < 0.005 && last.desc === desc) last.to = x.m;
-      else bands.push({ from: x.m, to: x.m, total: x.total, desc });
+      if (last && last.sig === x.sig && last.desc === desc) { last.to = x.m; last.totalFin = x.total; }
+      else bands.push({ from: x.m, to: x.m, total: x.total, totalFin: x.total, desc, sig: x.sig });
     });
 
     const extra = (l, g) => {
@@ -729,10 +768,10 @@
       <div class="img-sec">${ex ? 'Tus servicios' : 'Servicios'}</div>
       <ul class="img-list">${items.join('')}</ul>
       <div class="img-sec">${ex ? 'Cuánto pagás por mes desde tu próxima factura' : 'Cuánto pagás por mes'}</div>
-      <div>${bands.map(b => `<div class="img-row"><span>${rango(b.from, b.to)}${b.desc ? ` <i class="off">${b.desc} OFF</i>` : ''}</span><b>${fmt(b.total)}</b></div>`).join('')}
+      <div>${bands.map(b => `<div class="img-row"><span>${rango(b.from, b.to)}${b.desc ? ` <i class="off">${b.desc} OFF</i>` : ''}</span><b>${fmt(b.total)}${Math.abs(b.totalFin - b.total) >= 0.005 ? `<small style="display:block;font-weight:400">a ${fmt(b.totalFin)}</small>` : ''}</b></div>`).join('')}
         ${r.lines.length ? `<div class="img-row after"><span>Desde el mes ${r.totalMonths + 1}<br><small>sin promoción</small></span><b>${fmt(r.after)}</b></div>` : ''}
       </div>
-      <div class="img-foot">Precios finales por mes, a valores de hoy. Pueden cambiar si hay aumentos de tarifas.${vendedor ? `<br>Asesor: ${esc(vendedor)}.` : ''}</div>`;
+      <div class="img-foot">${hayAlta(r, ex) ? `${NOTA_PRIMERA}<br>` : ''}${r.aum ? `Precios finales por mes, con un aumento estimado de ${pctTxt(r.aum)}% mensual desde el mes 2 (no incluye cuotas). Los aumentos reales pueden ser distintos.` : 'Precios finales por mes, a valores de hoy. Pueden cambiar si hay aumentos de tarifas.'}${vendedor ? `<br>Asesor: ${esc(vendedor)}.` : ''}</div>`;
   }
 
   function renderAll() { renderClient(); renderItems(); renderQty(); renderSheet(); }
@@ -812,6 +851,15 @@
       const tr = t.closest('tr');
       tr.classList.toggle('selected', [...tr.querySelectorAll('input.qty')].some(i => (parseInt(i.value, 10) || 0) > 0));
       save(); renderSheet();
+    } else if (t.dataset.modo) {
+      state.modo = state.modo || {};
+      const id = t.dataset.modo, f = t.dataset.f, m = state.modo[id] = { ...state.modo[id] };
+      m[f] = f === 'tipo' ? t.value : (parseFloat(t.value) || 0);
+      const it = conModo(state.items.find(x => x.id === id));
+      if (f === 'tipo' && it.tipo === 'inst' && !it.cuotas) m.cuotas = 6;
+      if (f === 'tipo' && it.tipo === 'bonif' && it.gratis == null) m.gratis = 4;
+      save(); renderSheet();
+      if (f === 'tipo') renderQty();
     } else if (t.dataset.item !== undefined) {
       const it = state.items[+t.dataset.item], f = t.dataset.f;
       it[f] = (f === 'precio' || f === 'cuotas' || f === 'gratis') ? (parseFloat(t.value) || 0) : t.value;
@@ -833,6 +881,10 @@
       save(); renderDeudaCuota(); renderSheet();
     } else if (t.id === 'mesActual' || t.id === 'mesAdd') {
       state[t.id] = Math.max(1, parseInt(t.value, 10) || 1); save(); renderPromoInfo(); renderSheet();
+    } else if (t.id === 'aumMensual' || t.id === 'aumPct') {
+      if (t.id === 'aumMensual') state.aumMensual = t.checked;
+      else state.aumPct = Math.max(0, parseFloat(t.value) || 0);
+      save(); renderSheet();
     } else if (['cliente', 'direccion', 'vendedor', 'fecha', 'showMonthly', 'showKpis'].includes(t.id)) {
       renderSheet();
     }
@@ -876,13 +928,15 @@
         });
         break;
       }
-      case 'clearQty': state.qty = {}; state.qtyAdd = {}; state.deuda = 0; save(); renderAll(); break;
+      case 'clearQty': state.qty = {}; state.qtyAdd = {}; state.modo = {}; state.deuda = 0; save(); renderAll(); break;
       case 'printBtn': window.print(); break;
       case 'jpgBtn': exportJpg(t); break;
     }
   });
 
   document.getElementById('fecha').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('aumMensual').checked = !!state.aumMensual;
+  document.getElementById('aumPct').value = state.aumPct ?? 2;
   renderAll();
   syncRemote();
 })();

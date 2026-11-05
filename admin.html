@@ -47,6 +47,13 @@
     .plan-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0 15px; }
     .full-width { grid-column: 1 / -1; }
     
+    .hint { color: #667085; font-size: 13px; margin: 0 0 16px; line-height: 1.5; }
+    .aum-tabla { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .aum-tabla th { text-align: left; background: #f0f3f8; padding: 8px 10px; font-weight: 600; }
+    .aum-tabla td { padding: 7px 10px; border-bottom: 1px solid #eee; }
+    .aum-tabla .num { text-align: right; white-space: nowrap; }
+    .aum-tabla .grupo td { background: #fafbfd; font-weight: 700; color: var(--blue); font-size: 13px; }
+    .aum-scroll { overflow-x: auto; margin-bottom: 20px; }
     .benefit-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
     .benefit-row input { flex: 1; margin: 0; }
     
@@ -84,6 +91,7 @@
       <div class="tabs">
         <div class="tab" :class="{active: activeTab === 'sitio'}" @click="activeTab = 'sitio'">Configuración del Sitio</div>
         <div class="tab" :class="{active: activeTab === 'planes'}" @click="activeTab = 'planes'">Planes de Internet</div>
+        <div class="tab" :class="{active: activeTab === 'aumento'}" @click="activeTab = 'aumento'">Aumento de Precios</div>
       </div>
 
       <!-- Pestaña: Configuración del Sitio -->
@@ -133,6 +141,7 @@
             <div class="field"><label>ID Interno (sin espacios)</label><input type="text" v-model="plan.id"></div>
             <div class="field"><label>Nombre del Plan</label><input type="text" v-model="plan.nombre"></div>
             <div class="field"><label>Precio Mensual ($)</label><input type="number" v-model="plan.precio"></div>
+            <div class="field"><label>Precio con Fútbol Premium ($) <span style="font-weight:400;color:#667085;">(vacío = sin casillas Fútbol/HBO)</span></label><input type="number" v-model.number="plan.precio_futbol" placeholder="Ej: 46591"></div>
             <div class="field">
               <label>Tecnología</label>
               <select v-model="plan.tipo">
@@ -173,13 +182,63 @@
         </div>
       </div>
 
+      <!-- Pestaña: Aumento de precios -->
+      <div v-if="activeTab === 'aumento'">
+        <h3 style="margin-top:0;">Aumento de precios</h3>
+        <p class="hint">Escribí el porcentaje (por ejemplo <strong>2</strong> para un 2%; si la lista dice "× 1,02", eso es un 2%) y se suben todos los precios marcados.
+          Abajo ves cómo quedan antes de publicar. Al tocar <strong>Aplicar</strong> se guardan en issanjose.com.ar y en el cotizador.</p>
+
+        <div class="plan-body">
+          <div class="field">
+            <label>Porcentaje de aumento (%)</label>
+            <input type="text" inputmode="decimal" v-model="pctTexto" placeholder="Ej: 2">
+            <div v-if="!Number.isNaN(pct)" class="hint" style="margin:6px 0 0;">Cada precio se multiplica por {{ pctFmt(1 + pct / 100) }}</div>
+          </div>
+          <div class="field">
+            <label>Último aumento aplicado</label>
+            <div style="padding: 12px 0;">{{ ultimoAumento ? `${pctFmt(ultimoAumento.porcentaje)}% el ${fechaFmt(ultimoAumento.fecha)}` : 'Todavía no se aplicó ninguno desde acá' }}</div>
+          </div>
+        </div>
+
+        <div class="checkbox-field"><input type="checkbox" id="aumPlanes" v-model="aum.planes"><label for="aumPlanes" style="margin:0;">Planes de internet</label></div>
+        <div class="checkbox-field"><input type="checkbox" id="aumExtras" v-model="aum.extras"><label for="aumExtras" style="margin:0;">Convertidor adicional</label></div>
+        <div class="checkbox-field"><input type="checkbox" id="aumPacks" v-model="aum.packs"><label for="aumPacks" style="margin:0;">Pack Fútbol y Pack HBO (en el sitio y en el cotizador; normalmente no aumentan)</label></div>
+        <div class="checkbox-field"><input type="checkbox" id="aumCam" v-model="aum.camaras"><label for="aumCam" style="margin:0;">IS CAM (abono e instalación)</label></div>
+        <div class="checkbox-field"><input type="checkbox" id="aumCotiz" v-model="aum.cotizador" :disabled="!cotiz"><label for="aumCotiz" style="margin:0;">Precios del cotizador de promociones{{ cotiz ? '' : ' (no se pudieron cargar)' }}</label></div>
+
+        <div v-if="vistaPrevia.length" class="aum-scroll">
+          <table class="aum-tabla">
+            <thead><tr><th>Precio</th><th class="num">Ahora</th><th class="num">Con aumento</th></tr></thead>
+            <tbody>
+              <template v-for="(f, i) in vistaPrevia" :key="i">
+                <tr v-if="i === 0 || vistaPrevia[i - 1].grupo !== f.grupo" class="grupo"><td colspan="3">{{ f.grupo }}</td></tr>
+                <tr><td>{{ f.nombre }}</td><td class="num">{{ plata(f.antes) }}</td><td class="num"><strong>{{ plata(f.despues) }}</strong></td></tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+        <p v-else-if="pctTexto" class="hint" style="color:#c21a14;">Escribí un porcentaje válido, entre 0 y 50 (ej: 2).</p>
+
+        <button class="btn" @click="aplicarAumento" :disabled="aplicando || !vistaPrevia.length">
+          {{ aplicando ? 'Publicando…' : (vistaPrevia.length ? `📈 Aplicar ${pctFmt(pct)}% y publicar` : '📈 Aplicar aumento y publicar') }}
+        </button>
+        <div v-if="aumMsg" class="msg" :class="aumStatus" style="display:block;">{{ aumMsg }}</div>
+
+        <div v-if="historial.length" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+          <h3 style="margin-top:0;">Aumentos anteriores</h3>
+          <div v-for="(h, i) in historial.slice().reverse()" :key="i" style="font-size:14px; padding:4px 0;">
+            {{ fechaFmt(h.fecha) }} — {{ pctFmt(h.porcentaje) }}% ({{ h.precios }} precios)
+          </div>
+        </div>
+      </div>
+
       <!-- Barra de Acciones Final -->
       <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items:center; flex-wrap:wrap; gap:15px;">
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
           <a href="admin/cobertura.html" target="_blank" style="color: var(--blue); font-weight:600; text-decoration: none;">🗺️ Abrir Mapa de Cobertura</a>
           <a href="admin/cotizador.html" target="_blank" style="color: var(--blue); font-weight:600; text-decoration: none;">🧮 Abrir Cotizador de Promociones</a>
         </div>
-        <button class="btn" @click="saveData" :disabled="isSaving">{{ isSaving ? 'Guardando en la nube...' : '💾 Guardar Todos los Cambios' }}</button>
+        <button v-if="activeTab !== 'aumento'" class="btn" @click="saveData" :disabled="isSaving">{{ isSaving ? 'Guardando en la nube...' : '💾 Guardar Todos los Cambios' }}</button>
       </div>
       
       <div v-if="saveMessage" class="msg" :class="saveStatus" style="display:block;">{{ saveMessage }}</div>
@@ -187,7 +246,7 @@
   </div>
 
   <script>
-    const { createApp, ref, reactive, onMounted } = Vue;
+    const { createApp, ref, reactive, computed, onMounted } = Vue;
 
     createApp({
       setup() {
@@ -295,6 +354,7 @@
             Object.assign(data, content);
             
             isAuthenticated.value = true;
+            cargarDatosAumento();
           } catch (err) {
             authError.value = err.message;
             captcha.reiniciar();
@@ -355,6 +415,179 @@
           }
         }
 
+        // ── Aumento de precios ─────────────────────────────
+        const BRANCH = 'main';
+        const COTIZ_PATH = 'data/promos-cotizador.json';
+        const HIST_PATH = 'data/aumentos.json';
+        const EXTRAS = [['precio_convertidor_adicional', 'Convertidor adicional']];
+        const PACKS = [['precio_pack_futbol', 'Pack Fútbol'], ['precio_pack_hbo', 'Pack HBO']];
+        const PACKS_COTIZ = ['fut', 'hbo']; // Fútbol Premium y HBO en el cotizador
+        const CAMARAS = [['abono_mensual', 'Abono mensual por cámara'], ['instalacion_interna', 'Instalación interna (total)'], ['instalacion_externa', 'Instalación externa (total)']];
+
+        const pctTexto = ref('');
+        const aum = reactive({ planes: true, extras: true, packs: false, camaras: true, cotizador: true });
+        const cotiz = ref(null);
+        const historial = ref([]);
+        const aplicando = ref(false);
+        const aumMsg = ref('');
+        const aumStatus = ref('');
+
+        const r0 = n => Math.round(n);
+        const r2 = n => Math.round(n * 100) / 100;
+        // "27.660" → 27660 · 28226 → "28.226" (así se guardan los precios de texto del sitio)
+        const deTexto = s => Number(String(s ?? '').replace(/\$|\s/g, '').replace(/\./g, '').replace(',', '.'));
+        const aTexto = n => n.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+        const plata = n => '$' + Number(n).toLocaleString('es-AR', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 });
+        const pctFmt = n => Number(n).toLocaleString('es-AR', { maximumFractionDigits: 4 });
+        const fechaFmt = f => f ? f.split('-').reverse().join('/') : '';
+
+        const pct = computed(() => {
+          const t = String(pctTexto.value).trim().replace('%', '').replace(',', '.');
+          const n = t === '' ? NaN : Number(t);
+          return n > 0 && n <= 50 ? n : NaN;
+        });
+        const ultimoAumento = computed(() => historial.value[historial.value.length - 1] || null);
+
+        // Devuelve copias de los datos con el aumento aplicado y la lista de cambios.
+        function calcular(f) {
+          const d = JSON.parse(JSON.stringify(data));
+          const c = cotiz.value ? JSON.parse(JSON.stringify(cotiz.value)) : null;
+          const filas = [];
+          const fila = (grupo, nombre, antes, despues) => filas.push({ grupo, nombre, antes, despues });
+
+          if (aum.planes) (d.planes || []).forEach(p => {
+            const a = Number(p.precio);
+            if (a > 0) {
+              p.precio = r0(a * f); fila('Planes', p.nombre, a, p.precio);
+              // Precio con fútbol: sube el plan; lo que suma el Fútbol solo sube si se marcan los packs.
+              const fa = Number(p.precio_futbol);
+              if (fa > a) {
+                const extra = fa - a;
+                p.precio_futbol = p.precio + (aum.packs ? r0(extra * f) : extra);
+                fila('Planes', `${p.nombre} (con Fútbol)`, fa, p.precio_futbol);
+              }
+            }
+          });
+          const subirTexto = ([k, nombre]) => {
+            const a = deTexto(d.sitio[k]);
+            if (a > 0) { const b = r0(a * f); d.sitio[k] = aTexto(b); fila('Packs y adicionales', nombre, a, b); }
+          };
+          if (aum.extras && d.sitio) EXTRAS.forEach(subirTexto);
+          if (aum.packs && d.sitio) PACKS.forEach(subirTexto);
+          if (aum.camaras && d.camaras) {
+            CAMARAS.forEach(([k, nombre]) => {
+              const a = Number(d.camaras[k]);
+              if (a > 0) { d.camaras[k] = r2(a * f); fila('IS CAM', nombre, a, d.camaras[k]); }
+            });
+            ['interna', 'externa'].forEach(t => {
+              const total = Number(d.camaras[`instalacion_${t}`]), cuotas = Number(d.camaras[`instalacion_${t}_cuotas`]);
+              if (total > 0 && cuotas > 0) d.camaras[`instalacion_${t}_valor_cuota`] = r2(total / cuotas);
+            });
+          }
+          if (aum.cotizador && c && Array.isArray(c.items)) {
+            c.items.forEach(it => {
+              if (!aum.packs && PACKS_COTIZ.includes(it.id)) return;
+              const a = Number(it.precio);
+              if (a > 0) { it.precio = r2(a * f); fila('Cotizador', it.nombre, a, it.precio); }
+            });
+            c.actualizado = new Date().toISOString();
+          }
+          return { d, c, filas };
+        }
+
+        const vistaPrevia = computed(() => Number.isNaN(pct.value) ? [] : calcular(1 + pct.value / 100).filas);
+
+        async function gh(path, opts = {}) {
+          const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/${path}`, {
+            ...opts,
+            cache: 'no-store',
+            headers: {
+              'Authorization': `Bearer ${decryptedToken}`,
+              'Accept': 'application/vnd.github.v3+json',
+              ...(opts.body ? { 'Content-Type': 'application/json' } : {})
+            }
+          });
+          if (!res.ok) { const e = new Error(`GitHub respondió ${res.status}`); e.status = res.status; throw e; }
+          return res.json();
+        }
+        async function leerJson(path) {
+          const r = await gh(`contents/${path}?ref=${BRANCH}`);
+          return { sha: r.sha, content: JSON.parse(b64DecodeUnicode(r.content.replace(/\n/g, ''))) };
+        }
+
+        async function cargarDatosAumento() {
+          try { cotiz.value = (await leerJson(COTIZ_PATH)).content; }
+          catch (e) { cotiz.value = null; aum.cotizador = false; }
+          try { historial.value = (await leerJson(HIST_PATH)).content || []; }
+          catch (e) { historial.value = []; }
+        }
+
+        // Guarda varios archivos en un solo cambio (un solo commit en GitHub).
+        async function guardarArchivos(archivos, mensaje) {
+          const ref = await gh(`git/ref/heads/${BRANCH}`);
+          const padre = ref.object.sha;
+          const commitPadre = await gh(`git/commits/${padre}`);
+          const arbol = await gh('git/trees', { method: 'POST', body: JSON.stringify({
+            base_tree: commitPadre.tree.sha,
+            tree: archivos.map(a => ({ path: a.path, mode: '100644', type: 'blob', content: a.content }))
+          }) });
+          const commit = await gh('git/commits', { method: 'POST', body: JSON.stringify({ message: mensaje, tree: arbol.sha, parents: [padre] }) });
+          await gh(`git/refs/heads/${BRANCH}`, { method: 'PATCH', body: JSON.stringify({ sha: commit.sha }) });
+          return commit.sha;
+        }
+
+        async function aplicarAumento() {
+          const p = pct.value;
+          if (Number.isNaN(p)) return;
+          aumMsg.value = '';
+          const hoy = new Date().toLocaleDateString('en-CA'); // AAAA-MM-DD
+          const ult = ultimoAumento.value;
+          if (ult && ult.fecha.slice(0, 7) === hoy.slice(0, 7) &&
+              !confirm(`Este mes ya se aplicó un aumento de ${pctFmt(ult.porcentaje)}% (el ${fechaFmt(ult.fecha)}).\n¿Querés aplicar otro aumento de ${pctFmt(p)}% encima?`)) return;
+          const { filas } = calcular(1 + p / 100);
+          if (!confirm(`Se van a subir ${filas.length} precios un ${pctFmt(p)}% y se publican en el sitio.\n(Si cambiaste algo en las otras pestañas sin guardar, también se guarda.)\n\n¿Continuar?`)) return;
+
+          aplicando.value = true;
+          try {
+            // Si alguien guardó planes desde otro lado, no pisarlos.
+            const actual = await gh(`contents/${FILE_PATH}?ref=${BRANCH}`);
+            if (actual.sha !== currentSha) throw new Error('Los planes cambiaron en el sitio desde que entraste. Recargá la página y volvé a intentar.');
+            if (aum.cotizador) {
+              const remoto = (await leerJson(COTIZ_PATH)).content;
+              cotiz.value = remoto;
+            }
+            const { d, c, filas: cambios } = calcular(1 + p / 100);
+            const registro = {
+              fecha: hoy,
+              porcentaje: p,
+              precios: cambios.length,
+              incluye: Object.keys(aum).filter(k => aum[k] && (k !== 'cotizador' || c))
+            };
+            const hist = [...historial.value, registro];
+            const archivos = [
+              { path: FILE_PATH, content: JSON.stringify(d, null, 2) },
+              { path: HIST_PATH, content: JSON.stringify(hist, null, 2) + '\n' }
+            ];
+            if (aum.cotizador && c) archivos.push({ path: COTIZ_PATH, content: JSON.stringify(c, null, 2) + '\n' });
+
+            const sha = await guardarArchivos(archivos, `Aumento de precios ${pctFmt(p)}% vía Panel Simple`);
+
+            Object.assign(data, d);
+            if (aum.cotizador && c) cotiz.value = c;
+            historial.value = hist;
+            try { currentSha = (await gh(`contents/${FILE_PATH}?ref=${sha}`)).sha; }
+            catch (e) { /* si falla, al recargar la página se toma la versión nueva */ }
+            pctTexto.value = '';
+            aumMsg.value = `¡Listo! Se subieron ${cambios.length} precios un ${pctFmt(p)}%. En unos minutos se ven en issanjose.com.ar.`;
+            aumStatus.value = 'success';
+          } catch (err) {
+            aumMsg.value = err.message.startsWith('GitHub') ? `No se pudo publicar (${err.message}). No se cambió nada, probá de nuevo.` : err.message;
+            aumStatus.value = 'error';
+          } finally {
+            aplicando.value = false;
+          }
+        }
+
         function togglePlan(index) {
           expandedPlan.value = expandedPlan.value === index ? null : index;
         }
@@ -394,7 +627,9 @@
           isAuthenticated, username, password, isLoading, authError, login, captchaBox,
           data, activeTab, expandedPlan, togglePlan,
           addPlan, removePlan, addBenefit, removeBenefit,
-          saveData, isSaving, saveMessage, saveStatus
+          saveData, isSaving, saveMessage, saveStatus,
+          pctTexto, pct, aum, cotiz, historial, ultimoAumento, vistaPrevia, aplicarAumento, aplicando, aumMsg, aumStatus,
+          plata, pctFmt, fechaFmt
         }
       }
     }).mount('#app');
